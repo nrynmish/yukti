@@ -1,20 +1,29 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown, Eye, Instagram, Search, Twitter } from "lucide-react";
 import { useMemo, useState, type FormEvent } from "react";
-import campusImage from "../assets/dtu-campus-aerial.jpg";
+import campusImage from "../assets/dtu-campus-aerial.png";
 import studentsImage from "../assets/yukti-students.jpg";
+import dtuLogo from "../assets/dtu_logo.png";
+import footerImage from "../assets/footer.jpeg";
 
 export function Brand() {
   return (
     <Link to="/" className="flex items-center gap-3" aria-label="YUKTI 2026 home">
-      <span className="grid size-11 place-items-center rounded-full border-2 border-primary text-[10px] font-bold text-primary">
-        DTU
-      </span>
+      <div className="flex size-11 shrink-0 items-center justify-center">
+        <img
+          src={dtuLogo}
+          alt="Delhi Technological University"
+          className="size-full object-contain"
+        />
+      </div>
+
       <span className="leading-tight">
         <strong className="block text-lg">
           <span className="text-primary">YUKTI</span> 2026
         </strong>
-        <small className="block text-[10px] font-bold">DTU Rashtriya Innovation</small>
+        <small className="block text-[10px] font-bold">
+          DTU Rashtriya Innovation
+        </small>
       </span>
     </Link>
   );
@@ -77,8 +86,19 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="footer-texture border-t border-border py-16">
-      <div className="site-shell grid gap-10 md:grid-cols-12">
+    <footer className="footer-texture relative overflow-hidden border-t border-border py-16">
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${footerImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: 0.15,
+        }}
+      />
+
+      <div className="site-shell relative z-10 grid gap-10 md:grid-cols-12">
         <div className="md:col-span-6">
           <h2 className="mb-3 text-xl font-bold">DTU – YUKTI 2026</h2>
           <p className="max-w-md text-sm leading-7 text-muted-foreground">
@@ -86,6 +106,7 @@ export function Footer() {
             Challenge. Empowering youth to create sustainable, prototype-driven solutions for Viksit
             Bharat.
           </p>
+
           <div className="mt-5 flex gap-3">
             <a className="social" href="https://twitter.com" aria-label="X">
               <Twitter size={15} />
@@ -95,8 +116,10 @@ export function Footer() {
             </a>
           </div>
         </div>
+
         <div className="md:col-span-3">
           <h3 className="mb-4 font-bold">Navigation</h3>
+
           <div className="space-y-3 text-sm text-muted-foreground">
             <a className="block" href="/#about">
               About Challenge
@@ -112,10 +135,12 @@ export function Footer() {
             </Link>
           </div>
         </div>
+
         <div className="md:col-span-3">
           <h3 className="mb-4 font-bold">Partner Hubs</h3>
           <p className="text-sm text-muted-foreground">DTU (National Centre)</p>
         </div>
+
         <p className="border-t border-border pt-7 text-center text-xs text-muted-foreground md:col-span-12">
           Copyright © 2026 Delhi Technological University (DTU). All Rights Reserved.
         </p>
@@ -244,7 +269,7 @@ export function HomePage() {
             ))}
           </div>
         </section>
-        <section id="announcements" className="section-pad bg-surface">
+        <section id="announcements" className="live-announcements section-pad">
           <div className="site-shell">
             <p className="eyebrow">Important Notices</p>
             <h2 className="section-title">Live Announcements</h2>

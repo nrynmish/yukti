@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <radialGradient id="sealGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="85%" stop-color="#fef2f2"/>
+      <stop offset="100%" stop-color="#fee2e2"/>
+    </radialGradient>
+  </defs>
+  <!-- Outer circle with teeth/notches -->
+  <circle cx="60" cy="60" r="56" fill="#fff" stroke="#991b1b" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="51" fill="none" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="3,2"/>
+  <circle cx="60" cy="60" r="46" fill="none" stroke="#991b1b" stroke-width="2"/>
+  
+  <!-- Outer ring background -->
+  <path d="M 60,14 A 46,46 0 1,1 59.9,14" fill="none"/>
+  
+  <!-- Text along arc or circular text -->
+  <text font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="7.5" font-weight="700" fill="#881337" text-anchor="middle">
+    <textPath href="#textPathTop" startOffset="50%">DELHI TECHNOLOGICAL UNIVERSITY</textPath>
+  </text>
+  <defs>
+    <path id="textPathTop" d="M 17,60 A 43,43 0 0,1 103,60" fill="none"/>
+    <path id="textPathBottom" d="M 103,60 A 43,43 0 0,1 17,60" fill="none"/>
+  </defs>
+  <text font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="7" font-weight="700" fill="#991b1b" text-anchor="middle">
+    <textPath href="#textPathBottom" startOffset="50%">ESTD. 1941 • DELTECH</textPath>
+  </text>
+
+  <!-- Inner core emblem -->
+  <circle cx="60" cy="60" r="32" fill="url(#sealGrad)" stroke="#b91c1c" stroke-width="1.5"/>
+  
+  <!-- Sun rays / Flame / Gear emblem -->
+  <g transform="translate(60,56) scale(0.65)">
+    <!-- Torch Flame -->
+    <path d="M0,-24 C-8,-14 -12,-4 -6,10 C-3,17 3,17 6,10 C12,-4 8,-14 0,-24 Z" fill="#ef4444"/>
+    <path d="M0,-16 C-4,-8 -6,0 -3,8 C-1,12 1,12 3,8 C6,0 4,-8 0,-16 Z" fill="#fbbf24"/>
+    <!-- Torch Handle -->
+    <path d="M-5,10 L5,10 L3,25 L-3,25 Z" fill="#991b1b"/>
+    <!-- Open Book -->
+    <path d="M-22,18 C-12,14 -4,15 0,18 C4,15 12,14 22,18 L20,30 C11,26 4,26 0,29 C-4,26 -11,26 -20,30 Z" fill="#1e3a8a" stroke="#ffffff" stroke-width="1.2"/>
+  </g>
+
+  <!-- Stars on sides -->
+  <polygon points="17,60 19,56 23,56 20,59 21,63 17,61 13,63 14,59 11,56 15,56" fill="#dc2626" transform="translate(2,0) scale(0.7)"/>
+  <polygon points="103,60 105,56 109,56 106,59 107,63 103,61 99,63 100,59 97,56 101,56" fill="#dc2626" transform="translate(-14,0) scale(0.7)"/>
+</svg>

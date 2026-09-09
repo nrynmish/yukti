@@ -1,0 +1,50 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js
+.next/
+out/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Misc
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Debug
+*.debug
+
+# Local config
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+
+# Package files
+*.tgz
+*.war
+*.jar
+
+# Static files
+# .cache/
+
+# TypeScript
+*.tsbuildinfo
+
+digest.txt

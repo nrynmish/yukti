@@ -295,7 +295,7 @@
   }
   .countdown {
     position: absolute;
-    bottom: 0;
+    bottom: -1.35rem;
     left: 50%;
     z-index: 20;
     transform: translate(-50%, 50%);
@@ -478,6 +478,8 @@
   }
   .footer-texture {
     background: linear-gradient(to bottom, var(--surface), var(--muted));
+    border: none;
+    margin: 0;
   }
   .social {
     display: grid;
@@ -582,6 +584,7 @@
     background: linear-gradient(90deg, oklch(0.99 0 0 / 0.94), oklch(0.99 0 0 / 0.65));
   }
   .countdown {
+    bottom: -1rem;
     gap: 0.35rem;
     padding: 0.8rem;
   }

@@ -1,6 +1,6 @@
-# YUKTI 2026 - Frontend
+# SEWA 2026 - Frontend
 
-Frontend application for the DTU YUKTI 2026 Rashtriya Innovation Challenge portal.
+Frontend application for the DTU SEWA 2026 Youth Innovation Challenge portal.
 
 ## Tech Stack
 

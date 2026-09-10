@@ -4,6 +4,7 @@ import {
   Award,
   BarChart3,
   BoxSelect,
+  Calendar,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -20,13 +21,13 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import campusImage from "../assets/dtu-campus-aerial.jpeg";
-import studentsImage from "../assets/yukti-students.jpg";
+import studentsImage from "../assets/sewa-students.jpg";
 import dtuLogo from "../assets/dtu_logo.png";
 import footerImage from "../assets/footer.jpeg";
 
 export function Brand() {
   return (
-    <Link to="/" className="flex items-center gap-3" aria-label="YUKTI 2026 home">
+    <Link to="/" className="flex items-center gap-3" aria-label="SEWA 2026 home">
       <div className="flex size-11 shrink-0 items-center justify-center">
         <img
           src={dtuLogo}
@@ -37,10 +38,10 @@ export function Brand() {
 
       <span className="leading-tight">
         <strong className="block text-lg">
-          <span className="text-primary">YUKTI</span> 2026
+          <span className="text-primary">SEWA</span> 2026
         </strong>
         <small className="block text-[10px] font-bold">
-          DTU Rashtriya Innovation
+          DTU Youth Innovation
         </small>
       </span>
     </Link>
@@ -88,11 +89,11 @@ export function Header() {
         <div className="live-updates-ticker-wrap min-w-0 flex-1 overflow-hidden">
           <div className="ticker flex h-full items-center whitespace-nowrap font-medium">
             <span>
-              YUKTI 2026 / Rashtriya Innovation Challenge officially launched at Delhi Technological
+              SEWA 2026 / Youth Innovation Challenge officially launched at Delhi Technological
               University on 17 September 2026.
             </span>
             <span aria-hidden="true">
-              YUKTI 2026 / Rashtriya Innovation Challenge officially launched at Delhi Technological
+              SEWA 2026 / Youth Innovation Challenge officially launched at Delhi Technological
               University on 17 September 2026.
             </span>
           </div>
@@ -104,23 +105,28 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="footer-texture relative overflow-hidden border-t border-border py-16">
+    <footer className="footer-texture relative overflow-hidden m-0 border-none py-16 shadow-[inset_0_20px_35px_-15px_rgba(0,0,0,0.06)]">
+      {/* Top subtle fade gradient that blends with the white section above */}
+      <div className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-white via-white/50 to-transparent pointer-events-none z-[1]" />
+
       <div
         className="absolute inset-0"
         style={{
           backgroundImage: `url(${footerImage})`,
           backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundPosition: "center calc(45% + 45px)",
           backgroundRepeat: "no-repeat",
           opacity: 0.15,
+          maskImage: "linear-gradient(to bottom, transparent 0%, black 25%, black 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 25%, black 100%)",
         }}
       />
 
       <div className="site-shell relative z-10 grid gap-10 md:grid-cols-12">
         <div className="md:col-span-6">
-          <h2 className="mb-3 text-xl font-bold">DTU – YUKTI 2026</h2>
+          <h2 className="mb-3 text-xl font-bold">DTU – SEWA 2026</h2>
           <p className="max-w-md text-sm leading-7 text-muted-foreground">
-            Young India&apos;s Knowledge &amp; Technology Initiative — Rashtriya Innovation
+            Young India&apos;s Knowledge &amp; Technology Initiative — Youth Innovation
             Challenge. Empowering youth to create sustainable, prototype-driven solutions for Viksit
             Bharat.
           </p>
@@ -246,8 +252,18 @@ export function CountdownTimer() {
     <div
       className="countdown px-5 sm:px-8 md:px-10 py-3 sm:py-3.5 select-none border border-black/[0.04]"
       role="timer"
-      aria-label="Countdown to YUKTI 2026 Launch on 17 September 2026"
+      aria-label="Countdown to SEWA 2026 Launch on 17 September 2026"
     >
+      {/* Launch Date Card Above Timer */}
+      <div className="absolute -top-10 sm:-top-12 left-1/2 -translate-x-1/2 whitespace-nowrap">
+        <div className="flex items-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl bg-white px-3.5 sm:px-5 py-1.5 sm:py-2 shadow-[0_10px_28px_rgba(0,0,0,0.10)] border border-black/[0.04]">
+          <Calendar size={13} className="text-primary shrink-0 sm:size-[15px]" />
+          <span className="text-[11px] sm:text-xs md:text-sm font-extrabold tracking-tight text-gray-900">
+            Launching on 17 September 2026
+          </span>
+        </div>
+      </div>
+
       <div className="flex items-center gap-2.5 sm:gap-4 md:gap-6">
         {/* DAYS */}
         <div className="flex flex-col items-center min-w-[40px] sm:min-w-[48px] md:min-w-[56px]">
@@ -351,6 +367,20 @@ export function HomePage() {
             <div className="absolute inset-0 bg-hero-overlay" />
           </div>
 
+          {/* Floating Live Viewers Card in top-right corner below Live Updates */}
+          <div className="absolute top-4 sm:top-5 right-4 sm:right-6 md:right-8 lg:right-12 z-20 select-none">
+            <div className="flex items-center gap-2 rounded-xl sm:rounded-2xl bg-white px-3.5 sm:px-4 py-1.5 sm:py-2 shadow-[0_10px_28px_rgba(0,0,0,0.10)] border border-black/[0.04] backdrop-blur-xs transition-all duration-200 hover:-translate-y-0.5">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+              </span>
+              <Eye size={14} className="text-primary shrink-0" />
+              <span className="text-xs sm:text-sm font-extrabold tracking-tight text-gray-900">
+                67K <span className="font-semibold text-gray-600">Views</span>
+              </span>
+            </div>
+          </div>
+
           {/* Carousel Arrows */}
           <button
             type="button"
@@ -369,7 +399,7 @@ export function HomePage() {
 
           <div className="site-shell relative flex min-h-[570px] items-center z-10">
             <div className="animate-rise max-w-xl py-20">
-              <p className="eyebrow">Rashtriya Innovation Challenge</p>
+              <p className="eyebrow">Youth Innovation Challenge</p>
               <h1 className="mt-4 text-5xl font-extrabold leading-[1.08] sm:text-6xl">
                 Innovating Today,
                 <br />
@@ -396,7 +426,7 @@ export function HomePage() {
             <h2 className="text-4xl font-extrabold">
               What
               <br />
-              is YUKTI?
+              is SEWA?
             </h2>
             {[
               [
@@ -509,7 +539,7 @@ export function HomePage() {
                     {open === i && (
                       <div className="mt-4 pt-3.5 border-t border-gray-200/90 text-xs text-gray-700 leading-relaxed animate-fade-in">
                         {n[3] ||
-                          "Complete circulars, guidelines, and submission links are published through the official DTU YUKTI portal."}
+                          "Complete circulars, guidelines, and submission links are published through the official DTU SEWA portal."}
                       </div>
                     )}
                   </article>
@@ -600,7 +630,7 @@ export function HomePage() {
 
                 <div className="pt-3.5">
                   <h3 className="text-sm sm:text-[15px] font-bold text-gray-900 tracking-tight">
-                    Rashtriya Innovation Challenge
+                    Youth Innovation Challenge
                   </h3>
                   <p className="mt-1 text-[11px] sm:text-xs text-gray-500 font-medium">
                     17 Sep – 25 Dec <span className="mx-1.5 text-gray-300 font-light">|</span> Coordinated by DTU
@@ -650,7 +680,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     setMessage(
       mode === "login"
         ? "Sign-in details received."
-        : "Registration details received! Welcome to YUKTI 2026.",
+        : "Registration details received! Welcome to SEWA 2026.",
     );
   };
 
@@ -672,7 +702,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
               <Brand />
               <div>
                 <p className="eyebrow">Welcome back</p>
-                <h1 className="mt-2 text-3xl font-extrabold">Sign in to YUKTI</h1>
+                <h1 className="mt-2 text-3xl font-extrabold">Sign in to SEWA</h1>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Access your challenge workspace and submissions.
                 </p>
@@ -752,11 +782,11 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
           {/* Top-Left Brand Typography */}
           <div className="absolute top-6 left-6 sm:top-8 sm:left-9 z-10 select-none">
             <div className="text-xl sm:text-2xl font-black tracking-tight leading-none">
-              <span className="text-[#ff5a5f]">YUKTI</span>{" "}
+              <span className="text-[#ff5a5f]">SEWA</span>{" "}
               <span className="text-black font-black">2026</span>
             </div>
             <div className="text-xs sm:text-[13px] font-bold text-black leading-tight mt-1">
-              DTU Rashtriya<br />Innovation
+              DTU Youth<br />Innovation
             </div>
           </div>
 
@@ -847,14 +877,12 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                       role="switch"
                       aria-checked={rememberMe}
                       onClick={() => setRememberMe(!rememberMe)}
-                      className={`relative inline-flex h-4.5 w-8 shrink-0 items-center rounded-full transition-colors focus:outline-none cursor-pointer ${
-                        rememberMe ? "bg-[#ff5a5f]" : "bg-gray-300"
-                      }`}
+                      className={`relative inline-flex h-4.5 w-8 shrink-0 items-center rounded-full transition-colors focus:outline-none cursor-pointer ${rememberMe ? "bg-[#ff5a5f]" : "bg-gray-300"
+                        }`}
                     >
                       <span
-                        className={`inline-block size-3.5 transform rounded-full bg-white shadow-xs transition-transform ${
-                          rememberMe ? "translate-x-4" : "translate-x-0.5"
-                        }`}
+                        className={`inline-block size-3.5 transform rounded-full bg-white shadow-xs transition-transform ${rememberMe ? "translate-x-4" : "translate-x-0.5"
+                          }`}
                       />
                     </button>
                     <span className="text-[11px] font-medium text-gray-700">Remember me</span>

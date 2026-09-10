@@ -73,8 +73,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "YUKTI 2026" },
-      { name: "description", content: "DTU Rashtriya Innovation Challenge" },
+      { title: "SEWA 2026" },
+      { name: "description", content: "DTU Youth Innovation Challenge" },
       { name: "author", content: "Delhi Technological University" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

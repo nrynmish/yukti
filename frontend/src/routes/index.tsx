@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HomePage } from "../components/YuktiSite";
+import { HomePage } from "../components/SewaSite";
 
 // No head() here: the home route inherits title/description/og/twitter from
 // __root.tsx, and ships no og:image so serve-time hosting can inject the
@@ -7,13 +7,13 @@ import { HomePage } from "../components/YuktiSite";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "YUKTI 2026 | DTU Innovation Challenge" },
+      { title: "SEWA 2026 | DTU Innovation Challenge" },
       {
         name: "description",
         content:
-          "Join YUKTI 2026, DTU's 100-day national innovation challenge for students, researchers and startups.",
+          "Join SEWA 2026, DTU's 100-day national innovation challenge for students, researchers and startups.",
       },
-      { property: "og:title", content: "YUKTI 2026 | DTU Innovation Challenge" },
+      { property: "og:title", content: "SEWA 2026 | DTU Innovation Challenge" },
       {
         property: "og:description",
         content: "Innovating today, inspiring tomorrow through a 100-day national challenge.",

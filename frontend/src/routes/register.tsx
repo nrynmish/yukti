@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AuthPage } from "../components/YuktiSite";
+import { AuthPage } from "../components/SewaSite";
 export const Route = createFileRoute("/register")({
   head: () => ({
     meta: [
-      { title: "Register Your Team | YUKTI 2026" },
+      { title: "Register Your Team | SEWA 2026" },
       {
         name: "description",
-        content: "Register your team for the YUKTI 2026 Rashtriya Innovation Challenge.",
+        content: "Register your team for the SEWA 2026 Youth Innovation Challenge.",
       },
-      { property: "og:title", content: "Register Your Team | YUKTI 2026" },
+      { property: "og:title", content: "Register Your Team | SEWA 2026" },
       {
         property: "og:description",
         content: "Begin your team's 100-day innovation journey with DTU.",

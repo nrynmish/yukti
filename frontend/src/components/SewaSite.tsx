@@ -105,7 +105,7 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="footer-texture relative overflow-hidden m-0 border-none py-16 shadow-[inset_0_20px_35px_-15px_rgba(0,0,0,0.06)]">
+    <footer className="footer-texture relative overflow-hidden m-0 border-none pt-20 sm:pt-24 pb-16 shadow-[inset_0_20px_35px_-15px_rgba(0,0,0,0.06)]">
       {/* Top subtle fade gradient that blends with the white section above */}
       <div className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-white via-white/50 to-transparent pointer-events-none z-[1]" />
 
@@ -114,7 +114,7 @@ export function Footer() {
         style={{
           backgroundImage: `url(${footerImage})`,
           backgroundSize: "cover",
-          backgroundPosition: "center calc(45% + 45px)",
+          backgroundPosition: "center calc(50% + 50px)",
           backgroundRepeat: "no-repeat",
           opacity: 0.15,
           maskImage: "linear-gradient(to bottom, transparent 0%, black 25%, black 100%)",
@@ -125,7 +125,7 @@ export function Footer() {
       <div className="site-shell relative z-10 grid gap-10 md:grid-cols-12">
         <div className="md:col-span-6">
           <h2 className="mb-3 text-xl font-bold">DTU – SEWA 2026</h2>
-          <p className="max-w-md text-sm leading-7 text-muted-foreground">
+          <p className="max-w-md text-sm leading-7 font-medium text-foreground/85">
             Young India&apos;s Knowledge &amp; Technology Initiative — Youth Innovation
             Challenge. Empowering youth to create sustainable, prototype-driven solutions for Viksit
             Bharat.
@@ -147,20 +147,20 @@ export function Footer() {
         <div className="md:col-span-3">
           <h3 className="mb-4 font-bold">Navigation</h3>
 
-          <div className="space-y-3 text-sm text-muted-foreground">
-            <a className="block" href="/#about">
+          <div className="space-y-3 text-sm font-medium text-foreground/85">
+            <a className="block hover:text-primary transition-colors" href="/#about">
               About Challenge
             </a>
-            <a className="block" href="/#steps">
+            <a className="block hover:text-primary transition-colors" href="/#steps">
               5 National Themes
             </a>
-            <a className="block" href="/#announcements">
+            <a className="block hover:text-primary transition-colors" href="/#announcements">
               Problem Statements (UDAN)
             </a>
-            <a className="block" href="/#steps">
+            <a className="block hover:text-primary transition-colors" href="/#steps">
               100-Day Timeline
             </a>
-            <Link className="block" to="/login">
+            <Link className="block hover:text-primary transition-colors" to="/login">
               Login
             </Link>
           </div>
@@ -168,10 +168,10 @@ export function Footer() {
 
         <div className="md:col-span-3">
           <h3 className="mb-4 font-bold">Partner Hubs</h3>
-          <p className="text-sm text-muted-foreground">DTU (National Centre)</p>
+          <p className="text-sm font-medium text-foreground/85">DTU (National Centre)</p>
         </div>
 
-        <p className="border-t border-border pt-7 text-center text-xs text-muted-foreground md:col-span-12">
+        <p className="border-t border-border pt-7 text-center text-xs font-medium text-muted-foreground md:col-span-12">
           Copyright © 2026 Delhi Technological University (DTU). All Rights Reserved.
         </p>
       </div>

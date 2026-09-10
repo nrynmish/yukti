@@ -161,7 +161,7 @@ export function Footer() {
               100-Day Timeline
             </a>
             <Link className="block hover:text-primary transition-colors" to="/login">
-              Login
+              Email
             </Link>
           </div>
         </div>
@@ -677,6 +677,29 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
+  // OTP states
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
+
+  useEffect(() => {
+    if (otpTimer <= 0) return;
+    const id = setInterval(() => setOtpTimer((t) => t - 1), 1000);
+    return () => clearInterval(id);
+  }, [otpTimer]);
+
+  const handleSendOtp = () => {
+    if (!phone || otpLoading || otpTimer > 0) return;
+    setOtpLoading(true);
+    // Simulate sending OTP
+    setTimeout(() => {
+      setOtpLoading(false);
+      setOtpSent(true);
+      setOtpTimer(60);
+    }, 1000);
+  };
+
   const submit = (e: FormEvent) => {
     e.preventDefault();
     setMessage(
@@ -824,15 +847,65 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                   <label className="block text-[11px] font-semibold text-gray-800 mb-1">
                     Phone
                   </label>
-                  <input
-                    required
-                    type="tel"
-                    placeholder="Telephone number"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-md bg-white border border-gray-200/90 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] transition-all"
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      required
+                      type="tel"
+                      placeholder="Telephone number"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="flex-1 h-10 px-3.5 rounded-md bg-white border border-gray-200/90 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      disabled={!phone || otpLoading || otpTimer > 0}
+                      className="h-10 px-3 rounded-md bg-[#ff5a5f] text-white font-semibold text-[10px] sm:text-xs shadow-xs hover:bg-[#ff4757] active:scale-[0.99] transition-all flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {otpLoading ? (
+                        <span className="inline-block size-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <Send size={12} />
+                      )}
+                      {otpTimer > 0 ? `${otpTimer}s` : otpLoading ? "Sending…" : "Send OTP"}
+                    </button>
+                  </div>
+
+                  {/* OTP input — shown after code is sent */}
+                  {otpSent && (
+                    <div className="mt-2 animate-fade-in">
+                      <label className="block text-[11px] font-semibold text-gray-800 mb-1">
+                        Enter OTP
+                      </label>
+                      <input
+                        required
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        placeholder="6-digit code"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                        className="w-full h-10 px-3.5 rounded-md bg-white border border-[#ff5a5f]/60 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] tracking-[0.2em] font-mono transition-all"
+                      />
+                      <p className="mt-1 text-[10px] text-gray-500">
+                        A 6-digit code was sent to{" "}
+                        <span className="font-semibold text-gray-700">{phone}</span>.{" "}
+                        {otpTimer > 0 ? (
+                          <span>Resend in {otpTimer}s</span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={handleSendOtp}
+                            className="text-[#ff5a5f] hover:underline font-medium cursor-pointer"
+                          >
+                            Resend
+                          </button>
+                        )}
+                      </p>
+                    </div>
+                  )}
                 </div>
+
 
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-800 mb-1">
@@ -847,7 +920,6 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                     className="w-full h-10 px-3.5 rounded-md bg-white border border-gray-200/90 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] transition-all"
                   />
                 </div>
-
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-800 mb-1">
                     Password

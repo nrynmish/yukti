@@ -24,26 +24,42 @@ import campusImage from "../assets/dtu-campus-aerial.jpeg";
 import studentsImage from "../assets/sewa-students.jpg";
 import dtuLogo from "../assets/dtu_logo.png";
 import footerImage from "../assets/footer.jpeg";
+import satymevjayteLogo from "../assets/satymevjayte.svg";
+import govtofnctLogo from "../assets/govtofnctdelhi.svg";
 
 export function Brand() {
   return (
-    <Link to="/" className="flex items-center gap-3" aria-label="SEWA 2026 home">
-      <div className="flex size-11 shrink-0 items-center justify-center">
-        <img
-          src={dtuLogo}
-          alt="Delhi Technological University"
-          className="size-full object-contain"
-        />
-      </div>
+    <Link to="/" className="flex flex-col items-start gap-1" aria-label="SEWA 2026 home">
+      {/* Govt of NCT Delhi — top row */}
+      <img
+        src={govtofnctLogo}
+        alt="Government of NCT of Delhi"
+        className="h-10 w-auto object-contain shrink-0"
+      />
 
-      <span className="leading-tight">
-        <strong className="block text-lg">
-          <span className="text-primary">SEWA</span> 2026
-        </strong>
-        <small className="block text-[10px] font-bold">
-          DTU Youth Innovation
-        </small>
-      </span>
+      {/* Satyamev Jayate + DTU — bottom row */}
+      <div className="flex items-center gap-3">
+        <img
+          src={satymevjayteLogo}
+          alt="Satyamev Jayate"
+          className="h-9 w-auto object-contain shrink-0"
+        />
+        <div className="flex items-center gap-2">
+          <img
+            src={dtuLogo}
+            alt="Delhi Technological University"
+            className="h-9 w-auto object-contain shrink-0"
+          />
+          <span className="leading-tight">
+            <strong className="block text-base">
+              <span className="text-primary">SEWA</span> 2026
+            </strong>
+            <small className="block text-[10px] font-bold text-muted-foreground">
+              DTU Youth Innovation
+            </small>
+          </span>
+        </div>
+      </div>
     </Link>
   );
 }
@@ -52,7 +68,7 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur">
-        <div className="site-shell flex h-20 items-center justify-between">
+        <div className="site-shell flex h-24 items-center justify-between">
           <Brand />
           <nav
             className="hidden items-center gap-8 text-sm font-semibold md:flex"
@@ -376,7 +392,7 @@ export function HomePage() {
               </span>
               <Eye size={14} className="text-primary shrink-0" />
               <span className="text-xs sm:text-sm font-extrabold tracking-tight text-gray-900">
-                67K <span className="font-semibold text-gray-600">Views</span>
+                100K <span className="font-semibold text-gray-600">Views</span>
               </span>
             </div>
           </div>
@@ -400,12 +416,25 @@ export function HomePage() {
           <div className="site-shell relative flex min-h-[570px] items-center z-10">
             <div className="animate-rise max-w-xl py-20">
               <p className="eyebrow">Youth Innovation Challenge</p>
-              <h1 className="mt-4 text-5xl font-extrabold leading-[1.08] sm:text-6xl text-black">
-                Observe,
-                <br />
-                Innovate,
-                <br />
-                <span className="text-primary">Impact.</span>
+              <h1 className="mt-4 text-5xl font-extrabold leading-[1.08] sm:text-6xl">
+                <span
+                  className="block"
+                  style={{ color: "#FF6200", textShadow: "0 2px 24px rgba(255,98,0,0.25)" }}
+                >
+                  Observe,
+                </span>
+                <span
+                  className="block"
+                  style={{ color: "#000080", textShadow: "0 2px 24px rgba(0,0,128,0.18)" }}
+                >
+                  Innovate,
+                </span>
+                <span
+                  className="block"
+                  style={{ color: "#138808", textShadow: "0 2px 24px rgba(19,136,8,0.22)" }}
+                >
+                  Impact.
+                </span>
               </h1>
               <p className="mt-6 max-w-lg text-base leading-7 text-foreground/80">
                 Young India&apos;s Knowledge &amp; Technology Initiative — a 100-day journey

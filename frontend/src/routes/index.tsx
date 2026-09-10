@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "SEWA 2026 | DTU Innovation Challenge" },
       {
         property: "og:description",
-        content: "Innovating today, inspiring tomorrow through a 100-day national challenge.",
+        content: "Observe, innovate, impact through a 100-day national challenge.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -400,10 +400,12 @@ export function HomePage() {
           <div className="site-shell relative flex min-h-[570px] items-center z-10">
             <div className="animate-rise max-w-xl py-20">
               <p className="eyebrow">Youth Innovation Challenge</p>
-              <h1 className="mt-4 text-5xl font-extrabold leading-[1.08] sm:text-6xl">
-                Innovating Today,
+              <h1 className="mt-4 text-5xl font-extrabold leading-[1.08] sm:text-6xl text-black">
+                Observe,
                 <br />
-                <span className="text-primary">Inspiring Tomorrow.</span>
+                Innovate,
+                <br />
+                <span className="text-primary">Impact.</span>
               </h1>
               <p className="mt-6 max-w-lg text-base leading-7 text-foreground/80">
                 Young India&apos;s Knowledge &amp; Technology Initiative — a 100-day journey

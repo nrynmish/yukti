@@ -322,8 +322,8 @@
     color: var(--muted-foreground);
   }
   .info-column {
-    border-left: 1px solid var(--border);
-    padding-left: 1.5rem;
+    border-left: none;
+    padding-left: 0;
   }
   .info-column h3 {
     font-size: 1.05rem;
@@ -477,7 +477,7 @@
     border-color: var(--border);
   }
   .footer-texture {
-    background: linear-gradient(to bottom, var(--surface), var(--muted));
+    background: #ffffff;
     border: none;
     margin: 0;
   }

@@ -3,6 +3,7 @@ import { prisma } from "../config/prisma.js";
 import { AppError } from "../middleware/errorHandler.js";
 import { TEAM_MAX_MEMBERS, TEAM_MIN_MEMBERS } from "../schemas/team.schema.js";
 import type { AddMemberInput, CreateTeamInput } from "../schemas/team.schema.js";
+import { sendTeamMemberAddedEmail, sendTeamRegistrationEmail } from "../utils/mailer.js";
 
 export async function createTeam(leaderUserId: string, input: CreateTeamInput) {
   const existing = await prisma.team.findFirst({ where: { leaderUserId } });
@@ -67,7 +68,7 @@ export async function addTeamMember(teamId: string, leaderUserId: string, input:
   // If someone with this email has an account, we still don't auto-link
   // it — see design note in memory: identity claiming is a separate,
   // explicit flow (not implemented here), not an automatic email match.
-  return prisma.teamMember.create({
+  const newMember = await prisma.teamMember.create({
     data: {
       teamId,
       firstName: input.firstName,
@@ -77,6 +78,20 @@ export async function addTeamMember(teamId: string, leaderUserId: string, input:
       role: "member",
     },
   });
+
+  const leader = team.members.find((m: TeamMember) => m.role === "leader");
+  const leaderName = leader ? `${leader.firstName} ${leader.lastName}` : "Your team leader";
+
+  sendTeamMemberAddedEmail(
+    newMember.email,
+    { firstName: newMember.firstName, lastName: newMember.lastName },
+    { name: team.name, institute: team.institute, theme: team.theme },
+    leaderName,
+  ).catch(() => {
+    // Handled & logged in mailer
+  });
+
+  return newMember;
 }
 
 export async function removeTeamMember(teamId: string, leaderUserId: string, memberId: string) {
@@ -96,10 +111,19 @@ export async function submitTeam(teamId: string, leaderUserId: string) {
     throw new AppError(400, `A team needs at least ${TEAM_MIN_MEMBERS} members to submit.`);
   }
 
-  return prisma.team.update({
+  const updatedTeam = await prisma.team.update({
     where: { id: teamId },
     data: { status: "submitted", submittedAt: new Date() },
+    include: { members: true },
   });
+
+  // Send confirmation email to all team members including leader
+  const recipients = updatedTeam.members.map((m: TeamMember) => m.email);
+  sendTeamRegistrationEmail(recipients, updatedTeam).catch(() => {
+    // Handled & logged in mailer
+  });
+
+  return updatedTeam;
 }
 
 export async function getMyTeam(leaderUserId: string) {

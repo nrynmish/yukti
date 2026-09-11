@@ -39,3 +39,269 @@ export async function sendOtpEmail(
   });
   logger.info({ to, purpose }, "otp_email_sent");
 }
+
+export interface TeamEmailPayload {
+  id: string;
+  name: string;
+  institute: string;
+  theme: string;
+  problemStatement: string;
+  submittedAt?: Date | null;
+  members: Array<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string | null;
+    role: string;
+  }>;
+}
+
+export async function sendTeamRegistrationEmail(
+  recipients: string[],
+  team: TeamEmailPayload,
+): Promise<void> {
+  if (!recipients.length) return;
+
+  const subject = `SEWA 2026: Team Registration Confirmed - ${team.name}`;
+
+  const memberListText = team.members
+    .map(
+      (m, idx) =>
+        `  ${idx + 1}. ${m.firstName} ${m.lastName} (${m.role.toUpperCase()}) - ${m.email}${m.phone ? ` | ${m.phone}` : ""}`,
+    )
+    .join("\n");
+
+  const memberListHtml = team.members
+    .map(
+      (m) => `
+      <tr style="border-bottom: 1px solid #e5e7eb;">
+        <td style="padding: 10px 12px; font-weight: 500; color: #111827;">${m.firstName} ${m.lastName}</td>
+        <td style="padding: 10px 12px; color: #4b5563;">
+          <span style="display: inline-block; padding: 2px 8px; font-size: 12px; font-weight: 600; border-radius: 9999px; background-color: ${
+            m.role === "leader" ? "#dbeafe; color: #1e40af" : "#f3f4f6; color: #374151"
+          }; text-transform: uppercase;">${m.role}</span>
+        </td>
+        <td style="padding: 10px 12px; color: #4b5563;">${m.email}</td>
+        <td style="padding: 10px 12px; color: #4b5563;">${m.phone || "—"}</td>
+      </tr>`,
+    )
+    .join("");
+
+  const textBody = `
+Dear Team ${team.name},
+
+Congratulations! Your team registration for the SEWA 2026 Youth Innovation Challenge has been successfully submitted.
+
+Team Details:
+- Team Name: ${team.name}
+- Team ID: ${team.id}
+- Institution: ${team.institute}
+- Theme: ${team.theme}
+- Problem Statement: ${team.problemStatement}
+
+Team Members:
+${memberListText}
+
+What's Next?
+1. The evaluation committee is currently reviewing submissions.
+2. Shortlisted teams will be notified via email for the next evaluation round.
+3. Keep an eye on your inbox and ensure all team members stay tuned for updates.
+
+If you have any questions or require support, please reply to this email or reach out to the SEWA 2026 Organizing Committee.
+
+Best regards,
+SEWA 2026 Organizing Committee
+DTU Youth Innovation Challenge
+`.trim();
+
+  const htmlBody = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: #ffffff; padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0 0 8px 0; font-size: 24px; font-weight: 700; letter-spacing: -0.025em; }
+    .header p { margin: 0; font-size: 14px; opacity: 0.9; }
+    .content { padding: 28px 24px; color: #374151; font-size: 15px; line-height: 1.6; }
+    .card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin: 20px 0; }
+    .card-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+    .card-row:last-child { margin-bottom: 0; }
+    .card-label { color: #64748b; font-weight: 500; }
+    .card-value { color: #0f172a; font-weight: 600; text-align: right; }
+    .table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; text-align: left; }
+    .table th { background-color: #f3f4f6; padding: 10px 12px; color: #4b5563; font-weight: 600; border-bottom: 2px solid #e5e7eb; }
+    .badge-success { display: inline-block; background-color: #dcfce7; color: #15803d; font-weight: 600; padding: 4px 12px; border-radius: 9999px; font-size: 13px; }
+    .steps-box { background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 0 8px 8px 0; margin-top: 24px; }
+    .footer { text-align: center; padding: 20px; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; background-color: #fafafa; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>SEWA 2026</h1>
+      <p>DTU Youth Innovation Challenge</p>
+    </div>
+    <div class="content">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <span class="badge-success">✓ Registration Submitted</span>
+      </div>
+      <p>Dear <strong>${team.name}</strong>,</p>
+      <p>Your team registration for the <strong>SEWA 2026 Youth Innovation Challenge</strong> has been successfully submitted and confirmed.</p>
+
+      <div class="card">
+        <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; font-weight: 500;">Team Name:</td>
+            <td style="padding: 6px 0; color: #0f172a; font-weight: 600; text-align: right;">${team.name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; font-weight: 500;">Team Reference ID:</td>
+            <td style="padding: 6px 0; color: #0f172a; font-weight: 600; text-align: right; font-family: monospace;">${team.id}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; font-weight: 500;">Institution:</td>
+            <td style="padding: 6px 0; color: #0f172a; font-weight: 600; text-align: right;">${team.institute}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; font-weight: 500;">Theme:</td>
+            <td style="padding: 6px 0; color: #0f172a; font-weight: 600; text-align: right;">${team.theme}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; font-weight: 500;">Problem Statement:</td>
+            <td style="padding: 6px 0; color: #0f172a; font-weight: 600; text-align: right;">${team.problemStatement}</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3 style="font-size: 16px; margin: 24px 0 12px 0; color: #111827;">Team Roster</h3>
+      <div style="overflow-x: auto;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Role</th>
+              <th>Email</th>
+              <th>Phone</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${memberListHtml}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="steps-box">
+        <strong style="color: #1e40af; font-size: 14px; display: block; margin-bottom: 6px;">What's next?</strong>
+        <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: #1e3a8a;">
+          <li>Your submission is now with the evaluation committee for initial screening.</li>
+          <li>Shortlisted teams will receive stage-2 guidelines and pitch schedules via email.</li>
+          <li>Ensure all team members keep an eye on their registered inboxes for updates.</li>
+        </ol>
+      </div>
+
+      <p style="margin-top: 24px; font-size: 14px;">If you have any questions or notice any discrepancy in your details, please reach out immediately.</p>
+    </div>
+    <div class="footer">
+      <p style="margin: 0 0 4px 0;">SEWA 2026 Organizing Committee • Delhi Technological University</p>
+      <p style="margin: 0;">This is an automated notification. Please do not reply directly to this email if automated.</p>
+    </div>
+  </div>
+</body>
+</html>
+`.trim();
+
+  try {
+    await transporter.sendMail({
+      from: env.SMTP_FROM,
+      to: recipients,
+      subject,
+      text: textBody,
+      html: htmlBody,
+    });
+    logger.info({ teamId: team.id, recipientCount: recipients.length }, "team_registration_email_sent");
+  } catch (error) {
+    logger.error({ err: error, teamId: team.id }, "failed_to_send_team_registration_email");
+  }
+}
+
+export async function sendTeamMemberAddedEmail(
+  to: string,
+  member: { firstName: string; lastName: string },
+  team: { name: string; institute: string; theme: string },
+  leaderName: string,
+): Promise<void> {
+  const subject = `SEWA 2026: You've been added to Team ${team.name}`;
+
+  const textBody = `
+Dear ${member.firstName} ${member.lastName},
+
+You have been added as a team member to "${team.name}" by ${leaderName} for the SEWA 2026 Youth Innovation Challenge.
+
+Team Details:
+- Team Name: ${team.name}
+- Institution: ${team.institute}
+- Selected Theme: ${team.theme}
+
+Once your team leader finalizes and submits the team application, you will receive a confirmation with the complete team roster and next steps.
+
+Best regards,
+SEWA 2026 Organizing Committee
+DTU Youth Innovation Challenge
+`.trim();
+
+  const htmlBody = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px; }
+    .container { max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
+    .header { background: #1e3a8a; color: #ffffff; padding: 24px; text-align: center; }
+    .content { padding: 24px; color: #374151; font-size: 15px; line-height: 1.6; }
+    .card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; font-size: 14px; }
+    .footer { text-align: center; padding: 16px; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2 style="margin: 0; font-size: 20px;">SEWA 2026</h2>
+      <p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.9;">DTU Youth Innovation Challenge</p>
+    </div>
+    <div class="content">
+      <p>Dear <strong>${member.firstName}</strong>,</p>
+      <p><strong>${leaderName}</strong> has added you as a team member to <strong>${team.name}</strong> for SEWA 2026.</p>
+      
+      <div class="card">
+        <p style="margin: 0 0 6px 0;"><strong>Team:</strong> ${team.name}</p>
+        <p style="margin: 0 0 6px 0;"><strong>Institution:</strong> ${team.institute}</p>
+        <p style="margin: 0;"><strong>Theme:</strong> ${team.theme}</p>
+      </div>
+
+      <p style="font-size: 14px; color: #6b7280;">When your team leader completes the team submission, you will receive full confirmation and schedule updates.</p>
+    </div>
+    <div class="footer">
+      <p style="margin: 0;">SEWA 2026 Organizing Committee</p>
+    </div>
+  </div>
+</body>
+</html>
+`.trim();
+
+  try {
+    await transporter.sendMail({
+      from: env.SMTP_FROM,
+      to,
+      subject,
+      text: textBody,
+      html: htmlBody,
+    });
+    logger.info({ to, teamName: team.name }, "team_member_added_email_sent");
+  } catch (error) {
+    logger.error({ err: error, to, teamName: team.name }, "failed_to_send_team_member_added_email");
+  }
+}

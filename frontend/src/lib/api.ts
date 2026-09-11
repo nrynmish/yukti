@@ -184,6 +184,16 @@ export const teamApi = {
   /** Returns `{ team: null }` when the signed-in user hasn't created one. */
   getMine: () => request<{ team: Team | null }>("/api/register/me"),
 
+  /** Draft-only — 409s once the team has been submitted. */
+  update: (
+    teamId: string,
+    input: { name: string; institute: string; theme: string; problemStatement: string },
+  ) =>
+    request<{ team: Team }>(`/api/register/${teamId}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
+
   addMember: (
     teamId: string,
     input: { firstName: string; lastName: string; email: string; phone?: string | undefined },

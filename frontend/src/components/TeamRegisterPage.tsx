@@ -407,6 +407,7 @@ function ConfirmationSummary({
     ],
     ["Date of Birth", personal.dateOfBirth || "—"],
     ["Gender", personal.gender || "—"],
+    ["Nationality / Citizenship", personal.nationality || "—"],
     ["Category / Social Group", personal.category || "—"],
     ["Aadhaar Number", maskedAadhaar],
     [
@@ -417,6 +418,7 @@ function ConfirmationSummary({
         personal.city,
         personal.state,
         personal.pinCode,
+        personal.country,
       ]
         .filter(Boolean)
         .join(", "),
@@ -647,6 +649,22 @@ export function TeamRegisterPage() {
         alternatePhone: personal.alternatePhone || undefined,
         backupEmail: personal.backupEmail || undefined,
       });
+      // The leader's roster slot (used in Step 3's preview, Step 4's review,
+      // and the printed confirmation) is otherwise only synced from the
+      // session's `user` object on mount — without this, editing your name
+      // or phone here leaves slot 0 showing what you signed up with.
+      setMembers((prev) =>
+        prev.map((m, idx) =>
+          idx === 0
+            ? {
+                ...m,
+                firstName: personal.firstName,
+                lastName: personal.lastName,
+                phone: personal.phone,
+              }
+            : m,
+        ),
+      );
       return true;
     } catch (err) {
       setError(
@@ -705,15 +723,44 @@ export function TeamRegisterPage() {
         });
         id = team.id;
         setTeamId(id);
+      } else {
+        // Resumed draft — the create() branch above is skipped, so push any
+        // edits made to team name/institute/theme/problem since it loaded.
+        await teamApi.update(id, { name: teamName, institute, theme, problemStatement: problem });
       }
 
+      // Reconcile the local roster against whatever's already on the team
+      // server-side: drop members removed locally, add new ones, and treat
+      // an edit to an existing member as remove-then-re-add (there's no
+      // update-member endpoint). Without this, a resumed draft's edits or
+      // removals never reach the backend and the submitted roster silently
+      // diverges from what was reviewed.
       const { team: current } = await teamApi.getMine();
-      const alreadyOn = new Set(
-        (current?.members ?? []).map((m: TeamMember) => m.email.toLowerCase()),
+      const currentMembers = (current?.members ?? []).filter(
+        (m: TeamMember) => m.role !== "leader",
       );
+      const currentByEmail = new Map(
+        currentMembers.map((m: TeamMember) => [m.email.toLowerCase(), m]),
+      );
+      const localEmails = new Set(members.slice(1).map((m) => m.email.toLowerCase()));
+
+      for (const cm of currentMembers) {
+        if (!localEmails.has(cm.email.toLowerCase())) {
+          await teamApi.removeMember(id, cm.id);
+        }
+      }
 
       for (const m of members.slice(1)) {
-        if (alreadyOn.has(m.email.toLowerCase())) continue;
+        const existing = currentByEmail.get(m.email.toLowerCase());
+        const changed =
+          !!existing &&
+          (existing.firstName !== m.firstName ||
+            existing.lastName !== m.lastName ||
+            (existing.phone ?? "") !== m.phone);
+
+        if (existing && !changed) continue;
+        if (existing && changed) await teamApi.removeMember(id, existing.id);
+
         await teamApi.addMember(id, {
           firstName: m.firstName,
           lastName: m.lastName,
@@ -1201,45 +1248,52 @@ export function TeamRegisterPage() {
 
                 <SectionHeader n={2} icon={Users} title="Member Details" />
                 <div className="-mt-5 space-y-3">
-                  {members.map((m, i) => (
-                    <div key={i} className="space-y-3 rounded-xl border border-gray-100 p-4">
-                      <label className="block text-xs font-semibold text-gray-600">
-                        {i === 0 ? "Team Leader (You)" : `Member ${i + 1} *`}
-                      </label>
-                      <div className="grid grid-cols-2 gap-3">
+                  {members.map((m, i) => {
+                    const who = i === 0 ? "Team Leader" : `Member ${i + 1}`;
+                    return (
+                      <div key={i} className="space-y-3 rounded-xl border border-gray-100 p-4">
+                        <label className="block text-xs font-semibold text-gray-600">
+                          {i === 0 ? "Team Leader (You)" : `Member ${i + 1} *`}
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
+                          <input
+                            aria-label={`${who} first name`}
+                            className={inputClass}
+                            disabled={i === 0}
+                            value={m.firstName}
+                            onChange={(e) => updateMember(i, "firstName", e.target.value)}
+                            placeholder="First name"
+                          />
+                          <input
+                            aria-label={`${who} last name`}
+                            className={inputClass}
+                            disabled={i === 0}
+                            value={m.lastName}
+                            onChange={(e) => updateMember(i, "lastName", e.target.value)}
+                            placeholder="Last name"
+                          />
+                        </div>
                         <input
+                          type="email"
+                          aria-label={`${who} email`}
                           className={inputClass}
                           disabled={i === 0}
-                          value={m.firstName}
-                          onChange={(e) => updateMember(i, "firstName", e.target.value)}
-                          placeholder="First name"
+                          value={m.email}
+                          onChange={(e) => updateMember(i, "email", e.target.value)}
+                          placeholder={i === 0 ? "your@email.com" : `member${i + 1}@email.com`}
                         />
                         <input
+                          type="tel"
+                          aria-label={`${who} phone`}
                           className={inputClass}
                           disabled={i === 0}
-                          value={m.lastName}
-                          onChange={(e) => updateMember(i, "lastName", e.target.value)}
-                          placeholder="Last name"
+                          value={m.phone}
+                          onChange={(e) => updateMember(i, "phone", e.target.value)}
+                          placeholder="Phone (optional)"
                         />
                       </div>
-                      <input
-                        type="email"
-                        className={inputClass}
-                        disabled={i === 0}
-                        value={m.email}
-                        onChange={(e) => updateMember(i, "email", e.target.value)}
-                        placeholder={i === 0 ? "your@email.com" : `member${i + 1}@email.com`}
-                      />
-                      <input
-                        type="tel"
-                        className={inputClass}
-                        disabled={i === 0}
-                        value={m.phone}
-                        onChange={(e) => updateMember(i, "phone", e.target.value)}
-                        placeholder="Phone (optional)"
-                      />
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {error && (

@@ -101,6 +101,48 @@ export interface Team {
   members?: TeamMember[];
 }
 
+// ─── Candidate profile ("Personal Details" step) ───────────────────────────
+
+export interface CandidateProfile {
+  middleName?: string | null;
+  category?: string | null;
+  nationality: string;
+  dateOfBirth: string;
+  gender: string;
+  aadhaarNumber: string;
+  addressLine1: string;
+  addressLine2?: string | null;
+  pinCode: string;
+  city: string;
+  state: string;
+  country: string;
+  alternatePhone?: string | null;
+  backupEmail?: string | null;
+}
+
+// Separate from CandidateProfile (the read shape, where the backend sends
+// `null` for an absent optional field) — a PUT omits absent optional fields
+// entirely, so those are typed `| undefined` here.
+export interface UpsertProfileInput {
+  firstName: string;
+  middleName?: string | undefined;
+  lastName: string;
+  category?: string | undefined;
+  nationality: string;
+  dateOfBirth: string;
+  gender: string;
+  aadhaarNumber: string;
+  addressLine1: string;
+  addressLine2?: string | undefined;
+  pinCode: string;
+  city: string;
+  state: string;
+  country: string;
+  phone: string;
+  alternatePhone?: string | undefined;
+  backupEmail?: string | undefined;
+}
+
 // ─── Auth ───────────────────────────────────────────────────────────────────
 
 export const authApi = {
@@ -151,4 +193,17 @@ export const teamApi = {
     request<void>(`/api/register/${teamId}/members/${memberId}`, { method: "DELETE" }),
 
   submit: (teamId: string) => post<{ team: Team }>(`/api/register/${teamId}/submit`),
+};
+
+// ─── Candidate profile ──────────────────────────────────────────────────────
+
+export const profileApi = {
+  /** `profile` is null until the applicant has saved Step 1 at least once. */
+  getMine: () => request<{ user: User; profile: CandidateProfile | null }>("/api/profile"),
+
+  upsert: (input: UpsertProfileInput) =>
+    request<{ profile: CandidateProfile }>("/api/profile", {
+      method: "PUT",
+      body: JSON.stringify(input),
+    }),
 };

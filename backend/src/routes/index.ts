@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { authRouter } from "./auth.routes.js";
 import { teamRouter } from "./team.routes.js";
+import { profileRouter } from "./profile.routes.js";
 import { prisma } from "../config/prisma.js";
 
 export const apiRouter = Router();
 
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/register", teamRouter);
+apiRouter.use("/profile", profileRouter);
 
 apiRouter.get("/health", async (_req, res) => {
   try {

@@ -49,8 +49,44 @@ model User {
   ledTeams        Team[]       @relation("TeamLeader")
   teamMemberships TeamMember[]
   auditLogs       AuditLog[]
+  candidateProfile CandidateProfile?
 
   @@map("users")
+}
+
+/**
+ * The "Personal Details" step of the registration dossier — KYC-style
+ * fields about the applicant that don't belong on the auth-focused User
+ * model. One-to-one with User; created/updated as a whole via PUT /api/profile.
+ */
+model CandidateProfile {
+  id     String @id @default(uuid())
+  userId String @unique @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  middleName  String? @map("middle_name") @db.VarChar(100)
+  category    String? @db.VarChar(50) // Category / Social Group (for MoE analytics)
+  nationality String  @db.VarChar(100)
+  dateOfBirth DateTime @map("date_of_birth")
+  gender      String  @db.VarChar(30)
+
+  // Stored as entered per product decision — no masking/truncation.
+  aadhaarNumber String @map("aadhaar_number") @db.VarChar(20)
+
+  addressLine1 String  @map("address_line1") @db.VarChar(200)
+  addressLine2 String? @map("address_line2") @db.VarChar(200)
+  pinCode      String  @map("pin_code") @db.VarChar(10)
+  city         String  @db.VarChar(100)
+  state        String  @db.VarChar(100)
+  country      String  @db.VarChar(100)
+
+  alternatePhone String? @map("alternate_phone") @db.VarChar(15)
+  backupEmail    String? @map("backup_email") @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("candidate_profiles")
 }
 
 model OtpVerification {

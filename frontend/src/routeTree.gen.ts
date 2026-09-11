@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EventsRouteImport } from './routes/events'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as SigninRouteImport } from './routes/signin'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as TeamRegisterRouteImport } from './routes/team-register'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -24,49 +26,86 @@ const EventsRoute = EventsRouteImport.update({
   path: '/events',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
+const SigninRoute = SigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamRegisterRoute = TeamRegisterRouteImport.update({
+  id: '/team-register',
+  path: '/team-register',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/events': typeof EventsRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
+  '/team-register': typeof TeamRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/events': typeof EventsRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
+  '/team-register': typeof TeamRegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/events': typeof EventsRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/signin': typeof SigninRoute
+  '/signup': typeof SignupRoute
+  '/team-register': typeof TeamRegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/events' | '/login' | '/register'
+  fullPaths:
+    | '/'
+    | '/events'
+    | '/forgot-password'
+    | '/signin'
+    | '/signup'
+    | '/team-register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/events' | '/login' | '/register'
-  id: '__root__' | '/' | '/events' | '/login' | '/register'
+  to:
+    | '/'
+    | '/events'
+    | '/forgot-password'
+    | '/signin'
+    | '/signup'
+    | '/team-register'
+  id:
+    | '__root__'
+    | '/'
+    | '/events'
+    | '/forgot-password'
+    | '/signin'
+    | '/signup'
+    | '/team-register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EventsRoute: typeof EventsRoute
-  LoginRoute: typeof LoginRoute
-  RegisterRoute: typeof RegisterRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  SigninRoute: typeof SigninRoute
+  SignupRoute: typeof SignupRoute
+  TeamRegisterRoute: typeof TeamRegisterRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -85,18 +124,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team-register': {
+      id: '/team-register'
+      path: '/team-register'
+      fullPath: '/team-register'
+      preLoaderRoute: typeof TeamRegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -105,8 +158,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EventsRoute: EventsRoute,
-  LoginRoute: LoginRoute,
-  RegisterRoute: RegisterRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  SigninRoute: SigninRoute,
+  SignupRoute: SignupRoute,
+  TeamRegisterRoute: TeamRegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

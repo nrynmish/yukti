@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AuthPage } from "../components/SewaSite";
-export const Route = createFileRoute("/register")({
+export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       { title: "Register Your Team | SEWA 2026" },

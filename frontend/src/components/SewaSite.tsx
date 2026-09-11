@@ -33,7 +33,6 @@ import campus4Image from "../assets/campus4.jpeg";
 import studentsImage from "../assets/sewa-students.jpg";
 import dtuLogo from "../assets/dtu_logo.png";
 import footerImage from "../assets/footer.jpeg";
-import dtuMapPreview from "../assets/dtu-map-preview.png";
 import dtuModel from "../assets/dtu-model.png";
 import satymevjayteLogo from "../assets/satymevjayte.svg";
 import govtofnctLogo from "../assets/govtofnctdelhi.svg";
@@ -61,43 +60,45 @@ export function Brand() {
   return (
     <Link
       to="/"
-      className="flex items-center gap-2.5 sm:gap-3.5 group select-none"
+      className="flex items-center gap-2 sm:gap-2.5 group select-none min-w-0"
       aria-label="SEWA 2026 home"
     >
       {/* 1. Indian Satyamev Jayate Emblem */}
       <img
         src={satymevjayteLogo}
         alt="Satyamev Jayate"
-        className="h-12 sm:h-16 md:h-18 w-auto object-contain shrink-0 dark:invert"
+        className="h-9 sm:h-11 md:h-13 w-auto object-contain shrink-0 dark:invert"
       />
 
       {/* 2. Text of Govt of National Capital Territory of Delhi */}
       <img
         src={govtofnctLogo}
         alt="Government of National Capital Territory of Delhi"
-        className="h-[24px] sm:h-[28px] w-auto object-contain shrink-0 dark:invert"
+        className="h-[19px] sm:h-[23px] md:h-[26px] w-auto object-contain shrink dark:invert"
       />
+
       {/* 3. DTU Logo + SEWA 2026 text */}
-      <div className="flex items-center gap-2 sm:gap-2.5">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         <img
           src={dtuLogo}
           alt="Delhi Technological University"
-          className="size-9 sm:size-10 object-contain shrink-0"
+          className="size-7 sm:size-8 md:size-9 object-contain shrink-0"
         />
-        <span className="leading-tight">
-          <strong className="block text-sm sm:text-base font-bold">
+        <span className="leading-tight min-w-0">
+          <strong className="block text-[11px] sm:text-sm md:text-base font-bold whitespace-nowrap">
             <span className="text-primary">SEWA</span> 2026
           </strong>
-          <small className="block text-[9px] sm:text-[10px] font-bold text-muted-foreground whitespace-nowrap">
+          <small className="block text-[8px] sm:text-[9px] font-bold text-muted-foreground">
             DTU First Youth Innovation Challenge
           </small>
         </span>
       </div>
     </Link>
+
   );
 }
 
-export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" } = {}) {
+export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" | "signin" | "signup" | "team-register" } = {}) {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur">
@@ -116,17 +117,23 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
             <a href="/#steps" className={`nav-link ${activeNav === "guidelines" ? "text-primary font-bold" : ""}`}>
               Guidelines
             </a>
+            <Link
+              to="/team-register"
+              className={`nav-link ${activeNav === "team-register" ? "text-primary font-bold" : ""}`}
+            >
+              Register Team
+            </Link>
             <a href="https://dtu.ac.in" target="_blank" rel="noreferrer" className="nav-link">
               About DTU
             </a>
-            <Link to="/login" className="nav-link">
+            <Link to="/signin" className="nav-link">
               Sign In
             </Link>
-            <Link to="/register" className="button button-outline">
+            <Link to="/signup" className="button button-outline">
               Sign Up
             </Link>
           </nav>
-          <Link to="/login" className="button button-outline md:hidden">
+          <Link to="/signin" className="button button-outline md:hidden">
             Sign In
           </Link>
         </div>
@@ -271,29 +278,80 @@ export function Footer() {
             <a className="block hover:text-primary transition-colors" href="/#steps">
               100-Day Timeline
             </a>
-            <Link className="block hover:text-primary transition-colors" to="/login">
+            <Link className="block hover:text-primary transition-colors" to="/signin">
               Login
             </Link>
           </div>
         </div>
 
-        {/* Column 3: DTU Delhi Map Card */}
+        {/* Column 3: DTU Delhi Interactive Scrollable Map Card */}
         <div className="md:col-span-4 flex justify-start md:justify-end">
-          <a
-            href="https://maps.google.com/?q=Delhi+Technological+University"
-            target="_blank"
-            rel="noreferrer"
-            className="group block rounded-2xl overflow-hidden border border-gray-200/90 shadow-xs hover:shadow-md hover:border-primary/40 transition-all max-w-[275px] sm:max-w-[290px]"
-            title="Open DTU Delhi in Google Maps"
-          >
-            <img
-              src={dtuMapPreview}
-              alt="DTU, Delhi Map Location"
-              className="w-full h-auto object-cover group-hover:scale-[1.02] transition-transform duration-300"
-              width={486}
-              height={330}
-            />
-          </a>
+          <div className="w-full max-w-[300px] sm:max-w-[320px] rounded-2xl overflow-hidden border border-gray-200/90 hover:border-[#ff4d4f] shadow-[0_14px_35px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.18)] transition-all duration-300 bg-white flex flex-col">
+            {/* Top Bar with Status & Google Maps Link */}
+            <div className="px-3.5 py-2.5 bg-gray-50/90 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="size-2 rounded-full bg-[#ff4d4f] shrink-0" />
+                <span className="text-xs font-bold text-gray-800 truncate">DTU Campus, Delhi</span>
+              </div>
+              <a
+                href="https://maps.google.com/?q=Delhi+Technological+University"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[11px] font-semibold text-[#ff4d4f] hover:underline shrink-0"
+                title="Open in Google Maps"
+              >
+                Google Maps ↗
+              </a>
+            </div>
+
+            {/* Interactive Scrollable & Zoomable Map */}
+            <div className="relative w-full h-[200px] sm:h-[215px] bg-slate-100">
+              <iframe
+                title="DTU Delhi Interactive Map"
+                srcDoc={`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    html, body, #map { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f8fafc; }
+    .leaflet-control-attribution { display: none !important; }
+    .leaflet-bar { border-radius: 8px !important; overflow: hidden; border: 1px solid rgba(0,0,0,0.12) !important; box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important; }
+    .leaflet-bar a { width: 28px !important; height: 28px !important; line-height: 28px !important; color: #374151 !important; }
+    .custom-red-pin { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35)); }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    const map = L.map('map', {
+      center: [28.7501, 77.1177],
+      zoom: 15,
+      zoomControl: true,
+      scrollWheelZoom: true
+    });
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+    const redIcon = L.divIcon({
+      className: 'custom-red-pin',
+      html: '<svg width="30" height="40" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37258 0 0 5.37258 0 12C0 19.5 12 32 12 32C12 32 24 19.5 24 12C24 5.37258 18.6274 0 12 0Z" fill="#ff4d4f"/><circle cx="12" cy="11.5" r="4.5" fill="white"/></svg>',
+      iconSize: [30, 40],
+      iconAnchor: [15, 40],
+      popupAnchor: [0, -38]
+    });
+
+    L.marker([28.7501, 77.1177], { icon: redIcon }).addTo(map);
+  </script>
+</body>
+</html>`}
+                className="w-full h-full border-0"
+                loading="lazy"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Bottom copyright line without top border */}
@@ -506,11 +564,10 @@ export function HomePage() {
                 key={idx}
                 src={image.src}
                 alt={image.alt}
-                className={`absolute inset-0 size-full object-cover transition-opacity duration-1000 ease-in-out ${
-                  idx === currentSlide
-                    ? "opacity-100 z-[1]"
-                    : "opacity-0 pointer-events-none z-0"
-                }`}
+                className={`absolute inset-0 size-full object-cover transition-opacity duration-1000 ease-in-out ${idx === currentSlide
+                  ? "opacity-100 z-[1]"
+                  : "opacity-0 pointer-events-none z-0"
+                  }`}
                 width={1600}
                 height={900}
               />
@@ -578,7 +635,7 @@ export function HomePage() {
                 empowering students, researchers, and startups to build solutions for Viksit Bharat.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link to="/register" className="button button-primary">
+                <Link to="/signup" className="button button-primary">
                   Register Your Team <ArrowRight size={17} />
                 </Link>
                 <a href="#about" className="button button-secondary">
@@ -844,11 +901,17 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // OTP states
+  // Phone OTP states
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpTimer, setOtpTimer] = useState(0);
+
+  // Email OTP step (shown after form submit)
+  const [emailOtpStep, setEmailOtpStep] = useState(false);
+  const [emailDigits, setEmailDigits] = useState<string[]>(["?", "", "", "", "", ""]);
+  const [emailOtpTimer, setEmailOtpTimer] = useState(60);
+  const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (otpTimer <= 0) return;
@@ -856,10 +919,15 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     return () => clearInterval(id);
   }, [otpTimer]);
 
+  useEffect(() => {
+    if (!emailOtpStep || emailOtpTimer <= 0) return;
+    const id = setInterval(() => setEmailOtpTimer((t) => t - 1), 1000);
+    return () => clearInterval(id);
+  }, [emailOtpStep, emailOtpTimer]);
+
   const handleSendOtp = () => {
     if (!phone || otpLoading || otpTimer > 0) return;
     setOtpLoading(true);
-    // Simulate sending OTP
     setTimeout(() => {
       setOtpLoading(false);
       setOtpSent(true);
@@ -867,13 +935,40 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     }, 1000);
   };
 
+  const handleResendEmailOtp = () => {
+    setEmailDigits(["", "", "", "", "", ""]);
+    setEmailOtpTimer(60);
+    setTimeout(() => digitRefs.current[0]?.focus(), 50);
+  };
+
+  const handleDigitInput = (idx: number, val: string) => {
+    const digit = val.replace(/\D/g, "").slice(-1);
+    const next = [...emailDigits];
+    next[idx] = digit;
+    setEmailDigits(next);
+    if (digit && idx < 5) digitRefs.current[idx + 1]?.focus();
+  };
+
+  const handleDigitKeyDown = (idx: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !emailDigits[idx] && idx > 0) {
+      digitRefs.current[idx - 1]?.focus();
+    }
+  };
+
+  const formatTime = (s: number) =>
+    `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    setMessage(
-      mode === "login"
-        ? "Sign-in details received."
-        : "Registration details received! Welcome to SEWA 2026.",
-    );
+    if (mode === "login") {
+      setMessage("Sign-in details received.");
+    } else {
+      // Switch to email OTP screen
+      setEmailDigits(["", "", "", "", "", ""]);
+      setEmailOtpTimer(60);
+      setEmailOtpStep(true);
+      setTimeout(() => digitRefs.current[0]?.focus(), 100);
+    }
   };
 
   if (mode === "login") {
@@ -922,9 +1017,9 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                   <label className="flex items-center gap-2">
                     <input type="checkbox" /> Remember me
                   </label>
-                  <a href="#" className="text-link">
+                  <Link to="/forgot-password" className="text-link">
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
                 <button className="button button-primary w-full justify-center" type="submit">
                   Sign in
@@ -935,15 +1030,9 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                   </p>
                 )}
               </form>
-              <div className="divider">
-                <span>or</span>
-              </div>
-              <button className="button button-dark w-full justify-center" type="button">
-                G&nbsp; Continue with Google
-              </button>
               <p className="text-center text-xs text-muted-foreground">
                 Don’t have an account?{" "}
-                <Link className="text-link" to="/register">
+                <Link className="text-link" to="/signup">
                   Sign up now
                 </Link>
               </p>
@@ -955,128 +1044,166 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     );
   }
 
+  // ─── SIGN UP (register) ───────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex flex-col bg-[#fbfbfb]">
-      <Header />
-      <main className="flex-1 w-full max-w-[1120px] mx-auto px-4 py-8 sm:py-12 flex items-center justify-center">
-        <div className="relative w-full rounded-2xl sm:rounded-3xl border-[1.5px] border-[#ff5a5f] bg-white overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.06)]">
-          {/* DTU Campus Aerial Background */}
-          <div
-            className="absolute inset-0 bg-cover bg-center pointer-events-none"
-            style={{
-              backgroundImage: `url(${campusImage})`,
-              backgroundPosition: "center 48%",
-            }}
-          />
-          {/* Translucent milky white overlay wash */}
-          <div className="absolute inset-0 bg-white/75 backdrop-blur-[1px] pointer-events-none" />
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header activeNav="signup" />
 
-          {/* Top-Left Brand Typography */}
-          <div className="absolute top-6 left-6 sm:top-8 sm:left-9 z-10 select-none">
-            <div className="text-xl sm:text-2xl font-black tracking-tight leading-none">
-              <span className="text-[#ff5a5f]">SEWA</span>{" "}
-              <span className="text-black font-black">2026</span>
-            </div>
-            <div className="text-xs sm:text-[13px] font-bold text-black leading-tight mt-1">
-              DTU Youth<br />Innovation
-            </div>
+      <main className="flex-1 w-full max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex items-start justify-center">
+        <div className="w-full flex flex-col lg:flex-row items-stretch gap-6">
+
+          {/* Left: Aerial DTU campus photo */}
+          <div className="flex-1 min-h-[440px] sm:min-h-[600px] lg:min-h-[660px] rounded-[18px] overflow-hidden shadow-[0_8px_28px_rgba(0,0,0,0.10)]">
+            <img
+              src={campusImage}
+              alt="Delhi Technological University campus aerial view"
+              className="size-full object-cover object-[48%_center]"
+            />
           </div>
 
-          {/* Center Form Container */}
-          <div className="relative z-10 flex min-h-[580px] sm:min-h-[640px] items-center justify-center px-4 py-16 sm:py-20">
-            <div className="w-full max-w-[360px] sm:max-w-[380px]">
-              <form onSubmit={submit} className="space-y-3.5">
+          {/* Right: Form card — switches between signup form and OTP verification */}
+          <div className="w-full lg:w-[420px] shrink-0 rounded-[18px] border border-[#ff5a5f]/70 bg-white px-8 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col justify-center">
+            {/* Brand header */}
+            <div className="mb-5 select-none">
+              <div className="text-[22px] font-extrabold tracking-tight leading-none">
+                <span className="text-[#ff4d4f]">SEWA</span>{" "}
+                <span className="text-gray-900">2026</span>
+              </div>
+              <div className="text-[13px] font-semibold text-gray-700 mt-0.5">
+                DTU Youth Innovation
+              </div>
+            </div>
+
+            {emailOtpStep ? (
+              /* ── EMAIL OTP VERIFICATION SCREEN ── */
+              <div className="space-y-5">
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-800 mb-1">
+                  <h2 className="text-lg font-bold text-gray-900">Two-Step Verification</h2>
+                  <p className="mt-1.5 text-xs text-gray-500 leading-relaxed">
+                    We've sent a 6-digit verification code to your registered email/phone number{" "}
+                    <span className="font-semibold text-gray-700">
+                      {email ? `${email[0]}***@${email.split("@")[1] ?? "dtu.ac.in"}` : "e***@dtu.ac.in"}
+                    </span>
+                    . Please enter it below to proceed.
+                  </p>
+                </div>
+
+                {/* 6 digit boxes */}
+                <div className="flex gap-2.5 justify-between">
+                  {emailDigits.map((d, i) => (
+                    <input
+                      key={i}
+                      ref={(el) => { digitRefs.current[i] = el; }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={d}
+                      onChange={(e) => handleDigitInput(i, e.target.value)}
+                      onKeyDown={(e) => handleDigitKeyDown(i, e)}
+                      onFocus={(e) => e.target.select()}
+                      className={`w-11 h-12 rounded-lg border text-center text-base font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/40 transition-all
+                        ${d ? "border-[#ff4d4f] bg-[#fff5f5]" : "border-gray-200 bg-[#f7f7f7]"}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Timer + Resend row */}
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>
+                    Resend code in{" "}
+                    <span className={`font-semibold ${emailOtpTimer > 0 ? "text-gray-700" : "text-[#ff4d4f]"}`}>
+                      {formatTime(emailOtpTimer)}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleResendEmailOtp}
+                    disabled={emailOtpTimer > 0}
+                    className="font-semibold text-[#ff4d4f] hover:underline disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    Resend OTP
+                  </button>
+                </div>
+
+                {/* Verify button */}
+                <button
+                  type="button"
+                  onClick={() => setMessage("Email verified! Welcome to SEWA 2026.")}
+                  disabled={emailDigits.join("").length < 6}
+                  className="w-full h-11 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Verify &amp; Proceed
+                </button>
+
+                {message && (
+                  <p role="status" className="text-center text-xs font-semibold text-emerald-600">
+                    {message}
+                  </p>
+                )}
+
+                {/* Bottom links */}
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <Link
+                    to="/signin"
+                    className="flex items-center gap-1 text-gray-500 hover:text-gray-800 transition-colors"
+                  >
+                    <ChevronLeft size={13} />
+                    Back to Login
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setEmailOtpStep(false)}
+                    className="text-[#ff4d4f] hover:underline font-medium cursor-pointer"
+                  >
+                    Change email address
+                  </button>
+                </div>
+              </div>
+            ) : (
+
+              <form onSubmit={submit} className="space-y-3">
+                {/* Name */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                     Name
                   </label>
-                  <div className="space-y-2">
-                    <input
-                      required
-                      type="text"
-                      placeholder="First name"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      className="w-full h-10 px-3.5 rounded-md bg-white border border-gray-200/90 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] transition-all"
-                    />
-                    <input
-                      required
-                      type="text"
-                      placeholder="Last name"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      className="w-full h-10 px-3.5 rounded-md bg-white border border-gray-200/90 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] transition-all"
-                    />
-                  </div>
+                  <input
+                    required
+                    type="text"
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full h-10 px-3.5 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all mb-2"
+                  />
+                  <input
+                    required
+                    type="text"
+                    placeholder="Last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full h-10 px-3.5 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
+                  />
                 </div>
 
+                {/* Phone */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-800 mb-1">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                     Phone
                   </label>
-                  <div className="flex gap-2">
-                    <input
-                      required
-                      type="tel"
-                      placeholder="Telephone number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="flex-1 h-10 px-3.5 rounded-md bg-white border border-gray-200/90 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] transition-all"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleSendOtp}
-                      disabled={!phone || otpLoading || otpTimer > 0}
-                      className="h-10 px-3 rounded-md bg-[#ff5a5f] text-white font-semibold text-[10px] sm:text-xs shadow-xs hover:bg-[#ff4757] active:scale-[0.99] transition-all flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {otpLoading ? (
-                        <span className="inline-block size-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <Send size={12} />
-                      )}
-                      {otpTimer > 0 ? `${otpTimer}s` : otpLoading ? "Sending…" : "Send OTP"}
-                    </button>
-                  </div>
-
-                  {/* OTP input — shown after code is sent */}
-                  {otpSent && (
-                    <div className="mt-2 animate-fade-in">
-                      <label className="block text-[11px] font-semibold text-gray-800 mb-1">
-                        Enter OTP
-                      </label>
-                      <input
-                        required
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={6}
-                        placeholder="6-digit code"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                        className="w-full h-10 px-3.5 rounded-md bg-white border border-[#ff5a5f]/60 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] tracking-[0.2em] font-mono transition-all"
-                      />
-                      <p className="mt-1 text-[10px] text-gray-500">
-                        A 6-digit code was sent to{" "}
-                        <span className="font-semibold text-gray-700">{phone}</span>.{" "}
-                        {otpTimer > 0 ? (
-                          <span>Resend in {otpTimer}s</span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={handleSendOtp}
-                            className="text-[#ff5a5f] hover:underline font-medium cursor-pointer"
-                          >
-                            Resend
-                          </button>
-                        )}
-                      </p>
-                    </div>
-                  )}
+                  <input
+                    required
+                    type="tel"
+                    placeholder="Telephone number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full h-10 px-3.5 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
+                  />
                 </div>
 
-
+                {/* Email */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-800 mb-1">
-                    Login
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                    Email
                   </label>
                   <input
                     required
@@ -1084,11 +1211,13 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-md bg-white border border-gray-200/90 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] transition-all"
+                    className="w-full h-10 px-3.5 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
                   />
                 </div>
+
+                {/* Password */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-gray-800 mb-1">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                     Password
                   </label>
                   <div className="relative">
@@ -1098,83 +1227,68 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                       placeholder="Enter password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full h-10 pl-3.5 pr-10 rounded-md bg-white border border-gray-200/90 text-xs text-gray-800 placeholder-gray-400 shadow-xs focus:outline-none focus:ring-1 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] transition-all"
+                      className="w-full h-10 pl-3.5 pr-10 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
                     />
                     <button
                       type="button"
                       onClick={() => setVisible(!visible)}
                       aria-label={visible ? "Hide password" : "Show password"}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
                     >
                       {visible ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-0.5 flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                {/* Remember me / Forgot password */}
+                <div className="flex items-center justify-between pt-0.5 select-none">
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <button
                       type="button"
                       role="switch"
                       aria-checked={rememberMe}
                       onClick={() => setRememberMe(!rememberMe)}
-                      className={`relative inline-flex h-4.5 w-8 shrink-0 items-center rounded-full transition-colors focus:outline-none cursor-pointer ${rememberMe ? "bg-[#ff5a5f]" : "bg-gray-300"
+                      className={`relative inline-flex h-[18px] w-[32px] shrink-0 items-center rounded-full transition-colors focus:outline-none cursor-pointer ${rememberMe ? "bg-[#ff4d4f]" : "bg-[#d9d9d9]"
                         }`}
                     >
                       <span
-                        className={`inline-block size-3.5 transform rounded-full bg-white shadow-xs transition-transform ${rememberMe ? "translate-x-4" : "translate-x-0.5"
+                        className={`inline-block size-3.5 transform rounded-full bg-white shadow-sm transition-transform ${rememberMe ? "translate-x-[14px]" : "translate-x-[2px]"
                           }`}
                       />
                     </button>
-                    <span className="text-[11px] font-medium text-gray-700">Remember me</span>
+                    <span className="text-xs text-gray-700">Remember me</span>
                   </label>
-
-                  <a href="#" className="text-[11px] text-[#3b82f6] hover:underline font-normal">
-                    Forgot password?
-                  </a>
                 </div>
 
+                {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full h-10 mt-1 rounded-md bg-[#ff5a5f] text-white font-bold text-xs sm:text-sm shadow-xs hover:bg-[#ff4757] active:scale-[0.99] transition-all flex items-center justify-center cursor-pointer"
+                  className="w-full h-10 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center cursor-pointer mt-1"
                 >
                   Sign in
                 </button>
 
                 {message && (
-                  <p role="status" className="text-center text-xs font-semibold text-emerald-600 animate-fade-in">
+                  <p role="status" className="text-center text-xs font-semibold text-emerald-600">
                     {message}
                   </p>
                 )}
 
-                <div className="pt-1 pb-0.5">
-                  <div className="border-t border-gray-300/80 w-full" />
-                </div>
-
-                <button
-                  type="button"
-                  className="w-full h-10 rounded-md bg-[#2b2e36] text-white font-semibold text-xs shadow-xs hover:bg-[#202228] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
-                >
-                  <svg className="size-4 shrink-0" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                  </svg>
-                  <span>Or sign in with Google</span>
-                </button>
-
-                <p className="pt-1 text-center text-[11px] text-gray-700">
-                  Dont have an account?{" "}
-                  <Link to="/register" className="text-[#3b82f6] hover:underline font-medium">
-                    Sign up now
+                {/* Footer link */}
+                <p className="pt-1 text-center text-xs text-gray-600">
+                  Have an account.{" "}
+                  <Link to="/signin" className="text-[#1890ff] hover:underline font-medium">
+                    Login
                   </Link>
                 </p>
               </form>
-            </div>
+            )}
           </div>
+
         </div>
       </main>
+
+      {/* Footer */}
       <Footer />
     </div>
   );
@@ -1666,3 +1780,407 @@ export function EventsPage() {
   );
 }
 
+
+export function ForgotPasswordPage() {
+  const [contact, setContact] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setSent(true);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header activeNav="signin" />
+
+      <main className="flex-1 w-full max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex items-start justify-center">
+        <div className="w-full flex flex-col lg:flex-row items-stretch gap-6">
+
+          {/* Left: Aerial DTU campus photo */}
+          <div className="flex-1 min-h-[440px] sm:min-h-[600px] lg:min-h-[660px] rounded-[18px] overflow-hidden shadow-[0_8px_28px_rgba(0,0,0,0.10)]">
+            <img
+              src={campusImage}
+              alt="Delhi Technological University campus aerial view"
+              className="size-full object-cover object-[48%_center]"
+            />
+          </div>
+
+          {/* Right: Card */}
+          <div className="w-full lg:w-[420px] shrink-0 rounded-[18px] border border-[#ff5a5f]/70 bg-white px-8 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col justify-center">
+            {/* Brand */}
+            <div className="mb-8 select-none">
+              <div className="text-[22px] font-extrabold tracking-tight leading-none">
+                <span className="text-[#ff4d4f]">SEWA</span>{" "}
+                <span className="text-gray-900">2026</span>
+              </div>
+              <div className="text-[13px] font-semibold text-gray-700 mt-0.5">
+                DTU Youth Innovation
+              </div>
+            </div>
+
+            {sent ? (
+              <div className="space-y-4 text-center">
+                <div className="size-14 mx-auto rounded-full bg-emerald-50 flex items-center justify-center">
+                  <svg className="size-7 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Instructions Sent!</h2>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Password reset instructions have been sent to{" "}
+                  <span className="font-semibold text-gray-700">{contact}</span>.
+                  Please check your inbox.
+                </p>
+                <Link to="/signin" className="inline-flex items-center gap-1.5 text-xs text-[#ff4d4f] hover:underline font-medium">
+                  <ChevronLeft size={13} />
+                  Back to Sign In
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-5">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Forgot Password?</h2>
+                  <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                    Enter your registered DTU email address or mobile number. We'll send you a
+                    password reset link and verification instructions.
+                  </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                      Email or phone number
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      placeholder="e.g. fullnumber@dtu.ac.in or 9876543210"
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
+                      className="w-full h-10 px-3.5 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full h-10 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    Send Reset Instructions
+                    <ArrowRight size={15} />
+                  </button>
+                </form>
+
+                <div className="text-center">
+                  <Link to="/signin" className="inline-flex items-center gap-1 text-xs text-[#ff4d4f] hover:underline font-medium">
+                    <ChevronLeft size={13} />
+                    Remember your password? Back to Login
+                  </Link>
+                </div>
+
+                <p className="pt-2 text-center text-[11px] text-gray-400 border-t border-gray-100">
+                  Facing issues receiving recovery credentials?{" "}
+                  <a href="mailto:helpdesk@dtu.ac.in" className="text-[#ff4d4f] hover:underline">
+                    Contact DTU IT Helpdesk
+                  </a>
+                </p>
+              </div>
+            )}
+          </div>
+
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+export function TeamRegisterPage() {
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [teamName, setTeamName] = useState("");
+  const [institute, setInstitute] = useState("");
+  const [theme, setTheme] = useState("");
+  const [problem, setProblem] = useState("");
+  const [teamSize, setTeamSize] = useState(2);
+  const [members, setMembers] = useState<string[]>(["", ""]);
+  const [agreed, setAgreed] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const themes = [
+    "Smart Infrastructure & Urban Mobility",
+    "Healthcare & Preventive Medicine",
+    "Agriculture & Food Security",
+    "Education & Skill Development",
+    "Clean Energy & Climate Action",
+    "Digital Governance & Financial Inclusion",
+  ];
+
+  const problems: Record<string, string[]> = {
+    "Smart Infrastructure & Urban Mobility": ["PS-01: AI Traffic Routing", "PS-02: Smart Parking", "PS-03: Pothole Detection System"],
+    "Healthcare & Preventive Medicine": ["PS-07: Rural Telemedicine", "PS-08: Mental Health Tracker", "PS-09: Drug Inventory AI"],
+    "Agriculture & Food Security": ["PS-13: Crop Disease Detection", "PS-14: Smart Irrigation", "PS-15: Cold Chain Monitoring"],
+    "Education & Skill Development": ["PS-19: Adaptive Learning Platform", "PS-20: VR Skill Labs", "PS-21: Regional Language EdTech"],
+    "Clean Energy & Climate Action": ["PS-25: Solar Forecasting", "PS-26: EV Fleet Optimizer", "PS-27: Carbon Footprint Tracker"],
+    "Digital Governance & Financial Inclusion": ["PS-31: Subsidy Disbursement dApp", "PS-32: Gram Panchayat Dashboard", "PS-33: Jan Dhan Fraud Detector"],
+  };
+
+  const updateMember = (i: number, val: string) => {
+    const next = [...members];
+    next[i] = val;
+    setMembers(next);
+  };
+
+  const handleSizeChange = (n: number) => {
+    setTeamSize(n);
+    setMembers((prev) => {
+      const next = [...prev];
+      while (next.length < n) next.push("");
+      return next.slice(0, n);
+    });
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  const StepDot = ({ n, label }: { n: 1 | 2 | 3; label: string }) => (
+    <div className="flex flex-col items-center gap-1">
+      <div className={`size-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+        step >= n ? "bg-[#ff4d4f] text-white" : "bg-gray-100 text-gray-400"
+      }`}>{n}</div>
+      <span className={`text-[10px] font-semibold ${step >= n ? "text-[#ff4d4f]" : "text-gray-400"}`}>{label}</span>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#f7f7f8]">
+      <Header activeNav="team-register" />
+
+      <main className="flex-1 w-full max-w-[780px] mx-auto px-4 sm:px-6 py-10 sm:py-14">
+
+        {submitted ? (
+          /* ── SUCCESS ── */
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-8 py-14 text-center space-y-4">
+            <div className="size-16 mx-auto rounded-full bg-emerald-50 flex items-center justify-center">
+              <svg className="size-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-extrabold text-gray-900">Team Registered!</h1>
+            <p className="text-sm text-gray-500 max-w-sm mx-auto leading-relaxed">
+              <span className="font-semibold text-gray-800">{teamName}</span> has been successfully registered for SEWA 2026.
+              A confirmation email has been sent to all team members.
+            </p>
+            <div className="inline-block bg-[#fff5f5] border border-[#ff4d4f]/20 rounded-xl px-6 py-3 mt-2">
+              <p className="text-xs text-gray-500">Team ID</p>
+              <p className="text-lg font-black text-[#ff4d4f] tracking-widest">SEWA-{Math.floor(1000 + Math.random() * 9000)}</p>
+            </div>
+            <div className="pt-4">
+              <Link to="/" className="inline-flex items-center gap-2 text-sm text-[#ff4d4f] hover:underline font-semibold">
+                <ChevronLeft size={16} /> Back to Home
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Page header */}
+            <div className="mb-8">
+              <p className="text-xs font-bold text-[#ff4d4f] uppercase tracking-widest mb-1">SEWA 2026 · DTU Youth Innovation Challenge</p>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">Register Your Team</h1>
+              <p className="mt-2 text-sm text-gray-500">Fill in team details, select your problem statement, and add your members.</p>
+            </div>
+
+            {/* Step indicator */}
+            <div className="flex items-center gap-2 mb-8">
+              <StepDot n={1} label="Team Info" />
+              <div className={`flex-1 h-0.5 rounded-full transition-all ${step >= 2 ? "bg-[#ff4d4f]" : "bg-gray-200"}`} />
+              <StepDot n={2} label="Members" />
+              <div className={`flex-1 h-0.5 rounded-full transition-all ${step >= 3 ? "bg-[#ff4d4f]" : "bg-gray-200"}`} />
+              <StepDot n={3} label="Confirm" />
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+
+                {/* ── STEP 1: Team Info ── */}
+                {step === 1 && (
+                  <div className="px-6 sm:px-8 py-8 space-y-5">
+                    <h2 className="text-lg font-bold text-gray-900">Team Details</h2>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Team Name *</label>
+                      <input required value={teamName} onChange={e => setTeamName(e.target.value)}
+                        placeholder="e.g. Circuit Breakers"
+                        className="w-full h-11 px-4 rounded-lg bg-[#f5f5f5] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/20 transition-all" />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Institute / College *</label>
+                      <input required value={institute} onChange={e => setInstitute(e.target.value)}
+                        placeholder="e.g. Delhi Technological University"
+                        className="w-full h-11 px-4 rounded-lg bg-[#f5f5f5] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/20 transition-all" />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Theme *</label>
+                      <select required value={theme} onChange={e => { setTheme(e.target.value); setProblem(""); }}
+                        className="w-full h-11 px-4 rounded-lg bg-[#f5f5f5] border-0 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/20 transition-all appearance-none cursor-pointer">
+                        <option value="">Select a theme…</option>
+                        {themes.map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+
+                    {theme && (
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Problem Statement *</label>
+                        <select required value={problem} onChange={e => setProblem(e.target.value)}
+                          className="w-full h-11 px-4 rounded-lg bg-[#f5f5f5] border-0 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/20 transition-all appearance-none cursor-pointer">
+                          <option value="">Select a problem statement…</option>
+                          {(problems[theme] ?? []).map(p => <option key={p} value={p}>{p}</option>)}
+                        </select>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-2">Team Size *</label>
+                      <div className="flex gap-2">
+                        {[2, 3, 4, 5].map(n => (
+                          <button key={n} type="button" onClick={() => handleSizeChange(n)}
+                            className={`size-10 rounded-lg font-bold text-sm transition-all cursor-pointer ${
+                              teamSize === n ? "bg-[#ff4d4f] text-white" : "bg-[#f5f5f5] text-gray-600 hover:bg-gray-200"
+                            }`}>{n}</button>
+                        ))}
+                      </div>
+                      <p className="mt-1.5 text-[11px] text-gray-400">Including team leader (you)</p>
+                    </div>
+
+                    <div className="pt-2 flex justify-end">
+                      <button type="button"
+                        disabled={!teamName || !institute || !theme || !problem}
+                        onClick={() => setStep(2)}
+                        className="flex items-center gap-2 h-10 px-6 rounded-lg bg-[#ff4d4f] text-white text-sm font-semibold hover:bg-[#ff3f45] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                        Next <ArrowRight size={15} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── STEP 2: Members ── */}
+                {step === 2 && (
+                  <div className="px-6 sm:px-8 py-8 space-y-5">
+                    <h2 className="text-lg font-bold text-gray-900">Add Team Members</h2>
+                    <p className="text-xs text-gray-400 -mt-2">Enter registered email addresses of your teammates.</p>
+
+                    {members.map((m, i) => (
+                      <div key={i}>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                          {i === 0 ? "Team Leader (You) *" : `Member ${i + 1} *`}
+                        </label>
+                        <input required type="email" value={m} onChange={e => updateMember(i, e.target.value)}
+                          placeholder={i === 0 ? "your@email.com" : `member${i + 1}@email.com`}
+                          disabled={i === 0}
+                          className="w-full h-11 px-4 rounded-lg bg-[#f5f5f5] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/20 transition-all disabled:opacity-60" />
+                      </div>
+                    ))}
+
+                    {/* Team preview pill */}
+                    <div className="bg-[#fff5f5] rounded-xl p-4 flex items-center gap-3 flex-wrap">
+                      {members.filter(Boolean).map((m, i) => (
+                        <div key={i} className="flex items-center gap-1.5 bg-white border border-[#ff4d4f]/20 rounded-full px-3 py-1">
+                          <div className="size-5 rounded-full bg-[#ff4d4f] text-white text-[9px] font-bold flex items-center justify-center">
+                            {m[0]?.toUpperCase() ?? "?"}
+                          </div>
+                          <span className="text-[11px] text-gray-700 truncate max-w-[120px]">{m || "—"}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-2 flex justify-between">
+                      <button type="button" onClick={() => setStep(1)}
+                        className="flex items-center gap-1.5 h-10 px-5 rounded-lg border border-gray-200 text-gray-600 text-sm font-semibold hover:border-gray-400 transition-all cursor-pointer">
+                        <ChevronLeft size={15} /> Back
+                      </button>
+                      <button type="button"
+                        disabled={members.some(m => !m)}
+                        onClick={() => setStep(3)}
+                        className="flex items-center gap-2 h-10 px-6 rounded-lg bg-[#ff4d4f] text-white text-sm font-semibold hover:bg-[#ff3f45] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                        Review <ArrowRight size={15} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── STEP 3: Review & Confirm ── */}
+                {step === 3 && (
+                  <div className="px-6 sm:px-8 py-8 space-y-5">
+                    <h2 className="text-lg font-bold text-gray-900">Review & Submit</h2>
+
+                    {/* Summary card */}
+                    <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 text-sm">
+                      {[
+                        { label: "Team Name", value: teamName },
+                        { label: "Institute", value: institute },
+                        { label: "Theme", value: theme },
+                        { label: "Problem Statement", value: problem },
+                        { label: "Team Size", value: `${teamSize} members` },
+                      ].map(({ label, value }) => (
+                        <div key={label} className="flex justify-between px-4 py-3">
+                          <span className="text-xs font-semibold text-gray-400">{label}</span>
+                          <span className="text-xs font-semibold text-gray-800 text-right max-w-[55%]">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Members list */}
+                    <div className="rounded-xl border border-gray-100 overflow-hidden">
+                      <div className="bg-gray-50 px-4 py-2.5">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Team Members</p>
+                      </div>
+                      {members.map((m, i) => (
+                        <div key={i} className="flex items-center gap-3 px-4 py-2.5 border-t border-gray-100">
+                          <div className="size-7 rounded-full bg-[#ff4d4f]/10 text-[#ff4d4f] text-xs font-bold flex items-center justify-center">
+                            {m[0]?.toUpperCase() ?? "?"}
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-gray-800">{m}</p>
+                            <p className="text-[10px] text-gray-400">{i === 0 ? "Team Leader" : `Member ${i + 1}`}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* T&C */}
+                    <label className="flex items-start gap-3 cursor-pointer select-none">
+                      <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} required className="mt-0.5 accent-[#ff4d4f]" />
+                      <span className="text-xs text-gray-500 leading-relaxed">
+                        I confirm that all team members are eligible participants and agree to the{" "}
+                        <a href="#" className="text-[#ff4d4f] hover:underline">SEWA 2026 Terms & Conditions</a>
+                        {" "}and{" "}
+                        <a href="#" className="text-[#ff4d4f] hover:underline">Code of Conduct</a>.
+                      </span>
+                    </label>
+
+                    <div className="pt-2 flex justify-between">
+                      <button type="button" onClick={() => setStep(2)}
+                        className="flex items-center gap-1.5 h-10 px-5 rounded-lg border border-gray-200 text-gray-600 text-sm font-semibold hover:border-gray-400 transition-all cursor-pointer">
+                        <ChevronLeft size={15} /> Back
+                      </button>
+                      <button type="submit" disabled={!agreed}
+                        className="flex items-center gap-2 h-10 px-7 rounded-lg bg-[#ff4d4f] text-white text-sm font-bold hover:bg-[#ff3f45] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-[0_4px_14px_rgba(255,77,79,0.35)]">
+                        Submit Registration
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </form>
+          </>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

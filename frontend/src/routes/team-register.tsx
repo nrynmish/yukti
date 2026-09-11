@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TeamRegisterPage } from "../components/SewaSite";
+import { RequireAuth } from "../lib/auth";
 
 export const Route = createFileRoute("/team-register")({
   head: () => ({
@@ -10,5 +11,9 @@ export const Route = createFileRoute("/team-register")({
       { property: "og:type", content: "website" },
     ],
   }),
-  component: () => <TeamRegisterPage />,
+  component: () => (
+    <RequireAuth>
+      <TeamRegisterPage />
+    </RequireAuth>
+  ),
 });

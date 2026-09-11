@@ -1,0 +1,85 @@
+import { prisma } from "../config/prisma.js";
+import { env } from "../config/env.js";
+import { generateOtp } from "../utils/otp.js";
+import { hashOtp, verifyOtp } from "../utils/hash.js";
+import { sendOtpEmail } from "../utils/mailer.js";
+import { AppError } from "../middleware/errorHandler.js";
+import type { OtpPurpose } from "@prisma/client";
+
+/**
+ * Issues a new OTP for the given user, enforcing the resend cooldown
+ * server-side (the frontend timer is UX only — this is the real check).
+ * Invalidates any prior unconsumed OTP of the same purpose.
+ */
+export async function issueOtp(userId: string, email: string, purpose: OtpPurpose): Promise<void> {
+  const cooldownStart = new Date(Date.now() - env.OTP_RESEND_COOLDOWN_SECONDS * 1000);
+
+  const recent = await prisma.otpVerification.findFirst({
+    where: { userId, purpose, createdAt: { gt: cooldownStart } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (recent) {
+    throw new AppError(429, "Please wait before requesting another code.");
+  }
+
+  const code = generateOtp();
+  const codeHash = await hashOtp(code);
+  const expiresAt = new Date(Date.now() + env.OTP_EXPIRY_MINUTES * 60 * 1000);
+
+  await prisma.$transaction([
+    // Invalidate any still-active prior OTPs of this purpose so only the
+    // most recent code can ever be consumed.
+    prisma.otpVerification.updateMany({
+      where: { userId, purpose, consumedAt: null },
+      data: { consumedAt: new Date() },
+    }),
+    prisma.otpVerification.create({
+      data: {
+        userId,
+        purpose,
+        codeHash,
+        expiresAt,
+        maxAttempts: env.OTP_MAX_ATTEMPTS,
+      },
+    }),
+  ]);
+
+  await sendOtpEmail(email, code, purpose);
+}
+
+/**
+ * Verifies a submitted OTP code. Increments the attempt counter on every
+ * call (success or failure) so a code can't be brute-forced indefinitely,
+ * and consumes the code on success so it can't be replayed.
+ */
+export async function consumeOtp(userId: string, purpose: OtpPurpose, code: string): Promise<boolean> {
+  const otp = await prisma.otpVerification.findFirst({
+    where: { userId, purpose, consumedAt: null },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!otp) {
+    throw new AppError(400, "No active verification code. Please request a new one.");
+  }
+
+  if (otp.expiresAt < new Date()) {
+    throw new AppError(400, "Code has expired. Please request a new one.");
+  }
+
+  if (otp.attempts >= otp.maxAttempts) {
+    throw new AppError(429, "Too many incorrect attempts. Please request a new code.");
+  }
+
+  const isValid = await verifyOtp(code, otp.codeHash);
+
+  await prisma.otpVerification.update({
+    where: { id: otp.id },
+    data: {
+      attempts: { increment: 1 },
+      consumedAt: isValid ? new Date() : undefined,
+    },
+  });
+
+  return isValid;
+}

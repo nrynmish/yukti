@@ -1,0 +1,117 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [citext]
+}
+
+enum UserStatus {
+  pending
+  active
+  suspended
+}
+
+enum OtpPurpose {
+  email_verify
+  password_reset
+}
+
+enum TeamRole {
+  leader
+  member
+}
+
+enum TeamStatus {
+  draft
+  submitted
+  under_review
+  shortlisted
+  rejected
+}
+
+model User {
+  id              String   @id @default(uuid())
+  firstName       String   @map("first_name") @db.VarChar(100)
+  lastName        String   @map("last_name") @db.VarChar(100)
+  email           String   @unique @db.Citext
+  phone           String?  @db.VarChar(15)
+  passwordHash    String   @map("password_hash")
+  emailVerified   Boolean  @default(false) @map("email_verified")
+  status          UserStatus @default(pending)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  otps            OtpVerification[]
+  ledTeams        Team[]       @relation("TeamLeader")
+  teamMemberships TeamMember[]
+  auditLogs       AuditLog[]
+
+  @@map("users")
+}
+
+model OtpVerification {
+  id          String     @id @default(uuid())
+  userId      String     @map("user_id")
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash    String     @map("code_hash")
+  purpose     OtpPurpose @default(email_verify)
+  attempts    Int        @default(0) @db.SmallInt
+  maxAttempts Int        @default(5) @map("max_attempts") @db.SmallInt
+  expiresAt   DateTime   @map("expires_at")
+  consumedAt  DateTime?  @map("consumed_at")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  @@index([userId, purpose])
+  @@map("otp_verifications")
+}
+
+model Team {
+  id               String  @id @default(uuid())
+  name             String  @db.VarChar(150)
+  institute        String  @db.VarChar(200)
+  theme            String  @db.VarChar(150)
+  problemStatement String  @map("problem_statement") @db.VarChar(200)
+  leaderUserId     String  @map("leader_user_id")
+  leader       User       @relation("TeamLeader", fields: [leaderUserId], references: [id])
+  status       TeamStatus @default(draft)
+  submittedAt  DateTime?  @map("submitted_at")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  members      TeamMember[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  teamId    String   @map("team_id")
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String?  @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id])
+  firstName String   @map("first_name") @db.VarChar(100)
+  lastName  String   @map("last_name") @db.VarChar(100)
+  email     String   @db.Citext
+  phone     String?  @db.VarChar(15)
+  role      TeamRole @default(member)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([teamId, email])
+  @@map("team_members")
+}
+
+model AuditLog {
+  id        BigInt   @id @default(autoincrement())
+  userId    String?  @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String   @db.VarChar(50)
+  ipAddress String?  @map("ip_address")
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}

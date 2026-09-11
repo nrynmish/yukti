@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
   Award,
@@ -26,6 +26,8 @@ import {
   Wrench,
 } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { ApiError, authApi, teamApi, type TeamMember } from "../lib/api";
+import { useAuth } from "../lib/auth";
 import campusImage from "../assets/dtu-campus-aerial.jpeg";
 import campus2Image from "../assets/campus2.jpeg";
 import campus3Image from "../assets/campus3.jpg";
@@ -99,13 +101,15 @@ export function Brand() {
 }
 
 export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" | "signin" | "signup" | "team-register" } = {}) {
+  const { user, isSignedIn, signOut } = useAuth();
+
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur">
         <div className="site-shell flex h-18 sm:h-22 items-center justify-between">
           <Brand />
           <nav
-            className="hidden items-center gap-8 text-sm font-semibold md:flex"
+            className="hidden items-center gap-5 whitespace-nowrap text-sm font-semibold lg:gap-7 md:flex"
             aria-label="Primary navigation"
           >
             <Link to="/" className={`nav-link ${activeNav === "home" ? "text-primary font-bold" : ""}`}>
@@ -126,16 +130,35 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
             <a href="https://dtu.ac.in" target="_blank" rel="noreferrer" className="nav-link">
               About DTU
             </a>
-            <Link to="/signin" className="nav-link">
+            {isSignedIn ? (
+              <>
+                <span className="max-w-[110px] truncate text-muted-foreground" title={user?.firstName}>
+                  Hi, {user?.firstName}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => signOut()}
+                  className="button button-outline shrink-0 cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/signin" className="nav-link">
+                  Sign In
+                </Link>
+                <Link to="/signup" className="button button-outline shrink-0">
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </nav>
+          {!isSignedIn && (
+            <Link to="/signin" className="button button-outline md:hidden">
               Sign In
             </Link>
-            <Link to="/signup" className="button button-outline">
-              Sign Up
-            </Link>
-          </nav>
-          <Link to="/signin" className="button button-outline md:hidden">
-            Sign In
-          </Link>
+          )}
         </div>
       </header>
       <div className="live-updates-bar flex h-10 overflow-hidden bg-muted text-xs">
@@ -890,10 +913,14 @@ export function HomePage() {
 }
 
 export function AuthPage({ mode }: { mode: "login" | "register" }) {
+  const navigate = useNavigate();
+  const { refresh } = useAuth();
+
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  // States for register page
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -901,23 +928,11 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Phone OTP states
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [otpLoading, setOtpLoading] = useState(false);
-  const [otpTimer, setOtpTimer] = useState(0);
-
-  // Email OTP step (shown after form submit)
+  // Email OTP step (shown after a successful signup POST)
   const [emailOtpStep, setEmailOtpStep] = useState(false);
-  const [emailDigits, setEmailDigits] = useState<string[]>(["?", "", "", "", "", ""]);
+  const [emailDigits, setEmailDigits] = useState<string[]>(["", "", "", "", "", ""]);
   const [emailOtpTimer, setEmailOtpTimer] = useState(60);
   const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => {
-    if (otpTimer <= 0) return;
-    const id = setInterval(() => setOtpTimer((t) => t - 1), 1000);
-    return () => clearInterval(id);
-  }, [otpTimer]);
 
   useEffect(() => {
     if (!emailOtpStep || emailOtpTimer <= 0) return;
@@ -925,20 +940,45 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     return () => clearInterval(id);
   }, [emailOtpStep, emailOtpTimer]);
 
-  const handleSendOtp = () => {
-    if (!phone || otpLoading || otpTimer > 0) return;
-    setOtpLoading(true);
-    setTimeout(() => {
-      setOtpLoading(false);
-      setOtpSent(true);
-      setOtpTimer(60);
-    }, 1000);
+  const handleResendEmailOtp = async () => {
+    if (busy || emailOtpTimer > 0) return;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      await authApi.resendOtp(email);
+      setEmailDigits(["", "", "", "", "", ""]);
+      // The server enforces its own cooldown; this timer is only UX.
+      setEmailOtpTimer(60);
+      setMessage("A new code is on its way.");
+      setTimeout(() => digitRefs.current[0]?.focus(), 50);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not resend the code.");
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const handleResendEmailOtp = () => {
-    setEmailDigits(["", "", "", "", "", ""]);
-    setEmailOtpTimer(60);
-    setTimeout(() => digitRefs.current[0]?.focus(), 50);
+  const handleVerifyOtp = async () => {
+    const code = emailDigits.join("");
+    if (code.length < 6 || busy) return;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      // A successful verify sets the session cookie server-side, so the
+      // user is signed in from here — no separate signin call needed.
+      await authApi.verifyOtp(email, code);
+      await refresh();
+      setMessage("Email verified! Welcome to SEWA 2026.");
+      navigate({ to: "/team-register" });
+    } catch (err) {
+      setEmailDigits(["", "", "", "", "", ""]);
+      digitRefs.current[0]?.focus();
+      setError(err instanceof ApiError ? err.message : "Verification failed.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const handleDigitInput = (idx: number, val: string) => {
@@ -958,87 +998,179 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
   const formatTime = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (mode === "login") {
-      setMessage("Sign-in details received.");
-    } else {
-      // Switch to email OTP screen
-      setEmailDigits(["", "", "", "", "", ""]);
-      setEmailOtpTimer(60);
-      setEmailOtpStep(true);
-      setTimeout(() => digitRefs.current[0]?.focus(), 100);
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    setMessage("");
+
+    try {
+      if (mode === "login") {
+        await authApi.signin(email, password);
+        await refresh();
+        navigate({ to: "/team-register" });
+      } else {
+        await authApi.signup({
+          firstName,
+          lastName,
+          email,
+          phone: phone || undefined,
+          password,
+        });
+        // Signup already issued the OTP — this screen only collects it.
+        setEmailDigits(["", "", "", "", "", ""]);
+        setEmailOtpTimer(60);
+        setEmailOtpStep(true);
+        setTimeout(() => digitRefs.current[0]?.focus(), 100);
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        // Prefer the field-level message when Zod rejected the input —
+        // "Validation failed" on its own tells the user nothing.
+        setError(err.firstFieldError ?? err.message);
+
+        // 403 on signin means the account exists but isn't verified yet;
+        // send them straight to the OTP screen instead of a dead end.
+        if (mode === "login" && err.status === 403 && /verify/i.test(err.message)) {
+          try {
+            await authApi.resendOtp(email);
+          } catch {
+            /* cooldown — the existing code is still valid */
+          }
+          setEmailDigits(["", "", "", "", "", ""]);
+          setEmailOtpTimer(60);
+          setEmailOtpStep(true);
+        }
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setBusy(false);
     }
   };
 
   if (mode === "login") {
     return (
-      <div>
-        <Header />
-        <main className="site-shell py-12">
-          <div className="auth-layout">
-            <div className="auth-photo">
+      <div className="min-h-screen flex flex-col bg-white">
+        <Header activeNav="signin" />
+
+        <main className="flex-1 w-full max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex items-start justify-center">
+          <div className="w-full flex flex-col lg:flex-row items-stretch gap-6">
+
+            {/* Left: Aerial DTU campus photo — same layout as the signup card */}
+            <div className="flex-1 min-h-[440px] sm:min-h-[600px] lg:min-h-[660px] rounded-[18px] overflow-hidden shadow-[0_8px_28px_rgba(0,0,0,0.10)]">
               <img
                 src={campusImage}
-                alt="Delhi Technological University campus"
-                width={1600}
-                height={900}
+                alt="Delhi Technological University campus aerial view"
+                className="size-full object-cover object-[48%_center]"
               />
             </div>
-            <section className="auth-panel">
-              <Brand />
-              <div>
-                <p className="eyebrow">Welcome back</p>
-                <h1 className="mt-2 text-3xl font-extrabold">Sign in to SEWA</h1>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Access your challenge workspace and submissions.
+
+            {/* Right: Form card */}
+            <div className="w-full lg:w-[480px] shrink-0 rounded-[18px] border border-[#ff5a5f]/70 bg-white px-8 py-9 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col">
+              {/* Brand header */}
+              <div className="mb-6">
+                <Brand />
+              </div>
+
+              <div className="mb-5">
+                <h2 className="text-xl font-bold text-gray-900">Welcome back</h2>
+                <p className="mt-1.5 text-xs text-gray-500 leading-relaxed">
+                  Sign in to access your challenge workspace and submissions.
                 </p>
               </div>
-              <form onSubmit={submit} className="space-y-4">
-                <Field label="Email or phone number" placeholder="you@example.com" type="email" />
-                <label className="field">
-                  <span>Password</span>
+
+              <form onSubmit={submit} className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Email</label>
+                  <input
+                    required
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full h-10 px-3.5 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">Password</label>
                   <div className="relative">
                     <input
                       required
                       type={visible ? "text" : "password"}
+                      autoComplete="current-password"
                       placeholder="Enter password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full h-10 pl-3.5 pr-10 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
                     />
                     <button
                       type="button"
-                      aria-label="Show password"
                       onClick={() => setVisible(!visible)}
+                      aria-label={visible ? "Hide password" : "Show password"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
                     >
-                      <Eye size={17} />
+                      {visible ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                </label>
-                <div className="flex items-center justify-between text-xs">
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" /> Remember me
+                </div>
+
+                <div className="flex items-center justify-between pt-0.5 select-none">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={rememberMe}
+                      onClick={() => setRememberMe(!rememberMe)}
+                      className={`relative inline-flex h-[18px] w-[32px] shrink-0 items-center rounded-full transition-colors focus:outline-none cursor-pointer ${rememberMe ? "bg-[#ff4d4f]" : "bg-[#d9d9d9]"
+                        }`}
+                    >
+                      <span
+                        className={`inline-block size-3.5 transform rounded-full bg-white shadow-sm transition-transform ${rememberMe ? "translate-x-[14px]" : "translate-x-[2px]"
+                          }`}
+                      />
+                    </button>
+                    <span className="text-xs text-gray-700">Remember me</span>
                   </label>
-                  <Link to="/forgot-password" className="text-link">
+                  <Link to="/forgot-password" className="text-xs text-[#1890ff] hover:underline font-medium">
                     Forgot password?
                   </Link>
                 </div>
-                <button className="button button-primary w-full justify-center" type="submit">
-                  Sign in
+
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="w-full h-10 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center cursor-pointer mt-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {busy ? "Signing in…" : "Sign in"}
                 </button>
+
+                {error && (
+                  <p role="alert" className="text-center text-xs font-semibold text-[#ff4d4f]">
+                    {error}
+                  </p>
+                )}
                 {message && (
-                  <p role="status" className="text-center text-sm font-semibold text-success">
+                  <p role="status" className="text-center text-xs font-semibold text-emerald-600">
                     {message}
                   </p>
                 )}
+
+                <p className="pt-1 text-center text-xs text-gray-600">
+                  Don't have an account?{" "}
+                  <Link to="/signup" className="text-[#1890ff] hover:underline font-medium">
+                    Sign up
+                  </Link>
+                </p>
               </form>
-              <p className="text-center text-xs text-muted-foreground">
-                Don’t have an account?{" "}
-                <Link className="text-link" to="/signup">
-                  Sign up now
-                </Link>
-              </p>
-            </section>
+            </div>
+
           </div>
         </main>
+
         <Footer />
       </div>
     );
@@ -1049,7 +1181,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     <div className="min-h-screen flex flex-col bg-white">
       <Header activeNav="signup" />
 
-      <main className="flex-1 w-full max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex items-start justify-center">
+      <main className="flex-1 w-full max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex items-start justify-center">
         <div className="w-full flex flex-col lg:flex-row items-stretch gap-6">
 
           {/* Left: Aerial DTU campus photo */}
@@ -1062,16 +1194,10 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
           </div>
 
           {/* Right: Form card — switches between signup form and OTP verification */}
-          <div className="w-full lg:w-[420px] shrink-0 rounded-[18px] border border-[#ff5a5f]/70 bg-white px-8 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col justify-center">
+          <div className="w-full lg:w-[480px] shrink-0 rounded-[18px] border border-[#ff5a5f]/70 bg-white px-8 py-9 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col justify-center">
             {/* Brand header */}
-            <div className="mb-5 select-none">
-              <div className="text-[22px] font-extrabold tracking-tight leading-none">
-                <span className="text-[#ff4d4f]">SEWA</span>{" "}
-                <span className="text-gray-900">2026</span>
-              </div>
-              <div className="text-[13px] font-semibold text-gray-700 mt-0.5">
-                DTU Youth Innovation
-              </div>
+            <div className="mb-6">
+              <Brand />
             </div>
 
             {emailOtpStep ? (
@@ -1118,7 +1244,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                   <button
                     type="button"
                     onClick={handleResendEmailOtp}
-                    disabled={emailOtpTimer > 0}
+                    disabled={busy || emailOtpTimer > 0}
                     className="font-semibold text-[#ff4d4f] hover:underline disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                   >
                     Resend OTP
@@ -1128,12 +1254,18 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                 {/* Verify button */}
                 <button
                   type="button"
-                  onClick={() => setMessage("Email verified! Welcome to SEWA 2026.")}
-                  disabled={emailDigits.join("").length < 6}
+                  onClick={handleVerifyOtp}
+                  disabled={busy || emailDigits.join("").length < 6}
                   className="w-full h-11 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Verify &amp; Proceed
+                  {busy ? "Verifying…" : "Verify & Proceed"}
                 </button>
+
+                {error && (
+                  <p role="alert" className="text-center text-xs font-semibold text-[#ff4d4f]">
+                    {error}
+                  </p>
+                )}
 
                 {message && (
                   <p role="status" className="text-center text-xs font-semibold text-emerald-600">
@@ -1263,10 +1395,17 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full h-10 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center cursor-pointer mt-1"
+                  disabled={busy}
+                  className="w-full h-10 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center cursor-pointer mt-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Sign in
+                  {busy ? "Creating account…" : "Create account"}
                 </button>
+
+                {error && (
+                  <p role="alert" className="text-center text-xs font-semibold text-[#ff4d4f]">
+                    {error}
+                  </p>
+                )}
 
                 {message && (
                   <p role="status" className="text-center text-xs font-semibold text-emerald-600">
@@ -1782,19 +1921,53 @@ export function EventsPage() {
 
 
 export function ForgotPasswordPage() {
+  // "request" collects the email; "reset" collects the code + new password.
+  const [stage, setStage] = useState<"request" | "reset" | "done">("request");
   const [contact, setContact] = useState("");
-  const [sent, setSent] = useState(false);
+  const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      await authApi.forgotPassword(contact);
+      // Always advances, even for an unregistered email — the backend
+      // answers identically either way so this page can't be used to
+      // check whether an address has an account.
+      setStage("reset");
+    } catch (err) {
+      setError(err instanceof ApiError ? (err.firstFieldError ?? err.message) : "Request failed.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleReset = async (e: FormEvent) => {
+    e.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      await authApi.resetPassword({ email: contact, code, password: newPassword });
+      setStage("done");
+    } catch (err) {
+      setError(err instanceof ApiError ? (err.firstFieldError ?? err.message) : "Reset failed.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header activeNav="signin" />
 
-      <main className="flex-1 w-full max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex items-start justify-center">
+      <main className="flex-1 w-full max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex items-start justify-center">
         <div className="w-full flex flex-col lg:flex-row items-stretch gap-6">
 
           {/* Left: Aerial DTU campus photo */}
@@ -1807,7 +1980,7 @@ export function ForgotPasswordPage() {
           </div>
 
           {/* Right: Card */}
-          <div className="w-full lg:w-[420px] shrink-0 rounded-[18px] border border-[#ff5a5f]/70 bg-white px-8 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col justify-center">
+          <div className="w-full lg:w-[480px] shrink-0 rounded-[18px] border border-[#ff5a5f]/70 bg-white px-8 py-9 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col justify-center">
             {/* Brand */}
             <div className="mb-8 select-none">
               <div className="text-[22px] font-extrabold tracking-tight leading-none">
@@ -1819,54 +1992,139 @@ export function ForgotPasswordPage() {
               </div>
             </div>
 
-            {sent ? (
+            {stage === "done" ? (
               <div className="space-y-4 text-center">
                 <div className="size-14 mx-auto rounded-full bg-emerald-50 flex items-center justify-center">
                   <svg className="size-7 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">Instructions Sent!</h2>
+                <h2 className="text-lg font-bold text-gray-900">Password Updated</h2>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Password reset instructions have been sent to{" "}
-                  <span className="font-semibold text-gray-700">{contact}</span>.
-                  Please check your inbox.
+                  You can now sign in with your new password.
                 </p>
                 <Link to="/signin" className="inline-flex items-center gap-1.5 text-xs text-[#ff4d4f] hover:underline font-medium">
                   <ChevronLeft size={13} />
                   Back to Sign In
                 </Link>
               </div>
+            ) : stage === "reset" ? (
+              <div className="space-y-5">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Enter Reset Code</h2>
+                  <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                    If <span className="font-semibold text-gray-700">{contact}</span> is registered,
+                    a 6-digit code is on its way. Enter it below along with your new password.
+                  </p>
+                </div>
+
+                <form onSubmit={handleReset} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                      Reset code
+                    </label>
+                    <input
+                      required
+                      inputMode="numeric"
+                      maxLength={6}
+                      placeholder="6-digit code"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                      className="w-full h-10 px-3.5 rounded-md bg-[#f2f2f2] border-0 text-sm tracking-[0.3em] text-gray-800 placeholder-gray-400 placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                      New password
+                    </label>
+                    <div className="relative">
+                      <input
+                        required
+                        type={visible ? "text" : "password"}
+                        autoComplete="new-password"
+                        placeholder="Enter new password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full h-10 pl-3.5 pr-10 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setVisible(!visible)}
+                        aria-label={visible ? "Hide password" : "Show password"}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+                      >
+                        {visible ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                    <p className="mt-1.5 text-[11px] text-gray-400">
+                      At least 8 characters, with upper and lower case, a number, and a symbol.
+                    </p>
+                  </div>
+
+                  {error && (
+                    <p role="alert" className="text-xs font-semibold text-[#ff4d4f]">
+                      {error}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={busy}
+                    className="w-full h-10 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {busy ? "Updating…" : "Update Password"}
+                  </button>
+                </form>
+
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => { setStage("request"); setError(""); }}
+                    className="text-xs text-[#ff4d4f] hover:underline font-medium cursor-pointer"
+                  >
+                    Use a different email
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="space-y-5">
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Forgot Password?</h2>
                   <p className="mt-2 text-xs text-gray-500 leading-relaxed">
-                    Enter your registered DTU email address or mobile number. We'll send you a
-                    password reset link and verification instructions.
+                    Enter your registered email address. We'll send you a 6-digit code to
+                    confirm it's you before you set a new password.
                   </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                      Email or phone number
+                      Email address
                     </label>
                     <input
                       required
-                      type="text"
-                      placeholder="e.g. fullnumber@dtu.ac.in or 9876543210"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="e.g. you@dtu.ac.in"
                       value={contact}
                       onChange={(e) => setContact(e.target.value)}
                       className="w-full h-10 px-3.5 rounded-md bg-[#f2f2f2] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/25 transition-all"
                     />
                   </div>
 
+                  {error && (
+                    <p role="alert" className="text-xs font-semibold text-[#ff4d4f]">
+                      {error}
+                    </p>
+                  )}
+
                   <button
                     type="submit"
-                    className="w-full h-10 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    disabled={busy}
+                    className="w-full h-10 rounded-md bg-[#ff5a5f] text-white font-semibold text-sm hover:bg-[#ff3f45] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Send Reset Instructions
+                    {busy ? "Sending…" : "Send Reset Code"}
                     <ArrowRight size={15} />
                   </button>
                 </form>
@@ -1896,16 +2154,101 @@ export function ForgotPasswordPage() {
   );
 }
 
+interface MemberDraft {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
+
+const emptyMember = (): MemberDraft => ({ firstName: "", lastName: "", email: "", phone: "" });
+
 export function TeamRegisterPage() {
+  const { user } = useAuth();
+
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [teamName, setTeamName] = useState("");
   const [institute, setInstitute] = useState("");
   const [theme, setTheme] = useState("");
   const [problem, setProblem] = useState("");
   const [teamSize, setTeamSize] = useState(2);
-  const [members, setMembers] = useState<string[]>(["", ""]);
+  // Slot 0 is always the signed-in leader. The backend seeds the leader
+  // into team_members itself when the team is created, so slot 0 is
+  // display-only here and is never POSTed as a member (doing so would
+  // collide with the unique [teamId, email] constraint).
+  const [members, setMembers] = useState<MemberDraft[]>([emptyMember(), emptyMember()]);
   const [agreed, setAgreed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [teamId, setTeamId] = useState<string | null>(null);
+  const [teamCode, setTeamCode] = useState<string | null>(null);
+  const [loadingExisting, setLoadingExisting] = useState(true);
+
+  // Mirror the leader's account into slot 0 once the session resolves.
+  useEffect(() => {
+    if (!user) return;
+    setMembers((prev) =>
+      prev.map((m, idx) =>
+        idx === 0
+          ? {
+              firstName: user.firstName,
+              lastName: user.lastName,
+              email: user.email,
+              phone: user.phone ?? "",
+            }
+          : m,
+      ),
+    );
+  }, [user]);
+
+  // A leader can only ever own one team, so resume an existing draft rather
+  // than letting the user fill the form and hit a 409 at the end.
+  useEffect(() => {
+    let cancelled = false;
+
+    teamApi
+      .getMine()
+      .then(({ team }) => {
+        if (cancelled || !team) return;
+        if (team.status !== "draft") {
+          setTeamCode(team.id);
+          setTeamName(team.name);
+          setSubmitted(true);
+          return;
+        }
+        setTeamId(team.id);
+        setTeamName(team.name);
+        setInstitute(team.institute);
+        setTheme(team.theme);
+        setProblem(team.problemStatement);
+
+        const existing = team.members ?? [];
+        const leader = existing.find((m: TeamMember) => m.role === "leader");
+        const others = existing.filter((m: TeamMember) => m.role !== "leader");
+        const toDraft = (m: TeamMember): MemberDraft => ({
+          firstName: m.firstName,
+          lastName: m.lastName,
+          email: m.email,
+          phone: m.phone ?? "",
+        });
+
+        const roster = [leader ? toDraft(leader) : emptyMember(), ...others.map(toDraft)];
+        setMembers(roster.length >= 2 ? roster : [...roster, emptyMember()]);
+        setTeamSize(Math.max(2, roster.length));
+      })
+      .catch(() => {
+        /* 401/403 is handled by RequireAuth; anything else surfaces on submit */
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingExisting(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const themes = [
     "Smart Infrastructure & Urban Mobility",
@@ -1925,25 +2268,115 @@ export function TeamRegisterPage() {
     "Digital Governance & Financial Inclusion": ["PS-31: Subsidy Disbursement dApp", "PS-32: Gram Panchayat Dashboard", "PS-33: Jan Dhan Fraud Detector"],
   };
 
-  const updateMember = (i: number, val: string) => {
-    const next = [...members];
-    next[i] = val;
-    setMembers(next);
+  const updateMember = (i: number, field: keyof MemberDraft, val: string) => {
+    setMembers((prev) =>
+      prev.map((m, idx) => (idx === i ? { ...m, [field]: val } : m)),
+    );
   };
 
   const handleSizeChange = (n: number) => {
     setTeamSize(n);
     setMembers((prev) => {
       const next = [...prev];
-      while (next.length < n) next.push("");
+      while (next.length < n) next.push(emptyMember());
       return next.slice(0, n);
     });
   };
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
+  const memberComplete = (m: MemberDraft) => !!(m.firstName && m.lastName && m.email);
+
+  /** First duplicate email found among members (leader included), or null. */
+  const duplicateEmail = (): string | null => {
+    const seen = new Set<string>();
+    for (const m of members) {
+      if (!m.email) continue;
+      const key = m.email.trim().toLowerCase();
+      if (seen.has(key)) return m.email;
+      seen.add(key);
+    }
+    return null;
   };
+
+  /**
+   * The backend models this as three separate calls, so a failure part-way
+   * through leaves a real draft team behind. `teamId` is kept in state and
+   * reused on retry so a second attempt adds the missing members rather
+   * than trying to create a duplicate team (which would 409).
+   */
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (busy) return;
+
+    // Every member (leader included) needs a distinct email — the backend
+    // enforces this with a unique constraint, but catching it here first
+    // gives a specific, actionable message instead of a generic "not
+    // enough members" error after a member gets silently dropped.
+    const dup = duplicateEmail();
+    if (dup) {
+      setError(`"${dup}" is used by more than one member. Each member needs a different email.`);
+      setStep(2);
+      return;
+    }
+
+    setBusy(true);
+    setError("");
+
+    try {
+      let id = teamId;
+
+      if (!id) {
+        const { team } = await teamApi.create({
+          name: teamName,
+          institute,
+          theme,
+          problemStatement: problem,
+        });
+        id = team.id;
+        setTeamId(id);
+      }
+
+      // Slot 0 is the leader, already on the roster server-side. Anything
+      // else already present (e.g. a retry after a partial failure) is
+      // skipped rather than re-added, since re-adding would 409 on the
+      // unique [teamId, email] constraint.
+      const { team: current } = await teamApi.getMine();
+      const alreadyOn = new Set((current?.members ?? []).map((m: TeamMember) => m.email.toLowerCase()));
+
+      for (const m of members.slice(1)) {
+        if (alreadyOn.has(m.email.toLowerCase())) continue;
+        await teamApi.addMember(id, {
+          firstName: m.firstName,
+          lastName: m.lastName,
+          email: m.email,
+          phone: m.phone || undefined,
+        });
+      }
+
+      const { team } = await teamApi.submit(id);
+      setTeamCode(team.id);
+      setSubmitted(true);
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? (err.firstFieldError ?? err.message)
+          : "Could not submit your registration. Please try again.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (loadingExisting) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#f7f7f8]">
+        <Header activeNav="team-register" />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="size-8 animate-spin rounded-full border-2 border-[#ff4d4f] border-t-transparent" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const StepDot = ({ n, label }: { n: 1 | 2 | 3; label: string }) => (
     <div className="flex flex-col items-center gap-1">
@@ -1975,7 +2408,7 @@ export function TeamRegisterPage() {
             </p>
             <div className="inline-block bg-[#fff5f5] border border-[#ff4d4f]/20 rounded-xl px-6 py-3 mt-2">
               <p className="text-xs text-gray-500">Team ID</p>
-              <p className="text-lg font-black text-[#ff4d4f] tracking-widest">SEWA-{Math.floor(1000 + Math.random() * 9000)}</p>
+              <p className="text-sm font-black text-[#ff4d4f] tracking-wider break-all">{teamCode}</p>
             </div>
             <div className="pt-4">
               <Link to="/" className="inline-flex items-center gap-2 text-sm text-[#ff4d4f] hover:underline font-semibold">
@@ -2071,31 +2504,59 @@ export function TeamRegisterPage() {
                 {step === 2 && (
                   <div className="px-6 sm:px-8 py-8 space-y-5">
                     <h2 className="text-lg font-bold text-gray-900">Add Team Members</h2>
-                    <p className="text-xs text-gray-400 -mt-2">Enter registered email addresses of your teammates.</p>
+                    <p className="text-xs text-gray-400 -mt-2">
+                      Members don't need their own account — their details are recorded against
+                      your team.
+                    </p>
 
                     {members.map((m, i) => (
-                      <div key={i}>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-                          {i === 0 ? "Team Leader (You) *" : `Member ${i + 1} *`}
+                      <div key={i} className="rounded-xl border border-gray-100 p-4 space-y-3">
+                        <label className="block text-xs font-semibold text-gray-600">
+                          {i === 0 ? "Team Leader (You)" : `Member ${i + 1} *`}
                         </label>
-                        <input required type="email" value={m} onChange={e => updateMember(i, e.target.value)}
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <input required type="text" value={m.firstName} disabled={i === 0}
+                            onChange={e => updateMember(i, "firstName", e.target.value)}
+                            placeholder="First name"
+                            className="h-11 px-4 rounded-lg bg-[#f5f5f5] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/20 transition-all disabled:opacity-60" />
+                          <input required type="text" value={m.lastName} disabled={i === 0}
+                            onChange={e => updateMember(i, "lastName", e.target.value)}
+                            placeholder="Last name"
+                            className="h-11 px-4 rounded-lg bg-[#f5f5f5] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/20 transition-all disabled:opacity-60" />
+                        </div>
+
+                        <input required type="email" value={m.email} disabled={i === 0}
+                          onChange={e => updateMember(i, "email", e.target.value)}
                           placeholder={i === 0 ? "your@email.com" : `member${i + 1}@email.com`}
-                          disabled={i === 0}
+                          className="w-full h-11 px-4 rounded-lg bg-[#f5f5f5] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/20 transition-all disabled:opacity-60" />
+
+                        <input type="tel" value={m.phone} disabled={i === 0}
+                          onChange={e => updateMember(i, "phone", e.target.value)}
+                          placeholder="Phone (optional)"
                           className="w-full h-11 px-4 rounded-lg bg-[#f5f5f5] border-0 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff4d4f]/20 transition-all disabled:opacity-60" />
                       </div>
                     ))}
 
                     {/* Team preview pill */}
                     <div className="bg-[#fff5f5] rounded-xl p-4 flex items-center gap-3 flex-wrap">
-                      {members.filter(Boolean).map((m, i) => (
+                      {members.filter(m => m.email).map((m, i) => (
                         <div key={i} className="flex items-center gap-1.5 bg-white border border-[#ff4d4f]/20 rounded-full px-3 py-1">
                           <div className="size-5 rounded-full bg-[#ff4d4f] text-white text-[9px] font-bold flex items-center justify-center">
-                            {m[0]?.toUpperCase() ?? "?"}
+                            {(m.firstName || m.email)[0]?.toUpperCase() ?? "?"}
                           </div>
-                          <span className="text-[11px] text-gray-700 truncate max-w-[120px]">{m || "—"}</span>
+                          <span className="text-[11px] text-gray-700 truncate max-w-[120px]">
+                            {m.firstName ? `${m.firstName} ${m.lastName}`.trim() : m.email}
+                          </span>
                         </div>
                       ))}
                     </div>
+
+                    {error && (
+                      <p role="alert" className="text-xs font-semibold text-[#ff4d4f]">
+                        {error}
+                      </p>
+                    )}
 
                     <div className="pt-2 flex justify-between">
                       <button type="button" onClick={() => setStep(1)}
@@ -2103,8 +2564,16 @@ export function TeamRegisterPage() {
                         <ChevronLeft size={15} /> Back
                       </button>
                       <button type="button"
-                        disabled={members.some(m => !m)}
-                        onClick={() => setStep(3)}
+                        disabled={members.some(m => !memberComplete(m))}
+                        onClick={() => {
+                          const dup = duplicateEmail();
+                          if (dup) {
+                            setError(`"${dup}" is used by more than one member. Each member needs a different email.`);
+                            return;
+                          }
+                          setError("");
+                          setStep(3);
+                        }}
                         className="flex items-center gap-2 h-10 px-6 rounded-lg bg-[#ff4d4f] text-white text-sm font-semibold hover:bg-[#ff3f45] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                         Review <ArrowRight size={15} />
                       </button>
@@ -2141,11 +2610,15 @@ export function TeamRegisterPage() {
                       {members.map((m, i) => (
                         <div key={i} className="flex items-center gap-3 px-4 py-2.5 border-t border-gray-100">
                           <div className="size-7 rounded-full bg-[#ff4d4f]/10 text-[#ff4d4f] text-xs font-bold flex items-center justify-center">
-                            {m[0]?.toUpperCase() ?? "?"}
+                            {(m.firstName || m.email)[0]?.toUpperCase() ?? "?"}
                           </div>
                           <div>
-                            <p className="text-xs font-semibold text-gray-800">{m}</p>
-                            <p className="text-[10px] text-gray-400">{i === 0 ? "Team Leader" : `Member ${i + 1}`}</p>
+                            <p className="text-xs font-semibold text-gray-800">
+                              {`${m.firstName} ${m.lastName}`.trim()}
+                            </p>
+                            <p className="text-[10px] text-gray-400">
+                              {m.email} · {i === 0 ? "Team Leader" : `Member ${i + 1}`}
+                            </p>
                           </div>
                         </div>
                       ))}
@@ -2162,14 +2635,20 @@ export function TeamRegisterPage() {
                       </span>
                     </label>
 
+                    {error && (
+                      <p role="alert" className="text-xs font-semibold text-[#ff4d4f]">
+                        {error}
+                      </p>
+                    )}
+
                     <div className="pt-2 flex justify-between">
                       <button type="button" onClick={() => setStep(2)}
                         className="flex items-center gap-1.5 h-10 px-5 rounded-lg border border-gray-200 text-gray-600 text-sm font-semibold hover:border-gray-400 transition-all cursor-pointer">
                         <ChevronLeft size={15} /> Back
                       </button>
-                      <button type="submit" disabled={!agreed}
+                      <button type="submit" disabled={!agreed || busy}
                         className="flex items-center gap-2 h-10 px-7 rounded-lg bg-[#ff4d4f] text-white text-sm font-bold hover:bg-[#ff3f45] active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-[0_4px_14px_rgba(255,77,79,0.35)]">
-                        Submit Registration
+                        {busy ? "Submitting…" : "Submit Registration"}
                       </button>
                     </div>
                   </div>

@@ -15,6 +15,13 @@ export async function getMyTeam(req: Request, res: Response) {
   res.status(200).json({ team });
 }
 
+export async function updateTeam(req: Request, res: Response) {
+  const input = req.body as CreateTeamInput;
+  const team = await teamService.updateTeam(req.params.teamId!, req.user!.id, input);
+  await writeAuditLog({ req, userId: req.user!.id, action: "team_update", metadata: { teamId: team.id } });
+  res.status(200).json({ team });
+}
+
 export async function addMember(req: Request, res: Response) {
   const input = req.body as AddMemberInput;
   const member = await teamService.addTeamMember(req.params.teamId!, req.user!.id, input);

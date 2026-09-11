@@ -15,8 +15,10 @@ type AuditAction =
   | "password_reset_success"
   | "password_reset_failure"
   | "team_create"
+  | "team_update"
   | "team_member_add"
-  | "team_submit";
+  | "team_submit"
+  | "profile_update";
 
 interface AuditParams {
   req: Request;

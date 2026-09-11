@@ -1,0 +1,55 @@
+import { z } from "zod";
+
+const phoneRegex = /^(\+91)?[6-9]\d{9}$/;
+const aadhaarRegex = /^\d{12}$/;
+const pinRegex = /^\d{6}$/;
+const dobRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+// The registration form's phone placeholders show a spaced-out format
+// ("+91 98765 43210") for readability, so accept that on input rather than
+// rejecting a value the UI itself suggested — strip whitespace before
+// checking shape.
+const phoneSchema = z
+  .string()
+  .transform((v) => v.replace(/\s+/g, ""))
+  .pipe(z.string().regex(phoneRegex, "Invalid Indian mobile number"));
+
+// Category / nationality / gender / state are kept as free text rather than
+// enums — same rationale as team.schema's theme/problemStatement: these
+// lists are expected to be finalized before launch and a DB enum would need
+// a migration every time they change. The frontend constrains them to a
+// fixed dropdown; this just guards length/shape.
+export const upsertProfileSchema = z
+  .object({
+    firstName: z.string().trim().min(1).max(100),
+    middleName: z.string().trim().max(100).optional(),
+    lastName: z.string().trim().min(1).max(100),
+    category: z.string().trim().max(50).optional(),
+    nationality: z.string().trim().min(2).max(100),
+    // z.coerce.date() runs arbitrary input through `new Date(...)`, where
+    // e.g. `null` silently becomes 1970-01-01 instead of failing — validate
+    // the expected yyyy-mm-dd shape and calendar validity first.
+    dateOfBirth: z
+      .string()
+      .trim()
+      .regex(dobRegex, "Date of birth must be a valid date (yyyy-mm-dd)")
+      .refine((v) => !Number.isNaN(new Date(v).getTime()), "Date of birth must be a valid calendar date")
+      .transform((v) => new Date(v)),
+    gender: z.string().trim().min(2).max(30),
+
+    aadhaarNumber: z.string().trim().regex(aadhaarRegex, "Aadhaar number must be exactly 12 digits"),
+
+    addressLine1: z.string().trim().min(3).max(200),
+    addressLine2: z.string().trim().max(200).optional(),
+    pinCode: z.string().trim().regex(pinRegex, "PIN code must be exactly 6 digits"),
+    city: z.string().trim().min(2).max(100),
+    state: z.string().trim().min(2).max(100),
+    country: z.string().trim().min(2).max(100),
+
+    phone: phoneSchema,
+    alternatePhone: phoneSchema.optional(),
+    backupEmail: z.string().trim().toLowerCase().email().max(255).optional(),
+  })
+  .strict();
+
+export type UpsertProfileInput = z.infer<typeof upsertProfileSchema>;

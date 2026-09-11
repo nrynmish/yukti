@@ -13,6 +13,8 @@ teamRouter.use(requireAuth, requireVerifiedEmail);
 
 teamRouter.post("/", validateBody(createTeamSchema), asyncHandler(teamController.createTeam));
 teamRouter.get("/me", asyncHandler(teamController.getMyTeam));
+// Draft-only — getOwnedTeamOrThrow (via updateTeam) 409s once the team is submitted.
+teamRouter.patch("/:teamId", validateBody(createTeamSchema), asyncHandler(teamController.updateTeam));
 teamRouter.post(
   "/:teamId/members",
   validateBody(addMemberSchema),

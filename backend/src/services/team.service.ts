@@ -43,6 +43,20 @@ export async function createTeam(leaderUserId: string, input: CreateTeamInput) {
   });
 }
 
+export async function updateTeam(teamId: string, leaderUserId: string, input: CreateTeamInput) {
+  await getOwnedTeamOrThrow(teamId, leaderUserId); // also enforces draft-only via its status check
+
+  return prisma.team.update({
+    where: { id: teamId },
+    data: {
+      name: input.name,
+      institute: input.institute,
+      theme: input.theme,
+      problemStatement: input.problemStatement,
+    },
+  });
+}
+
 async function getOwnedTeamOrThrow(teamId: string, leaderUserId: string) {
   const team = await prisma.team.findUnique({ where: { id: teamId }, include: { members: true } });
 

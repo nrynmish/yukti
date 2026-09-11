@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { TeamRegisterPage } from "../components/SewaSite";
+import { TeamRegisterPage } from "../components/TeamRegisterPage";
 import { RequireAuth } from "../lib/auth";
 
 export const Route = createFileRoute("/team-register")({

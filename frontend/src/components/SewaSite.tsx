@@ -24,6 +24,7 @@ import {
   Trophy,
   Twitter,
   Wrench,
+  X,
 } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import campusImage from "../assets/dtu-campus-aerial.jpeg";
@@ -101,7 +102,7 @@ export function Brand() {
 export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" | "signin" | "signup" | "team-register" } = {}) {
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/95 backdrop-blur">
         <div className="site-shell flex h-18 sm:h-22 items-center justify-between">
           <Brand />
           <nav
@@ -145,12 +146,10 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
         <div className="live-updates-ticker-wrap min-w-0 flex-1 overflow-hidden">
           <div className="ticker flex h-full items-center whitespace-nowrap font-medium">
             <span>
-              SEWA 2026 / Youth Innovation Challenge officially launched at Delhi Technological
-              University on 17 September 2026.
+              YUKTI 2026 / Rashtriya Innovation Challenge officially launched at Delhi Technological University on 17 September 2026.
             </span>
             <span aria-hidden="true">
-              SEWA 2026 / Youth Innovation Challenge officially launched at Delhi Technological
-              University on 17 September 2026.
+              YUKTI 2026 / Rashtriya Innovation Challenge officially launched at Delhi Technological University on 17 September 2026.
             </span>
           </div>
         </div>
@@ -522,6 +521,378 @@ export function CountdownTimer() {
   );
 }
 
+function getContinuousDiff(idx: number, progress: number, total: number) {
+  let diff = ((idx - progress) % total + total) % total;
+  if (diff > total / 2) diff -= total;
+  return diff;
+}
+
+export function VideoShowcaseSection() {
+  const [activeIndex, setActiveIndex] = useState(3);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [xStep, setXStep] = useState(195);
+
+  const prevActiveRef = useRef(activeIndex);
+  const isAnimatingRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const dragOffsetRef = useRef(0);
+  const hasDraggedRef = useRef(false);
+
+  useEffect(() => {
+    const updateStep = () => {
+      if (window.innerWidth < 640) {
+        setXStep(130);
+      } else if (window.innerWidth < 1024) {
+        setXStep(165);
+      } else {
+        setXStep(195);
+      }
+    };
+    updateStep();
+    window.addEventListener("resize", updateStep);
+    return () => window.removeEventListener("resize", updateStep);
+  }, []);
+
+  const videoCards = [
+    {
+      id: 1,
+      title: "SEWA Youth Innovation Challenge",
+      date: "17 Sep",
+      source: "DTU Youtube",
+      image: studentsImage,
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    },
+    {
+      id: 2,
+      title: "Green Campus Cleanliness Drive",
+      date: "12 Sep",
+      source: "DTU Media",
+      image: studentsImage,
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    },
+    {
+      id: 3,
+      title: "Solar Power Village Initiative",
+      date: "05 Sep",
+      source: "SEWA DTU",
+      image: studentsImage,
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    },
+    {
+      id: 4,
+      title: "Digital Literacy For All",
+      date: "28 Aug",
+      source: "DTU Outreach",
+      image: studentsImage,
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    },
+    {
+      id: 5,
+      title: "Women Empowerment Workshop",
+      date: "22 Aug",
+      source: "SEWA DTU",
+      image: studentsImage,
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    },
+    {
+      id: 6,
+      title: "Water Conservation Campaign",
+      date: "15 Aug",
+      source: "DTU Highlights",
+      image: studentsImage,
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    },
+    {
+      id: 7,
+      title: "Rural Health & Medical Drive",
+      date: "08 Aug",
+      source: "SEWA DTU",
+      image: studentsImage,
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    },
+  ];
+
+  const totalCards = videoCards.length;
+
+  const handleAdvance = (step: number) => {
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    setTimeout(() => {
+      isAnimatingRef.current = false;
+    }, 360);
+
+    prevActiveRef.current = activeIndex;
+    setActiveIndex((prev) => (prev + step + totalCards * 10) % totalCards);
+  };
+
+  const handlePrev = () => handleAdvance(-1);
+  const handleNext = () => handleAdvance(1);
+
+  const handleSelect = (newIndex: number) => {
+    if (newIndex === activeIndex || isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    setTimeout(() => {
+      isAnimatingRef.current = false;
+    }, 360);
+
+    prevActiveRef.current = activeIndex;
+    setActiveIndex((newIndex + totalCards) % totalCards);
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    // Only primary mouse button or touch
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+
+    isDraggingRef.current = true;
+    startXRef.current = e.clientX;
+    startYRef.current = e.clientY;
+    dragOffsetRef.current = 0;
+    hasDraggedRef.current = false;
+    setIsDragging(true);
+
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      if (!isDraggingRef.current) return;
+      const deltaX = moveEvent.clientX - startXRef.current;
+      const deltaY = moveEvent.clientY - startYRef.current;
+
+      // Allow natural vertical page scroll on touch devices if gesture is vertical
+      if (!hasDraggedRef.current && Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
+        isDraggingRef.current = false;
+        setIsDragging(false);
+        setDragOffset(0);
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", onPointerUp);
+        window.removeEventListener("pointercancel", onPointerUp);
+        return;
+      }
+
+      if (Math.abs(deltaX) > 6) {
+        hasDraggedRef.current = true;
+      }
+      dragOffsetRef.current = deltaX;
+      setDragOffset(deltaX);
+    };
+
+    const onPointerUp = () => {
+      if (!isDraggingRef.current) return;
+      isDraggingRef.current = false;
+      setIsDragging(false);
+
+      const offset = dragOffsetRef.current;
+      const threshold = 35;
+      const steps = Math.min(2, Math.max(1, Math.round(Math.abs(offset) / xStep)));
+      if (offset < -threshold) {
+        prevActiveRef.current = activeIndex;
+        setActiveIndex((prev) => (prev + steps + totalCards * 10) % totalCards);
+      } else if (offset > threshold) {
+        prevActiveRef.current = activeIndex;
+        setActiveIndex((prev) => (prev - steps + totalCards * 10) % totalCards);
+      }
+      setDragOffset(0);
+      dragOffsetRef.current = 0;
+
+      // Small delay to prevent accidental click triggers right after drag
+      setTimeout(() => {
+        hasDraggedRef.current = false;
+      }, 50);
+
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
+    };
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
+  };
+
+  // Continuous progress float: dragging left makes dragOffset < 0, increasing progress smoothly
+  const currentProgress = activeIndex - (isDragging ? dragOffset / xStep : 0);
+
+  return (
+    <div className="w-full relative z-10 mt-14 sm:mt-20 overflow-hidden select-none pb-8">
+      {/* 3D Coverflow Stage */}
+      <div
+        onPointerDown={handlePointerDown}
+        className={`relative w-full h-[375px] sm:h-[415px] md:h-[435px] flex items-center justify-center touch-pan-y ${
+          isDragging ? "cursor-grabbing" : "cursor-grab"
+        }`}
+        style={{ touchAction: "pan-y" }}
+      >
+        {videoCards.map((card, idx) => {
+          const diff = getContinuousDiff(idx, currentProgress, totalCards);
+          const prevDiff = getContinuousDiff(idx, prevActiveRef.current, totalCards);
+
+          // Card jumping across boundary at back of the circle teleports with no transition
+          const isWrapping = !isDragging && Math.abs(diff - prevDiff) > 2;
+
+          const absDiff = Math.abs(diff);
+
+          const x = diff * xStep;
+
+          // Calm, subtle scale: center card at 1.0, neighbors at ~0.945, outer cards at ~0.89
+          const scale = Math.max(0.83, 1 - absDiff * 0.055);
+
+          // Soothing opacity: smooth fade for outer cards, 0 at back of circle
+          let opacity = 1;
+          if (absDiff >= 2.8) {
+            opacity = 0;
+          } else if (absDiff > 1) {
+            opacity = Math.max(0, 0.88 - (absDiff - 1) * 0.48);
+          } else {
+            opacity = 1 - absDiff * 0.12;
+          }
+
+          // Blur: Center: 0px | Immediate neighbors: 0.75px | Outer cards: 1.35px
+          let blurVal = 0;
+          if (absDiff >= 0.25) {
+            blurVal = absDiff <= 1 ? absDiff * 0.75 : Math.min(1.8, 0.75 + (absDiff - 1) * 0.6);
+          }
+
+          const zIndex = Math.round(40 - absDiff * 10);
+          const isActive = absDiff < 0.5;
+
+          // Calm, soothing cubic-bezier easing with 550ms glide
+          const transitionStyle =
+            isDragging || isWrapping
+              ? "none"
+              : "transform 550ms cubic-bezier(0.22, 1, 0.36, 1), opacity 480ms ease, filter 480ms ease, box-shadow 480ms ease";
+
+          return (
+            <div
+              key={card.id}
+              onClick={() => {
+                if (hasDraggedRef.current) return;
+                handleSelect(idx);
+              }}
+              style={{
+                transform: `translateX(${x}px) scale(${scale})`,
+                opacity,
+                filter: blurVal > 0 ? `blur(${blurVal}px)` : "none",
+                zIndex,
+                pointerEvents: absDiff >= 2.8 ? "none" : "auto",
+                transition: transitionStyle,
+              }}
+              className={`absolute w-[260px] sm:w-[295px] md:w-[320px] rounded-[24px] bg-white border border-gray-100/90 p-3.5 sm:p-4 flex flex-col transition-shadow ${
+                isActive
+                  ? "shadow-[0_20px_45px_rgba(0,0,0,0.12)] ring-1 ring-black/5"
+                  : "shadow-[0_6px_18px_rgba(0,0,0,0.04)] hover:opacity-95"
+              }`}
+            >
+              {/* Video Thumbnail */}
+              <div className="relative w-full h-[150px] sm:h-[172px] md:h-[185px] rounded-[18px] overflow-hidden bg-gray-900 group pointer-events-none">
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  draggable={false}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none select-none"
+                />
+                {/* Play Button Overlay */}
+                <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                  <div className="size-12 sm:size-13 rounded-full bg-white/40 backdrop-blur-xs flex items-center justify-center text-white shadow-md group-hover:scale-110 group-hover:bg-white/60 transition-all">
+                    <Play size={18} fill="white" className="ml-0.5 text-white" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="pt-3 pb-1 flex flex-col gap-1 text-left">
+                <h4 className="text-[13px] sm:text-[14.5px] font-bold text-gray-900 line-clamp-1">
+                  {card.title}
+                </h4>
+                <div className="flex items-center text-[11.5px] sm:text-xs text-gray-400 font-medium">
+                  <span>{card.date}</span>
+                  <span className="mx-1.5 text-gray-300">|</span>
+                  <span>{card.source}</span>
+                </div>
+                <button
+                  type="button"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (hasDraggedRef.current) return;
+                    setActiveModal(card.videoUrl);
+                  }}
+                  className="mt-2.5 w-full py-2.5 rounded-xl bg-[#ff3b30] hover:bg-[#e03126] active:scale-[0.98] text-white text-xs sm:text-[13px] font-bold transition-all shadow-xs cursor-pointer text-center"
+                >
+                  Watch Now
+                </button>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Carousel Navigation Arrows */}
+        <button
+          type="button"
+          aria-label="Previous video"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={handlePrev}
+          className="absolute left-2 sm:left-6 md:left-12 z-40 size-11 sm:size-12 rounded-full bg-white/90 hover:bg-white text-gray-700 shadow-[0_4px_18px_rgba(0,0,0,0.08)] border border-gray-100 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer backdrop-blur-xs"
+        >
+          <ChevronLeft size={22} strokeWidth={2.5} />
+        </button>
+        <button
+          type="button"
+          aria-label="Next video"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={handleNext}
+          className="absolute right-2 sm:right-6 md:right-12 z-40 size-11 sm:size-12 rounded-full bg-white/90 hover:bg-white text-gray-700 shadow-[0_4px_18px_rgba(0,0,0,0.08)] border border-gray-100 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer backdrop-blur-xs"
+        >
+          <ChevronRight size={22} strokeWidth={2.5} />
+        </button>
+      </div>
+
+      {/* Dot Indicators */}
+      <div className="flex justify-center items-center gap-1.5 mt-3 sm:mt-4">
+        {videoCards.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            aria-label={`Go to slide ${i + 1}`}
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={() => handleSelect(i)}
+            className={`h-1.5 rounded-full transition-all cursor-pointer ${
+              i === activeIndex ? "w-6 bg-[#ff3b30]" : "w-1.5 bg-gray-300 hover:bg-gray-400"
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Video Modal Popup */}
+      {activeModal && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setActiveModal(null)}
+        >
+          <div
+            className="relative w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setActiveModal(null)}
+              className="absolute top-3 right-3 z-10 size-8 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-all cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+            <iframe
+              src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+              title="SEWA Video Player"
+              className="w-full h-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function HomePage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All Categories");
@@ -656,26 +1027,26 @@ export function HomePage() {
             {[
               [
                 "Young India’s Initiative",
-                "A national movement launched at DTU to transform grassroots challenges into sustainable, working prototypes.",
+                "YUKTI (Young India's Knowledge & Technology Initiative) is a national movement launched at DTU to transform grassroots challenges into sustainable, working prototypes.",
               ],
               [
                 "100-Day Innovation Journey",
-                "A structured transition from concept and design to testing and deployment, connecting innovators with technical mentorship.",
+                "A structured transition from concept and design to testing and deployment, connecting innovators with technical mentorship, laboratories, and regional innovation hubs.",
               ],
               [
                 "Ideas to Deployment",
-                "An end-to-end process ensuring every validated solution reaches its intended community or national beneficiary.",
+                "Unlike conventional hackathons, SEWA focuses on end-to-end impact — ensuring every validated solution reaches its intended community or national beneficiary.",
               ],
             ].map(([t, p]) => (
               <article key={t} className="info-column">
                 <h3>{t}</h3>
                 <p>{p}</p>
-                <a href="#steps">
-                  More Info <ArrowRight size={16} />
-                </a>
               </article>
             ))}
           </div>
+
+          {/* Video Showcase Section just below What is SEWA */}
+          <VideoShowcaseSection />
         </section>
         <section id="announcements" className="live-announcements pt-20 sm:pt-[100px] pb-0 scroll-mt-20">
           <div className="site-shell">
@@ -1318,11 +1689,11 @@ const stagesData = [
     badge: "Days 1–15 • 17 Sep – 1 Oct 2026",
     description: "Launch of 50 National Problem Statements, online orientation, team registrations, and idea submissions.",
     icon: Lightbulb,
-    color: "#ff6200",
-    gradient: "from-[#ff6200] to-[#ff7e1a]",
-    textColor: "text-[#ff6200]",
+    color: "#ff6000",
+    gradient: "from-[#ff5e00] to-[#ff7800]",
+    shadow: "shadow-[0_16px_36px_rgba(255,94,0,0.35)]",
+    textColor: "text-[#ff6000]",
     side: "left" as const,
-    hasPlay: true,
   },
   {
     number: "02",
@@ -1331,7 +1702,8 @@ const stagesData = [
     description: "Preliminary eligibility scrutiny, regional screening, and announcement of shortlisted teams on 2 October.",
     icon: Search,
     color: "#f59e0b",
-    gradient: "from-[#d97706] to-[#f59e0b]",
+    gradient: "from-[#f59e0b] to-[#fbbf24]",
+    shadow: "shadow-[0_16px_36px_rgba(245,158,11,0.35)]",
     textColor: "text-[#f59e0b]",
     side: "right" as const,
   },
@@ -1341,9 +1713,10 @@ const stagesData = [
     badge: "Days 31–60 • 17 Oct – 15 Nov 2026",
     description: "Expert bootcamps, laboratory/maker-space access, design reviews, and working prototype fabrication.",
     icon: Wrench,
-    color: "#059669",
-    gradient: "from-[#059669] to-[#10b981]",
-    textColor: "text-[#059669]",
+    color: "#00a86b",
+    gradient: "from-[#00a86b] to-[#10b981]",
+    shadow: "shadow-[0_16px_36px_rgba(0,168,107,0.35)]",
+    textColor: "text-[#00a86b]",
     side: "left" as const,
   },
   {
@@ -1352,9 +1725,10 @@ const stagesData = [
     badge: "Days 61–80 • 16 Nov – 5 Dec 2026",
     description: "Technical benchmarking, safety/reliability testing, and performance validation.",
     icon: ShieldCheck,
-    color: "#0284c7",
-    gradient: "from-[#0284c7] to-[#06b6d4]",
-    textColor: "text-[#0284c7]",
+    color: "#00b4d8",
+    gradient: "from-[#00b4d8] to-[#0096c7]",
+    shadow: "shadow-[0_16px_36px_rgba(0,180,216,0.35)]",
+    textColor: "text-[#00b4d8]",
     side: "right" as const,
   },
   {
@@ -1365,6 +1739,7 @@ const stagesData = [
     icon: Rocket,
     color: "#1d4ed8",
     gradient: "from-[#1d4ed8] to-[#2563eb]",
+    shadow: "shadow-[0_16px_36px_rgba(29,78,216,0.35)]",
     textColor: "text-[#1d4ed8]",
     side: "left" as const,
   },
@@ -1374,9 +1749,10 @@ const stagesData = [
     badge: "Days 96–100 • 21 – 25 Dec 2026",
     description: "Final report submissions and Regional Jury evaluations to nominate finalists for Delhi.",
     icon: Trophy,
-    color: "#6d28d9",
-    gradient: "from-[#6d28d9] to-[#7c3aed]",
-    textColor: "text-[#6d28d9]",
+    color: "#7c3aed",
+    gradient: "from-[#7c3aed] to-[#6d28d9]",
+    shadow: "shadow-[0_16px_36px_rgba(124,58,237,0.35)]",
+    textColor: "text-[#7c3aed]",
     side: "right" as const,
   },
 ];
@@ -1407,22 +1783,26 @@ export function StageTimeline() {
       const nodes = nodeEls.map(getPoint);
       const end = getPoint(endEl);
 
+      const firstNode = nodes[0];
+      const lastNode = nodes[nodes.length - 1];
+      if (!firstNode || !lastNode) return;
+
       // Build smooth wide curvy S-path
       let d = `M ${play.x} ${play.y} `;
 
       // 1. Play button into Node 1
-      const dy0 = nodes[0].y - play.y;
-      d += `C ${play.x + 25} ${play.y + dy0 * 0.4}, ${nodes[0].x - 10} ${nodes[0].y - dy0 * 0.4}, ${nodes[0].x} ${nodes[0].y} `;
+      const dy0 = firstNode.y - play.y;
+      d += `C ${play.x + 25} ${play.y + dy0 * 0.4}, ${firstNode.x - 10} ${firstNode.y - dy0 * 0.4}, ${firstNode.x} ${firstNode.y} `;
 
       // 2. Wide curvy wave between nodes
       for (let i = 0; i < nodes.length - 1; i++) {
         const p1 = nodes[i];
         const p2 = nodes[i + 1];
+        if (!p1 || !p2) continue;
         const dy = p2.y - p1.y;
 
         if (i % 2 === 0) {
           // From Right node (Stage 1, 3, 5) to Left node (Stage 2, 4, 6)
-          // Waves right, swoops across center, into p2
           const cp1x = p1.x + 45;
           const cp1y = p1.y + dy * 0.35;
           const cp2x = p2.x - 45;
@@ -1430,7 +1810,6 @@ export function StageTimeline() {
           d += `C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y} `;
         } else {
           // From Left node (Stage 2, 4) to Right node (Stage 3, 5)
-          // Waves left, swoops across center, into p2
           const cp1x = p1.x - 45;
           const cp1y = p1.y + dy * 0.35;
           const cp2x = p2.x + 45;
@@ -1440,9 +1819,8 @@ export function StageTimeline() {
       }
 
       // 3. Node 6 into End dot
-      const last = nodes[nodes.length - 1];
-      const dyEnd = end.y - last.y;
-      d += `C ${last.x - 30} ${last.y + dyEnd * 0.4}, ${end.x - 10} ${end.y - dyEnd * 0.4}, ${end.x} ${end.y}`;
+      const dyEnd = end.y - lastNode.y;
+      d += `C ${lastNode.x - 30} ${lastNode.y + dyEnd * 0.4}, ${end.x - 10} ${end.y - dyEnd * 0.4}, ${end.x} ${end.y}`;
 
       setPathData(d);
     };
@@ -1479,7 +1857,7 @@ export function StageTimeline() {
       <div className="flex justify-center mb-6">
         <div
           data-play-node
-          className="size-8 sm:size-9 rounded-full bg-[#ff6200] flex items-center justify-center text-white shadow-md hover:scale-110 transition-transform z-10"
+          className="size-10 sm:size-11 rounded-full bg-gradient-to-r from-[#ff5e00] to-[#ff7800] flex items-center justify-center text-white shadow-[0_8px_22px_rgba(255,94,0,0.4)] hover:scale-110 transition-transform z-10 cursor-pointer"
         >
           <Play size={13} fill="currentColor" className="ml-0.5" />
         </div>
@@ -1492,13 +1870,13 @@ export function StageTimeline() {
 
           return (
             <div key={stage.number} className={`relative flex ${isLeft ? "justify-start" : "justify-end"}`}>
-              <div className="w-full max-w-[460px] sm:max-w-[495px]">
+              <div className="w-full max-w-[470px] sm:max-w-[505px]">
                 {/* Stage Label above Card */}
-                <div className={`mb-2 text-left ${isLeft ? "pl-2" : "pl-8 sm:pl-10"}`}>
-                  <span className="text-[11px] sm:text-xs font-bold text-gray-500 uppercase tracking-widest block">
+                <div className={`mb-2 ${isLeft ? "text-left pl-3" : "text-right pr-3"}`}>
+                  <span className="text-[11px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest block">
                     STAGE
                   </span>
-                  <span className={`text-3xl sm:text-4xl font-black ${stage.textColor} leading-none`}>
+                  <span className={`text-4xl sm:text-5xl font-black ${stage.textColor} leading-none`}>
                     {stage.number}
                   </span>
                 </div>
@@ -1507,14 +1885,14 @@ export function StageTimeline() {
                   /* Left Card: Card Content + White Circle + Triangle Arrow + Target Node */
                   <div className="flex items-center">
                     <div
-                      className={`relative flex-1 rounded-full bg-gradient-to-r ${stage.gradient} py-2.5 sm:py-3.5 pl-5 sm:pl-7 pr-2 shadow-[0_12px_28px_rgba(0,0,0,0.13)] text-white flex items-center justify-between gap-2.5 sm:gap-3 transition-all hover:scale-[1.01]`}
+                      className={`relative flex-1 rounded-full bg-gradient-to-r ${stage.gradient} py-3 sm:py-3.5 pl-6 sm:pl-8 pr-2.5 ${stage.shadow} text-white flex items-center justify-between gap-3 sm:gap-4 transition-all hover:scale-[1.01]`}
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="text-base sm:text-lg font-extrabold tracking-wide uppercase">
                             {stage.name}
                           </span>
-                          <span className="text-[10px] sm:text-[11px] font-medium bg-white/20 backdrop-blur-xs px-2.5 py-0.5 rounded-full whitespace-nowrap text-white">
+                          <span className="text-[10px] sm:text-[11px] font-semibold bg-white/25 backdrop-blur-xs px-2.5 py-0.5 rounded-full whitespace-nowrap text-white">
                             {stage.badge}
                           </span>
                         </div>
@@ -1524,8 +1902,8 @@ export function StageTimeline() {
                       </div>
 
                       {/* White circular badge on right */}
-                      <div className="size-11 sm:size-13 rounded-full bg-white text-gray-900 shadow-md flex items-center justify-center shrink-0 mr-0.5">
-                        <Icon size={20} strokeWidth={2.2} />
+                      <div className="size-12 sm:size-14 rounded-full bg-white text-gray-900 shadow-md flex items-center justify-center shrink-0 mr-0.5">
+                        <Icon size={22} strokeWidth={2.2} />
                       </div>
                     </div>
 
@@ -1542,7 +1920,7 @@ export function StageTimeline() {
                     {/* Bullseye target node */}
                     <div
                       data-node-idx={idx}
-                      className="size-6 sm:size-6.5 rounded-full border-[2.5px] bg-white flex items-center justify-center shrink-0 shadow-xs z-10 ml-2"
+                      className="size-6 sm:size-7 rounded-full border-[2.5px] bg-white flex items-center justify-center shrink-0 shadow-xs z-10 ml-2"
                       style={{ borderColor: stage.color }}
                     >
                       <div className="size-2 sm:size-2.5 rounded-full" style={{ backgroundColor: stage.color }} />
@@ -1554,7 +1932,7 @@ export function StageTimeline() {
                     {/* Bullseye target node */}
                     <div
                       data-node-idx={idx}
-                      className="size-6 sm:size-6.5 rounded-full border-[2.5px] bg-white flex items-center justify-center shrink-0 shadow-xs z-10 mr-2"
+                      className="size-6 sm:size-7 rounded-full border-[2.5px] bg-white flex items-center justify-center shrink-0 shadow-xs z-10 mr-2"
                       style={{ borderColor: stage.color }}
                     >
                       <div className="size-2 sm:size-2.5 rounded-full" style={{ backgroundColor: stage.color }} />
@@ -1571,11 +1949,11 @@ export function StageTimeline() {
                     />
 
                     <div
-                      className={`relative flex-1 rounded-full bg-gradient-to-r ${stage.gradient} py-2.5 sm:py-3.5 pr-5 sm:pr-7 pl-2 shadow-[0_12px_28px_rgba(0,0,0,0.13)] text-white flex items-center gap-2.5 sm:gap-3 transition-all hover:scale-[1.01]`}
+                      className={`relative flex-1 rounded-full bg-gradient-to-r ${stage.gradient} py-3 sm:py-3.5 pr-6 sm:pr-8 pl-2.5 ${stage.shadow} text-white flex items-center gap-3 sm:gap-4 transition-all hover:scale-[1.01]`}
                     >
                       {/* White circular badge on left */}
-                      <div className="size-11 sm:size-13 rounded-full bg-white text-gray-900 shadow-md flex items-center justify-center shrink-0 ml-0.5">
-                        <Icon size={20} strokeWidth={2.2} />
+                      <div className="size-12 sm:size-14 rounded-full bg-white text-gray-900 shadow-md flex items-center justify-center shrink-0 ml-0.5">
+                        <Icon size={22} strokeWidth={2.2} />
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -1583,7 +1961,7 @@ export function StageTimeline() {
                           <span className="text-base sm:text-lg font-extrabold tracking-wide uppercase">
                             {stage.name}
                           </span>
-                          <span className="text-[10px] sm:text-[11px] font-medium bg-white/20 backdrop-blur-xs px-2.5 py-0.5 rounded-full whitespace-nowrap text-white">
+                          <span className="text-[10px] sm:text-[11px] font-semibold bg-white/25 backdrop-blur-xs px-2.5 py-0.5 rounded-full whitespace-nowrap text-white">
                             {stage.badge}
                           </span>
                         </div>
@@ -1620,7 +1998,7 @@ export function EventsPage() {
             <div className="lg:col-span-7">
               <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-gray-900 tracking-tight leading-[1.12]">
                 Discover What&apos;s
-                <span className="block text-[#ff4d4f] mt-1.5 sm:mt-2">Happening</span>
+                <span className="block text-[#ff3b30] mt-1.5 sm:mt-2">Happening</span>
               </h1>
               <p className="mt-5 sm:mt-6 text-sm sm:text-base text-gray-600 leading-relaxed max-w-lg font-normal">
                 Discover the key events of the SEWA Youth Innovation Challenge—from the launch and
@@ -1630,13 +2008,13 @@ export function EventsPage() {
               <div className="mt-8 flex flex-wrap items-center gap-4">
                 <a
                   href="#launch-event"
-                  className="rounded-full bg-[#ff4d4f] hover:bg-[#ff3535] active:scale-95 text-white font-bold px-7 py-3 text-sm shadow-[0_8px_22px_rgba(255,77,79,0.28)] hover:shadow-lg transition-all"
+                  className="rounded-full bg-[#ff3b30] hover:bg-[#e03126] active:scale-95 text-white font-bold px-8 py-3.5 text-sm shadow-[0_12px_28px_rgba(255,59,48,0.32)] transition-all"
                 >
                   Explore Events
                 </a>
                 <a
                   href="#roadmap"
-                  className="rounded-full bg-white hover:bg-gray-50 active:scale-95 text-gray-800 border border-gray-200/90 font-bold px-7 py-3 text-sm shadow-2xs hover:border-gray-300 transition-all"
+                  className="rounded-full bg-white hover:bg-gray-50 active:scale-95 text-gray-800 border border-gray-300 font-semibold px-8 py-3.5 text-sm shadow-2xs transition-all"
                 >
                   View Timeline
                 </a>
@@ -1644,7 +2022,7 @@ export function EventsPage() {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="relative rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-gray-100">
+              <div className="relative rounded-[28px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-gray-100/60">
                 <img
                   src={campusImage}
                   alt="DTU Campus Aerial View"
@@ -1660,29 +2038,31 @@ export function EventsPage() {
         {/* Section 2: National Launch Event */}
         <section id="launch-event" className="py-16 sm:py-24 bg-white scroll-mt-16 border-b border-gray-100">
           <div className="site-shell grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            {/* Left: Model Photo with offset decorative backdrop */}
+            {/* Left: Model Photo card on soft backdrop with glow */}
             <div className="lg:col-span-6 order-2 lg:order-1">
-              <div className="relative max-w-md mx-auto lg:max-w-none">
-                <div className="absolute -top-5 -left-5 sm:-top-7 sm:-left-7 w-full h-full rounded-3xl bg-gradient-to-br from-rose-100/60 via-rose-50/40 to-orange-50/50 -z-10 blur-xs" />
-                <div className="rounded-3xl overflow-hidden shadow-[0_18px_45px_rgba(0,0,0,0.08)] border border-gray-100 bg-white">
-                  <img
-                    src={dtuModel}
-                    alt="DTU Amphitheatre Scale Architectural Model"
-                    className="w-full h-auto object-cover"
-                    width={566}
-                    height={538}
-                  />
+              <div className="relative max-w-md mx-auto lg:max-w-none flex items-center justify-center">
+                <div className="absolute -top-6 -right-6 w-52 h-52 rounded-full bg-rose-200/50 blur-2xl -z-10" />
+                <div className="w-full max-w-[440px] aspect-[4/3.4] rounded-[36px] bg-[#f8f9fa] border border-gray-100/70 p-5 flex items-center justify-center">
+                  <div className="rounded-[26px] overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.14)] border border-white w-full h-full">
+                    <img
+                      src={dtuModel}
+                      alt="DTU Amphitheatre Scale Architectural Model"
+                      className="w-full h-full object-cover"
+                      width={566}
+                      height={538}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Right: Text details */}
             <div className="lg:col-span-6 order-1 lg:order-2">
-              <span className="text-xs sm:text-[13px] font-bold tracking-widest text-[#ff4d4f] uppercase">
+              <span className="text-xs sm:text-[13px] font-bold tracking-[0.2em] text-[#ff3b30] uppercase">
                 NATIONAL LAUNCH EVENT
               </span>
-              <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-gray-900 tracking-tight leading-[1.18]">
-                Kickstarting SEWA 2026<br />At Delhi Technological University
+              <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-gray-900 tracking-tight leading-[1.14]">
+                Kickstarting SEWA 2026<br />At Delhi Technological<br />University
               </h2>
               <p className="mt-5 text-sm sm:text-base text-gray-600 leading-relaxed font-normal">
                 Join us on 17 September 2026 for the grand inaugural ceremony and National Innovation
@@ -1692,10 +2072,10 @@ export function EventsPage() {
               </p>
               <a
                 href="#roadmap"
-                className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#ff4d4f] hover:text-[#e03a3a] transition-colors group"
+                className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#ff3b30] hover:underline"
               >
                 <span>View Launch Schedule</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight size={16} />
               </a>
             </div>
           </div>
@@ -1707,10 +2087,10 @@ export function EventsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
               {/* Left Column: Heading & Description */}
               <div className="lg:col-span-6">
-                <span className="text-xs sm:text-[13px] font-bold tracking-widest text-[#ff4d4f] uppercase">
+                <span className="text-xs sm:text-[13px] font-bold tracking-[0.2em] text-[#ff3b30] uppercase">
                   COMPETITION ROADMAP
                 </span>
-                <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-gray-900 tracking-tight leading-[1.18]">
+                <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-gray-900 tracking-tight leading-[1.14]">
                   The 100-Day<br />Innovation Journey
                 </h2>
                 <p className="mt-5 text-sm sm:text-base text-gray-600 leading-relaxed font-normal">
@@ -1721,41 +2101,43 @@ export function EventsPage() {
                 </p>
                 <a
                   href="#stages"
-                  className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#ff4d4f] hover:text-[#e03a3a] transition-colors group"
+                  className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#ff3b30] hover:underline"
                 >
                   <span>Explore the 6 Stages Below</span>
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={16} />
                 </a>
               </div>
 
-              {/* Right Column: 3-Image Collage */}
+              {/* Right Column: 3-Image Collage on soft pink card */}
               <div className="lg:col-span-6">
                 <div className="relative max-w-lg mx-auto lg:max-w-none">
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-rose-50/70 via-purple-50/40 to-amber-50/50 -z-10 translate-x-3 translate-y-3" />
-                  <div className="grid grid-cols-12 gap-3 sm:gap-4 items-center p-3 sm:p-4">
-                    <div className="col-span-6 space-y-3 sm:space-y-4">
-                      <div className="rounded-2xl overflow-hidden shadow-md border border-white">
-                        <img
-                          src={studentsImage}
-                          alt="Students gathering at DTU amphitheatre"
-                          className="w-full h-36 sm:h-44 object-cover"
-                        />
+                  <div className="absolute -top-6 -right-6 w-52 h-52 rounded-full bg-rose-200/50 blur-2xl -z-10" />
+                  <div className="rounded-[36px] bg-[#fdf2f0] p-4 sm:p-5">
+                    <div className="grid grid-cols-12 gap-3.5 sm:gap-4 items-center">
+                      <div className="col-span-6 space-y-3.5 sm:space-y-4">
+                        <div className="rounded-[22px] overflow-hidden shadow-sm border border-white">
+                          <img
+                            src={studentsImage}
+                            alt="Students gathering at DTU amphitheatre"
+                            className="w-full h-36 sm:h-44 object-cover"
+                          />
+                        </div>
+                        <div className="rounded-[22px] overflow-hidden shadow-sm border border-white">
+                          <img
+                            src={dtuModel}
+                            alt="DTU Campus architectural model perspective"
+                            className="w-full h-40 sm:h-48 object-cover"
+                          />
+                        </div>
                       </div>
-                      <div className="rounded-2xl overflow-hidden shadow-md border border-white">
-                        <img
-                          src={campus3Image}
-                          alt="DTU Campus aerial perspective"
-                          className="w-full h-40 sm:h-48 object-cover"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-span-6">
-                      <div className="rounded-2xl overflow-hidden shadow-md border border-white">
-                        <img
-                          src={campus4Image}
-                          alt="DTU Campus academic block sunset"
-                          className="w-full h-[300px] sm:h-[380px] object-cover"
-                        />
+                      <div className="col-span-6">
+                        <div className="rounded-[22px] overflow-hidden shadow-sm border border-white">
+                          <img
+                            src={campus4Image}
+                            alt="DTU Campus academic block sunset"
+                            className="w-full h-[310px] sm:h-[390px] object-cover"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>

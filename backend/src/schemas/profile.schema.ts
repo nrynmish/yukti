@@ -4,6 +4,16 @@ const phoneRegex = /^(\+91)?[6-9]\d{9}$/;
 const aadhaarRegex = /^\d{12}$/;
 const pinRegex = /^\d{6}$/;
 const dobRegex = /^\d{4}-\d{2}-\d{2}$/;
+const ELIGIBLE_STATES = [
+  "J&K",
+  "Ladakh",
+  "HP",
+  "Punjab",
+  "Haryana",
+  "Delhi",
+  "UP",
+  "Chandigarh",
+] as const;
 
 // The registration form's phone placeholders show a spaced-out format
 // ("+91 98765 43210") for readability, so accept that on input rather than
@@ -43,7 +53,9 @@ export const upsertProfileSchema = z
     addressLine2: z.string().trim().max(200).optional(),
     pinCode: z.string().trim().regex(pinRegex, "PIN code must be exactly 6 digits"),
     city: z.string().trim().min(2).max(100),
-    state: z.string().trim().min(2).max(100),
+    state: z.enum(ELIGIBLE_STATES, {
+      errorMap: () => ({ message: "State must be an eligible North Indian state or UT" }),
+    }),
     country: z.string().trim().min(2).max(100),
 
     phone: phoneSchema,

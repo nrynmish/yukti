@@ -39,6 +39,10 @@ import footerImage from "../assets/footer.jpeg";
 import dtuModel from "../assets/dtu-model.png";
 import satymevjayteLogo from "../assets/satymevjayte.svg";
 import govtofnctLogo from "../assets/govtofnctdelhi.svg";
+import sewaLogo from "../assets/sewalogo.png";
+import sewaWhiteLogo from "../assets/sewawhite.png";
+import timelineImg from "../assets/timeline.jpg";
+import benefitsSvg from "../assets/benefits.svg";
 
 const heroImages = [
   {
@@ -80,22 +84,19 @@ export function Brand() {
         className="h-[19px] sm:h-[23px] md:h-[26px] w-auto object-contain shrink dark:invert"
       />
 
-      {/* 3. DTU Logo + SEWA 2026 text */}
-      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <img
-          src={dtuLogo}
-          alt="Delhi Technological University"
-          className="size-7 sm:size-8 md:size-9 object-contain shrink-0"
-        />
-        <span className="leading-tight min-w-0">
-          <strong className="block text-[11px] sm:text-sm md:text-base font-bold whitespace-nowrap">
-            <span className="text-primary">SEWA</span> 2026
-          </strong>
-          <small className="block text-[8px] sm:text-[9px] font-bold text-muted-foreground">
-            DTU First Youth Innovation Challenge
-          </small>
-        </span>
-      </div>
+      {/* 3. DTU Logo */}
+      <img
+        src={dtuLogo}
+        alt="Delhi Technological University"
+        className="size-7 sm:size-8 md:size-9 object-contain shrink-0"
+      />
+
+      {/* 4. SEWA Logo */}
+      <img
+        src={sewaLogo}
+        alt="SEWA"
+        className="h-9 sm:h-11 md:h-13 w-auto object-contain shrink-0"
+      />
     </Link>
 
   );
@@ -106,77 +107,136 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/95 backdrop-blur">
-        <div className="site-shell flex h-18 sm:h-22 items-center justify-between">
-          <Brand />
-          <nav
-            className="hidden items-center gap-5 whitespace-nowrap text-sm font-semibold lg:gap-7 md:flex"
-            aria-label="Primary navigation"
+      {/* Top utility bar (dtu.ac.in + social handles): scrolls away and hides naturally on scroll */}
+      <div className="top-bar">
+        <div className="site-shell flex h-9 items-center justify-between">
+          <a
+            href="https://dtu.ac.in"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1 text-[#ff4d4f] font-bold text-xs hover:underline"
           >
-            <Link to="/" className={`nav-link ${activeNav === "home" ? "text-primary font-bold" : ""}`}>
-              Home
-            </Link>
-            <Link to="/events" className={`nav-link ${activeNav === "events" ? "text-primary font-bold" : ""}`}>
-              Events
-            </Link>
-            <a href="/#steps" className={`nav-link ${activeNav === "guidelines" ? "text-primary font-bold" : ""}`}>
-              Guidelines
+            dtu.ac.in
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="inline-block">
+              <path d="M1.5 8.5L8.5 1.5M8.5 1.5H3.5M8.5 1.5V6.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </a>
+          <div className="flex items-center gap-3">
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="text-[#ff4d4f] hover:opacity-80 transition-opacity">
+              <Facebook size={13} fill="currentColor" strokeWidth={0} />
             </a>
-            <Link
-              to="/team-register"
-              className={`nav-link ${activeNav === "team-register" ? "text-primary font-bold" : ""}`}
-            >
-              Register Team
-            </Link>
-            <a href="https://dtu.ac.in" target="_blank" rel="noreferrer" className="nav-link">
-              About DTU
+            <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X (Twitter)" className="text-[#ff4d4f] hover:opacity-80 transition-opacity flex items-center">
+              <svg className="size-3" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
             </a>
-            {isSignedIn ? (
-              <>
-                <span className="max-w-[110px] truncate text-muted-foreground" title={user?.firstName}>
-                  Hi, {user?.firstName}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => signOut()}
-                  className="button button-outline shrink-0 cursor-pointer"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/signin" className="nav-link">
-                  Sign In
-                </Link>
-                <Link to="/signup" className="button button-outline shrink-0">
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </nav>
-          {!isSignedIn && (
-            <Link to="/signin" className="button button-outline md:hidden">
-              Sign In
-            </Link>
-          )}
-        </div>
-      </header>
-      <div className="live-updates-bar flex h-10 overflow-hidden bg-muted text-xs">
-        <div className="live-updates-label flex shrink-0 items-center bg-primary px-6 font-bold text-primary-foreground">
-          Live Updates
-        </div>
-        <div className="live-updates-ticker-wrap min-w-0 flex-1 overflow-hidden">
-          <div className="ticker flex h-full items-center whitespace-nowrap font-medium">
-            <span>
-              YUKTI 2026 / Rashtriya Innovation Challenge officially launched at Delhi Technological University on 17 September 2026.
-            </span>
-            <span aria-hidden="true">
-              YUKTI 2026 / Rashtriya Innovation Challenge officially launched at Delhi Technological University on 17 September 2026.
-            </span>
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="text-[#ff4d4f] hover:opacity-80 transition-opacity">
+              <Instagram size={13} strokeWidth={1.8} />
+            </a>
           </div>
         </div>
       </div>
+
+      {/* Main navigation bar + Live updates ticker: stays sticky at top */}
+      <div className="sticky top-0 z-50">
+        <header className="border-b border-gray-100 bg-white shadow-sm">
+          <div className="site-shell flex h-18 sm:h-22 items-center justify-between">
+            <Brand />
+            <nav
+              className="hidden items-center gap-4 whitespace-nowrap text-sm font-semibold lg:gap-6 md:flex"
+              aria-label="Primary navigation"
+            >
+              <Link to="/" className={`nav-link ${activeNav === "home" ? "text-primary font-bold" : ""}`}>
+                Home
+              </Link>
+
+              {/* Events dropdown */}
+              <div className="nav-dropdown flex items-center gap-0.5 cursor-pointer">
+                <Link to="/events" className={`nav-link ${activeNav === "events" ? "text-primary font-bold" : ""}`}>
+                  Events
+                </Link>
+                <ChevronDown size={13} className="text-muted-foreground mt-0.5" />
+                <div className="nav-dropdown-menu">
+                  <a href="/events">All Events</a>
+                  <a href="/#steps">Timeline</a>
+                  <a href="/#announcements">Announcements</a>
+                </div>
+              </div>
+
+              {/* Guidelines dropdown */}
+              <div className="nav-dropdown flex items-center gap-0.5 cursor-pointer">
+                <a href="/#steps" className={`nav-link ${activeNav === "guidelines" ? "text-primary font-bold" : ""}`}>
+                  Guidelines
+                </a>
+                <ChevronDown size={13} className="text-muted-foreground mt-0.5" />
+                <div className="nav-dropdown-menu">
+                  <a href="/#steps">Eligibility</a>
+                  <a href="/#themes">Themes</a>
+                  <a href="/#steps">Submission Rules</a>
+                </div>
+              </div>
+
+              {/* About dropdown */}
+              <div className="nav-dropdown flex items-center gap-0.5 cursor-pointer">
+                <a href="https://dtu.ac.in" target="_blank" rel="noreferrer" className="nav-link">
+                  About
+                </a>
+                <ChevronDown size={13} className="text-muted-foreground mt-0.5" />
+                <div className="nav-dropdown-menu">
+                  <a href="/#about">About SEWA</a>
+                  <a href="https://dtu.ac.in" target="_blank" rel="noreferrer">About DTU</a>
+                  <a href="/#committee">Our Team</a>
+                </div>
+              </div>
+
+              <a href="/#announcements" className="nav-link">FAQ</a>
+              <a href="/#about" className="nav-link">Contact Us</a>
+
+              {isSignedIn ? (
+                <>
+                  <span className="max-w-[110px] truncate text-muted-foreground" title={user?.firstName}>
+                    Hi, {user?.firstName}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => signOut()}
+                    className="button button-outline shrink-0 cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/signin"
+                  className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary/90 transition-colors shrink-0 font-['Google_Sans_Code',monospace]"
+                >
+                  Login
+                </Link>
+              )}
+            </nav>
+            {!isSignedIn && (
+              <Link to="/signin" className="button button-outline md:hidden font-['Google_Sans_Code',monospace]">
+                Login
+              </Link>
+            )}
+          </div>
+        </header>
+        <div className="live-updates-bar flex h-10 overflow-hidden bg-muted text-xs">
+          <div className="live-updates-label flex shrink-0 items-center bg-primary px-6 font-bold text-primary-foreground">
+            Live Updates
+          </div>
+          <div className="live-updates-ticker-wrap min-w-0 flex-1 overflow-hidden">
+            <div className="ticker flex h-full items-center whitespace-nowrap font-medium">
+              <span>
+                SEWA 2026 / SEWA Youth Innovation Challenge officially launched at Delhi Technological University on 17 September 2026.
+              </span>
+              <span aria-hidden="true">
+                SEWA 2026 / SEWA Youth Innovation Challenge officially launched at Delhi Technological University on 17 September 2026.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>{/* end sticky wrapper */}
     </>
   );
 }
@@ -460,32 +520,22 @@ export function CountdownTimer() {
       role="timer"
       aria-label="Countdown to SEWA 2026 Launch on 17 September 2026"
     >
-      {/* Launch Date Card Above Timer */}
-      <div className="absolute -top-10 sm:-top-12 left-1/2 -translate-x-1/2 whitespace-nowrap">
-        <div className="flex items-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl bg-white px-3.5 sm:px-5 py-1.5 sm:py-2 shadow-[0_10px_28px_rgba(0,0,0,0.10)] border border-black/[0.04]">
-          <Calendar size={13} className="text-primary shrink-0 sm:size-[15px]" />
-          <span className="text-[11px] sm:text-xs md:text-sm font-extrabold tracking-tight text-gray-900">
-            Launching on 17 September 2026
-          </span>
-        </div>
-      </div>
-
       <div className="flex items-center gap-2.5 sm:gap-4 md:gap-6">
         {/* DAYS */}
         <div className="flex flex-col items-center min-w-[40px] sm:min-w-[48px] md:min-w-[56px]">
           <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center">
-            <span className="font-display font-extrabold text-2xl sm:text-3xl md:text-[38px] text-black tracking-tight tabular-nums leading-none">
+            <span className="font-bold text-2xl sm:text-3xl md:text-[36px] text-black tracking-tight tabular-nums leading-none">
               {time.days}
             </span>
           </div>
-          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-black tracking-wider uppercase mt-1">
+          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1">
             DAYS
           </span>
         </div>
 
         {/* COLON */}
         <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center -mt-2.5 sm:-mt-3">
-          <span className="text-lg sm:text-2xl md:text-3xl font-extrabold text-black leading-none">
+          <span className="text-lg sm:text-2xl md:text-3xl font-bold text-black leading-none">
             :
           </span>
         </div>
@@ -493,18 +543,18 @@ export function CountdownTimer() {
         {/* HOURS */}
         <div className="flex flex-col items-center min-w-[40px] sm:min-w-[48px] md:min-w-[56px]">
           <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center">
-            <span className="font-display font-extrabold text-2xl sm:text-3xl md:text-[38px] text-black tracking-tight tabular-nums leading-none">
+            <span className="font-bold text-2xl sm:text-3xl md:text-[36px] text-black tracking-tight tabular-nums leading-none">
               {time.hours}
             </span>
           </div>
-          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-black tracking-wider uppercase mt-1">
+          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1">
             HOURS
           </span>
         </div>
 
         {/* COLON */}
         <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center -mt-2.5 sm:-mt-3">
-          <span className="text-lg sm:text-2xl md:text-3xl font-extrabold text-black leading-none">
+          <span className="text-lg sm:text-2xl md:text-3xl font-bold text-black leading-none">
             :
           </span>
         </div>
@@ -512,18 +562,18 @@ export function CountdownTimer() {
         {/* MINUTES */}
         <div className="flex flex-col items-center min-w-[40px] sm:min-w-[48px] md:min-w-[56px]">
           <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center">
-            <span className="font-display font-extrabold text-2xl sm:text-3xl md:text-[38px] text-black tracking-tight tabular-nums leading-none">
+            <span className="font-bold text-2xl sm:text-3xl md:text-[36px] text-black tracking-tight tabular-nums leading-none">
               {time.minutes}
             </span>
           </div>
-          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-black tracking-wider uppercase mt-1">
+          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1">
             MINUTES
           </span>
         </div>
 
         {/* COLON */}
         <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center -mt-2.5 sm:-mt-3">
-          <span className="text-lg sm:text-2xl md:text-3xl font-extrabold text-black leading-none">
+          <span className="text-lg sm:text-2xl md:text-3xl font-bold text-black leading-none">
             :
           </span>
         </div>
@@ -531,11 +581,11 @@ export function CountdownTimer() {
         {/* SECONDS */}
         <div className="flex flex-col items-center min-w-[40px] sm:min-w-[48px] md:min-w-[56px]">
           <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center">
-            <span className="font-display font-extrabold text-2xl sm:text-3xl md:text-[38px] text-black tracking-tight tabular-nums leading-none">
+            <span className="font-bold text-2xl sm:text-3xl md:text-[36px] text-black tracking-tight tabular-nums leading-none">
               {time.seconds}
             </span>
           </div>
-          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-black tracking-wider uppercase mt-1">
+          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1">
             SECONDS
           </span>
         </div>
@@ -581,7 +631,7 @@ export function VideoShowcaseSection() {
   }, []);
 
 
-  
+
   const videoCards = [
     {
       id: 1,
@@ -743,9 +793,8 @@ export function VideoShowcaseSection() {
       {/* 3D Coverflow Stage */}
       <div
         onPointerDown={handlePointerDown}
-        className={`relative w-full h-[375px] sm:h-[415px] md:h-[435px] flex items-center justify-center touch-pan-y ${
-          isDragging ? "cursor-grabbing" : "cursor-grab"
-        }`}
+        className={`relative w-full h-[375px] sm:h-[415px] md:h-[435px] flex items-center justify-center touch-pan-y ${isDragging ? "cursor-grabbing" : "cursor-grab"
+          }`}
         style={{ touchAction: "pan-y" }}
       >
         {videoCards.map((card, idx) => {
@@ -802,11 +851,10 @@ export function VideoShowcaseSection() {
                 pointerEvents: absDiff >= 2.8 ? "none" : "auto",
                 transition: transitionStyle,
               }}
-              className={`absolute w-[260px] sm:w-[295px] md:w-[320px] rounded-[24px] bg-white border border-gray-100/90 p-3.5 sm:p-4 flex flex-col transition-shadow ${
-                isActive
+              className={`absolute w-[260px] sm:w-[295px] md:w-[320px] rounded-[24px] bg-white border border-gray-100/90 p-3.5 sm:p-4 flex flex-col transition-shadow ${isActive
                   ? "shadow-[0_20px_45px_rgba(0,0,0,0.12)] ring-1 ring-black/5"
                   : "shadow-[0_6px_18px_rgba(0,0,0,0.04)] hover:opacity-95"
-              }`}
+                }`}
             >
               {/* Video Thumbnail */}
               <div className="relative w-full h-[150px] sm:h-[172px] md:h-[185px] rounded-[18px] overflow-hidden bg-gray-900 group pointer-events-none">
@@ -881,9 +929,8 @@ export function VideoShowcaseSection() {
             aria-label={`Go to slide ${i + 1}`}
             onPointerDown={(e) => e.stopPropagation()}
             onClick={() => handleSelect(i)}
-            className={`h-1.5 rounded-full transition-all cursor-pointer ${
-              i === activeIndex ? "w-6 bg-[#ff3b30]" : "w-1.5 bg-gray-300 hover:bg-gray-400"
-            }`}
+            className={`h-1.5 rounded-full transition-all cursor-pointer ${i === activeIndex ? "w-6 bg-[#ff3b30]" : "w-1.5 bg-gray-300 hover:bg-gray-400"
+              }`}
           />
         ))}
       </div>
@@ -953,7 +1000,7 @@ export function HomePage() {
     <div>
       <Header />
       <main>
-        <section className="hero relative min-h-[570px]">
+        <section className="hero relative min-h-[580px]">
           <div className="absolute inset-0 overflow-hidden">
             {heroImages.map((image, idx) => (
               <img
@@ -971,26 +1018,12 @@ export function HomePage() {
             <div className="absolute inset-0 bg-hero-overlay z-[2]" />
           </div>
 
-          {/* Floating Live Viewers Card in top-right corner below Live Updates */}
-          <div className="absolute top-4 sm:top-5 right-4 sm:right-6 md:right-8 lg:right-12 z-20 select-none">
-            <div className="flex items-center gap-2 rounded-xl sm:rounded-2xl bg-white px-3.5 sm:px-4 py-1.5 sm:py-2 shadow-[0_10px_28px_rgba(0,0,0,0.10)] border border-black/[0.04] backdrop-blur-xs transition-all duration-200 hover:-translate-y-0.5">
-              <span className="relative flex size-2">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-              </span>
-              <Eye size={14} className="text-primary shrink-0" />
-              <span className="text-xs sm:text-sm font-extrabold tracking-tight text-gray-900">
-                100K <span className="font-semibold text-gray-600">Views</span>
-              </span>
-            </div>
-          </div>
-
           {/* Carousel Arrows */}
           <button
             type="button"
             aria-label="Previous slide"
             onClick={prevSlide}
-            className="flex absolute left-3 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-20 text-gray-800/80 hover:text-black hover:scale-110 active:scale-95 transition-all cursor-pointer select-none bg-white/30 hover:bg-white/70 backdrop-blur-xs p-1.5 sm:p-2 rounded-full shadow-xs"
+            className="flex absolute left-3 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-white hover:scale-110 active:scale-95 transition-all cursor-pointer select-none bg-white/20 hover:bg-white/40 backdrop-blur-xs p-1.5 sm:p-2 rounded-full shadow-xs"
           >
             <ChevronLeft size={36} strokeWidth={2.5} className="sm:size-[42px]" />
           </button>
@@ -998,44 +1031,42 @@ export function HomePage() {
             type="button"
             aria-label="Next slide"
             onClick={nextSlide}
-            className="flex absolute right-3 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-20 text-gray-800/80 hover:text-black hover:scale-110 active:scale-95 transition-all cursor-pointer select-none bg-white/30 hover:bg-white/70 backdrop-blur-xs p-1.5 sm:p-2 rounded-full shadow-xs"
+            className="flex absolute right-3 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-20 text-white/80 hover:text-white hover:scale-110 active:scale-95 transition-all cursor-pointer select-none bg-white/20 hover:bg-white/40 backdrop-blur-xs p-1.5 sm:p-2 rounded-full shadow-xs"
           >
             <ChevronRight size={36} strokeWidth={2.5} className="sm:size-[42px]" />
           </button>
 
-          <div className="site-shell relative flex min-h-[570px] items-center z-10">
-            <div className="animate-rise max-w-xl py-20">
-              <p className="eyebrow">DTU First Youth Innovation Challenge</p>
-              <h1 className="mt-4 text-5xl font-extrabold leading-[1.08] sm:text-6xl">
-                <span
-                  className="block"
-                  style={{ color: "#FF6200", textShadow: "0 2px 24px rgba(255,98,0,0.25)" }}
-                >
-                  Observe,
-                </span>
-                <span
-                  className="block"
-                  style={{ color: "#000080", textShadow: "0 2px 24px rgba(0,0,128,0.18)" }}
-                >
-                  Innovate,
-                </span>
-                <span
-                  className="block"
-                  style={{ color: "#138808", textShadow: "0 2px 24px rgba(19,136,8,0.22)" }}
-                >
-                  Impact.
-                </span>
+          {/* Hero content — centered */}
+          <div className="site-shell relative flex min-h-[580px] items-start justify-center z-10">
+            <div className="animate-rise flex flex-col items-center text-center pt-10 pb-20 max-w-3xl w-full">
+
+              {/* SEWA white logo in hero */}
+              <div className="mb-6 select-none drop-shadow-xl">
+                <img
+                  src={sewaWhiteLogo}
+                  alt="SEWA First"
+                  className="h-28 sm:h-32 md:h-36 w-auto object-contain"
+                />
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.65rem] font-bold leading-tight text-white drop-shadow-md whitespace-nowrap tracking-tight">
+                Rashtriya Youth Innovation Challenge 2026
               </h1>
-              <p className="mt-6 max-w-lg text-base leading-7 text-foreground/80">
-                Young India&apos;s Knowledge &amp; Technology Initiative — a 100-day journey
-                empowering students, researchers, and startups to build solutions for Viksit Bharat.
+
+              <p className="mt-3 sm:mt-4 text-lg sm:text-xl md:text-2xl font-semibold text-white tracking-normal">
+                Observe. Ideate. Innovate. Impact
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link to="/signup" className="button button-primary">
-                  Register Your Team <ArrowRight size={17} />
+
+              <p className="mt-3 sm:mt-4 max-w-2xl text-xs sm:text-sm md:text-[14.5px] leading-relaxed font-normal text-white/90">
+                Young India's Knowledge &amp; Technology Initiative — A 100-Day Innovation Journey empowering students, researchers, and startups to build sustainable working prototypes for Viksit Bharat.
+              </p>
+
+              <div className="mt-7 sm:mt-8 flex flex-wrap gap-3 justify-center">
+                <Link to="/signup" className="inline-flex items-center gap-2 rounded-lg bg-[#f04f43] hover:bg-[#d9382c] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 shadow-md">
+                  Register Your Team
                 </Link>
-                <a href="#about" className="button button-secondary">
-                  Watch Overview
+                <a href="#about" className="inline-flex items-center gap-2 rounded-lg bg-white/20 hover:bg-white/30 border border-white/40 backdrop-blur-sm px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5">
+                  Latest Updates
                 </a>
               </div>
             </div>
@@ -1043,238 +1074,273 @@ export function HomePage() {
           <CountdownTimer />
         </section>
         <section id="about" className="pt-36 sm:pt-[200px] pb-0">
-          <div className="site-shell grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 items-start">
+          <div className="site-shell grid grid-cols-1 lg:grid-cols-4 gap-10 lg:gap-16 items-start">
+            {/* Heading — unchanged */}
             <h2 className="text-4xl font-extrabold leading-[1.15]">
               What
               <br />
-              is SEWA?
+              <span className="text-primary">is SEWA FIRST</span>
+              <br />
+              <span className="text-xl font-bold text-muted-foreground leading-snug block mt-1">Rashtriya Youth Innovation Challenge 2026?</span>
             </h2>
-            {[
-              [
-                "Young India’s Initiative",
-                "YUKTI (Young India's Knowledge & Technology Initiative) is a national movement launched at DTU to transform grassroots challenges into sustainable, working prototypes.",
-              ],
-              [
-                "100-Day Innovation Journey",
-                "A structured transition from concept and design to testing and deployment, connecting innovators with technical mentorship, laboratories, and regional innovation hubs.",
-              ],
-              [
-                "Ideas to Deployment",
-                "Unlike conventional hackathons, SEWA focuses on end-to-end impact — ensuring every validated solution reaches its intended community or national beneficiary.",
-              ],
-            ].map(([t, p]) => (
-              <article key={t} className="info-column">
-                <h3>{t}</h3>
-                <p>{p}</p>
-              </article>
-            ))}
-          </div>
 
-          {/* Video Showcase Section just below What is SEWA */}
-          <VideoShowcaseSection />
-        </section>
-        <section id="announcements" className="live-announcements pt-20 sm:pt-[100px] pb-0 scroll-mt-20">
-          <div className="site-shell">
-            {/* Header row with title on left and Live pill badge on right */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-              <div>
-                <p className="eyebrow">Important Notices</p>
-                <h2 className="section-title">Live Announcement</h2>
-                <p className="section-subtitle">
-                  Stay updated with recent circulars, dates, and official notices.
-                </p>
-              </div>
-
-              {/* Live indicator badge */}
-              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200/80 text-red-600 font-bold text-xs shadow-xs self-start sm:self-center select-none">
-                <span>Live</span>
-                <span className="relative flex size-2.5">
-                  <span className="animate-ping absolute inline-flex size-full rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full size-2.5 bg-red-600" />
-                </span>
-              </div>
-            </div>
-
-            {/* Search and Category Filter Row */}
-            <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_220px]">
-              <label className="flex min-h-[46px] items-center gap-2.5 rounded-xl bg-[#f1f3f5] px-4 text-gray-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#ff5a5f]/20 focus-within:border-[#ff5a5f] border border-transparent transition-all">
-                <Search size={18} className="shrink-0 text-gray-400" />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search announcements..."
-                  className="w-full bg-transparent text-sm text-gray-900 placeholder-gray-400 outline-none"
-                />
-              </label>
-
-              <label className="flex min-h-[46px] items-center justify-between rounded-xl bg-[#f1f3f5] px-4 text-gray-700 cursor-pointer focus-within:bg-white focus-within:ring-2 focus-within:ring-[#ff5a5f]/20 focus-within:border-[#ff5a5f] border border-transparent transition-all">
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-transparent text-sm font-medium outline-none cursor-pointer"
-                >
-                  <option>All Categories</option>
-                  <option>Problem Statements</option>
-                  <option>Mentorship</option>
-                  <option>Guidelines</option>
-                  <option>Evaluation</option>
-                  <option>Announcements</option>
-                </select>
-                <ChevronDown size={18} className="shrink-0 text-gray-500 pointer-events-none" />
-              </label>
-            </div>
-
-            {/* Scrollable Container */}
-            <div className="relative mt-7">
-              <div className="space-y-4 max-h-[540px] overflow-y-auto pb-16 pr-1.5 scrollbar-thin scrollbar-thumb-gray-300">
-                {filtered.map((n, i) => (
-                  <article
-                    key={n[1]}
-                    className="rounded-2xl bg-[#f4f5f7] p-5 sm:p-6 transition-all duration-200 hover:bg-[#eceef2] hover:shadow-xs"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <span className="text-xs text-gray-500 font-medium tracking-tight">
-                        12.Sept.2026 10:30 A.M. · {n[0]}
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={() => setOpen(open === i ? null : i)}
-                        className="flex items-center gap-1.5 text-xs font-bold text-[#ff5a5f] hover:text-[#e03b40] transition-colors cursor-pointer shrink-0 select-none"
-                      >
-                        <span>{open === i ? "Hide Details" : "View Full Details"}</span>
-                        <ChevronDown
-                          size={14}
-                          className={`transition-transform duration-200 ${open === i ? "rotate-180" : ""}`}
-                        />
-                      </button>
-                    </div>
-
-                    <h3 className="mt-2 text-base sm:text-lg font-bold text-black tracking-tight leading-snug">
-                      {n[1]}
-                    </h3>
-                    <p className="mt-1.5 text-xs sm:text-sm text-gray-600 leading-relaxed max-w-3xl">
-                      {n[2]}
-                    </p>
-
-                    {open === i && (
-                      <div className="mt-4 pt-3.5 border-t border-gray-200/90 text-xs text-gray-700 leading-relaxed animate-fade-in">
-                        {n[3] ||
-                          "Complete circulars, guidelines, and submission links are published through the official DTU SEWA portal."}
-                      </div>
-                    )}
-                  </article>
-                ))}
-              </div>
-
-              {/* Subtle Grey Blur Overlay confined strictly to Content Width */}
-              <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-[26px] sm:h-[34px] bg-gradient-to-t from-gray-400/35 via-gray-300/20 to-transparent backdrop-blur-[2px] rounded-b-2xl" />
-            </div>
-          </div>
-        </section>
-        <section id="steps" className="pt-20 sm:pt-[100px] pb-20 sm:pb-[100px] overflow-hidden scroll-mt-20">
-          <div className="site-shell grid items-center gap-12 lg:gap-16 lg:grid-cols-2">
-            <div>
-              <p className="text-xs sm:text-[13px] font-semibold text-gray-500 tracking-normal">
-                Simple &amp; Structured Process
+            {/* Description spans remaining 3 columns */}
+            <div className="lg:col-span-3 pt-2">
+              <p className="text-[0.95rem] sm:text-base leading-8 text-gray-700 font-medium">
+                <strong className="text-gray-900">SEWA FIRST – Rashtriya Youth Innovation Challenge (RYIC) 2026</strong> is a national platform that empowers India's youth to identify real problems in their own surroundings and transform them into sustainable, affordable and implementable solutions. Launched at Delhi Technological University on 17 September 2026, the 100-day Challenge brings together students, researchers, educational institutions, industry, government and mentors to take innovations from problem identification and ideation to design, prototyping, validation and implementation. Rooted in the spirit of Sewa First, RYIC seeks to nurture innovation, leadership and entrepreneurship while creating solutions that deliver meaningful impact for communities and the nation.
               </p>
-              <h2 className="mt-2 text-3xl sm:text-4xl md:text-[42px] font-extrabold text-[#0e1726] tracking-tight leading-[1.15]">
-                Join The Challenge
-                <br />
-                In 3 Simple Steps
-              </h2>
+            </div>
+          </div>
 
-              <div className="mt-8 sm:mt-10 space-y-6 sm:space-y-7">
-                {/* Step 1 */}
-                <div className="flex items-start gap-4 sm:gap-4.5">
-                  <div className="size-11 sm:size-12 rounded-xl bg-[#e5a000] flex items-center justify-center text-white shrink-0 shadow-xs">
-                    <BoxSelect size={20} strokeWidth={2.2} />
-                  </div>
-                  <div>
-                    <h3 className="text-sm sm:text-[15px] font-bold text-gray-900 leading-snug">
-                      Select Track &amp; Problem Statement
-                    </h3>
-                    <p className="mt-1 text-xs sm:text-[13px] text-gray-500 leading-relaxed max-w-sm">
-                      Choose between the 5 National Themes or identify a local community challenge across 10 grassroots sectors.
-                    </p>
-                  </div>
+          {/* Video Showcase Section — hidden for now */}
+          {/* <VideoShowcaseSection /> */}
+        </section>
+
+        {/* ── Participation Benefits ── */}
+        <section id="benefits" className="py-12 sm:py-20 bg-white scroll-mt-20">
+          <div className="site-shell max-w-[1240px]">
+            <div className="w-full flex items-center justify-center">
+              <img
+                src={benefitsSvg}
+                alt="Participation Benefits — SEWA FIRST RYIC 2026"
+                className="w-full h-auto object-contain max-w-[1200px] select-none"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ── Themes Section ── */}
+        <section id="themes" className="py-16 sm:py-24 bg-[#ebebeb] scroll-mt-20">
+          <div className="site-shell max-w-5xl">
+            <h2 className="text-5xl sm:text-6xl md:text-7xl font-black text-black tracking-tight leading-none mb-5">
+              THEMES
+            </h2>
+
+            <p className="text-sm sm:text-base font-semibold text-black mb-7">
+              The Rashtriya Youth Innovation Challenge 2026 focuses on two broad themes:
+            </p>
+
+            <div className="space-y-6 text-xs sm:text-sm md:text-[14.5px] leading-relaxed sm:leading-7 text-black">
+              <p>
+                <strong className="font-extrabold text-black">National Level</strong> Innovations addressing critical national priorities in Defence, Space &amp; National Security, Disaster Management, AI, Robotics, Manufacturing, Energy, Environment, Infrastructure and Future Mobility
+              </p>
+
+              <p>
+                <strong className="font-extrabold text-black">Local Community</strong> Level Innovations addressing grassroots challenges in Agriculture &amp; Rural Development, Education, Healthcare, Urban Problems, Environment, Sports, Employment &amp; Livelihood, Women &amp; Child Safety, Disaster Management, Transport, Energy and Tourism. The themes encourage youth to develop innovative, affordable, sustainable, scalable and implementable solutions that transform real-world problems into meaningful impact.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Timeline of 100 Day Journey ── */}
+        <section id="timeline" className="py-12 sm:py-20">
+          <div className="site-shell">
+            <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-black tracking-[0.15em] uppercase text-gray-900 mb-8 sm:mb-12">
+              Timeline of 100 Day Journey
+            </h2>
+            <div className="flex items-center justify-center">
+              <img
+                src={timelineImg}
+                alt="Timeline of 100 Day Journey — SEWA FIRST RYIC 2026"
+                className="w-full max-w-5xl h-auto object-contain mix-blend-multiply"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Live Announcements — hidden for now */}
+        {false && (
+          <section id="announcements" className="live-announcements pt-20 sm:pt-[100px] pb-0 scroll-mt-20">
+            <div className="site-shell">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                  <p className="eyebrow">Important Notices</p>
+                  <h2 className="section-title">Live Announcement</h2>
+                  <p className="section-subtitle">
+                    Stay updated with recent circulars, dates, and official notices.
+                  </p>
                 </div>
-
-                {/* Step 2 */}
-                <div className="flex items-start gap-4 sm:gap-4.5">
-                  <div className="size-11 sm:size-12 rounded-xl bg-[#f04f43] flex items-center justify-center text-white shrink-0 shadow-xs">
-                    <FileEdit size={20} strokeWidth={2.2} />
-                  </div>
-                  <div>
-                    <h3 className="text-sm sm:text-[15px] font-bold text-gray-900 leading-snug">
-                      Register Team &amp; Submit Concept
-                    </h3>
-                    <p className="mt-1 text-xs sm:text-[13px] text-gray-500 leading-relaxed max-w-sm">
-                      Enter team details under your eligibility category and upload your initial solution and implementation plan.
-                    </p>
-                  </div>
+                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200/80 text-red-600 font-bold text-xs shadow-xs self-start sm:self-center select-none">
+                  <span>Live</span>
+                  <span className="relative flex size-2.5">
+                    <span className="animate-ping absolute inline-flex size-full rounded-full bg-red-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full size-2.5 bg-red-600" />
+                  </span>
                 </div>
+              </div>
+              <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_220px]">
+                <label className="flex min-h-[46px] items-center gap-2.5 rounded-xl bg-[#f1f3f5] px-4 text-gray-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#ff5a5f]/20 focus-within:border-[#ff5a5f] border border-transparent transition-all">
+                  <Search size={18} className="shrink-0 text-gray-400" />
+                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search announcements..." className="w-full bg-transparent text-sm text-gray-900 placeholder-gray-400 outline-none" />
+                </label>
+                <label className="flex min-h-[46px] items-center justify-between rounded-xl bg-[#f1f3f5] px-4 text-gray-700 cursor-pointer focus-within:bg-white focus-within:ring-2 focus-within:ring-[#ff5a5f]/20 focus-within:border-[#ff5a5f] border border-transparent transition-all">
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-transparent text-sm font-medium outline-none cursor-pointer">
+                    <option>All Categories</option>
+                    <option>Problem Statements</option>
+                    <option>Mentorship</option>
+                    <option>Guidelines</option>
+                    <option>Evaluation</option>
+                    <option>Announcements</option>
+                  </select>
+                  <ChevronDown size={18} className="shrink-0 text-gray-500 pointer-events-none" />
+                </label>
+              </div>
+              <div className="relative mt-7">
+                <div className="space-y-4 max-h-[540px] overflow-y-auto pb-16 pr-1.5 scrollbar-thin scrollbar-thumb-gray-300">
+                  {filtered.map((n, i) => (
+                    <article key={n[1]} className="rounded-2xl bg-[#f4f5f7] p-5 sm:p-6 transition-all duration-200 hover:bg-[#eceef2] hover:shadow-xs">
+                      <div className="flex items-start justify-between gap-4">
+                        <span className="text-xs text-gray-500 font-medium tracking-tight">12.Sept.2026 10:30 A.M. · {n[0]}</span>
+                        <button type="button" onClick={() => setOpen(open === i ? null : i)} className="flex items-center gap-1.5 text-xs font-bold text-[#ff5a5f] hover:text-[#e03b40] transition-colors cursor-pointer shrink-0 select-none">
+                          <span>{open === i ? "Hide Details" : "View Full Details"}</span>
+                          <ChevronDown size={14} className={`transition-transform duration-200 ${open === i ? "rotate-180" : ""}`} />
+                        </button>
+                      </div>
+                      <h3 className="mt-2 text-base sm:text-lg font-bold text-black tracking-tight leading-snug">{n[1]}</h3>
+                      <p className="mt-1.5 text-xs sm:text-sm text-gray-600 leading-relaxed max-w-3xl">{n[2]}</p>
+                      {open === i && (
+                        <div className="mt-4 pt-3.5 border-t border-gray-200/90 text-xs text-gray-700 leading-relaxed animate-fade-in">
+                          {n[3] || "Complete circulars, guidelines, and submission links are published through the official DTU SEWA portal."}
+                        </div>
+                      )}
+                    </article>
+                  ))}
+                </div>
+                <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-[26px] sm:h-[34px] bg-gradient-to-t from-gray-400/35 via-gray-300/20 to-transparent backdrop-blur-[2px] rounded-b-2xl" />
+              </div>
+            </div>
+          </section>
+        )}
+        {/* Join The Challenge — hidden for now */}
+        {false && (
+          <section id="steps" className="pt-20 sm:pt-[100px] pb-20 sm:pb-[100px] overflow-hidden scroll-mt-20">
+            <div className="site-shell grid items-center gap-12 lg:gap-16 lg:grid-cols-2">
+              <div>
+                <p className="text-xs sm:text-[13px] font-semibold text-gray-500 tracking-normal">
+                  Simple &amp; Structured Process
+                </p>
+                <h2 className="mt-2 text-3xl sm:text-4xl md:text-[42px] font-extrabold text-[#0e1726] tracking-tight leading-[1.15]">
+                  Join The Challenge
+                  <br />
+                  In 3 Simple Steps
+                </h2>
 
-                {/* Step 3 */}
-                <div className="flex items-start gap-4 sm:gap-4.5">
-                  <div className="size-11 sm:size-12 rounded-xl bg-[#08677a] flex items-center justify-center text-white shrink-0 shadow-xs">
-                    <Award size={20} strokeWidth={2.2} />
+                <div className="mt-8 sm:mt-10 space-y-6 sm:space-y-7">
+                  {/* Step 1 */}
+                  <div className="flex items-start gap-4 sm:gap-4.5">
+                    <div className="size-11 sm:size-12 rounded-xl bg-[#e5a000] flex items-center justify-center text-white shrink-0 shadow-xs">
+                      <BoxSelect size={20} strokeWidth={2.2} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-[15px] font-bold text-gray-900 leading-snug">
+                        Select Track &amp; Problem Statement
+                      </h3>
+                      <p className="mt-1 text-xs sm:text-[13px] text-gray-500 leading-relaxed max-w-sm">
+                        Choose between the 5 National Themes or identify a local community challenge across 10 grassroots sectors.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-sm sm:text-[15px] font-bold text-gray-900 leading-snug">
-                      Confirm &amp; Track Regional Review
-                    </h3>
-                    <p className="mt-1 text-xs sm:text-[13px] text-gray-500 leading-relaxed max-w-sm">
-                      Complete registration through the portal, receive your Team ID, and track regional screening results.
-                    </p>
+
+                  {/* Step 2 */}
+                  <div className="flex items-start gap-4 sm:gap-4.5">
+                    <div className="size-11 sm:size-12 rounded-xl bg-[#f04f43] flex items-center justify-center text-white shrink-0 shadow-xs">
+                      <FileEdit size={20} strokeWidth={2.2} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-[15px] font-bold text-gray-900 leading-snug">
+                        Register Team &amp; Submit Concept
+                      </h3>
+                      <p className="mt-1 text-xs sm:text-[13px] text-gray-500 leading-relaxed max-w-sm">
+                        Enter team details under your eligibility category and upload your initial solution and implementation plan.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="flex items-start gap-4 sm:gap-4.5">
+                    <div className="size-11 sm:size-12 rounded-xl bg-[#08677a] flex items-center justify-center text-white shrink-0 shadow-xs">
+                      <Award size={20} strokeWidth={2.2} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-[15px] font-bold text-gray-900 leading-snug">
+                        Confirm &amp; Track Regional Review
+                      </h3>
+                      <p className="mt-1 text-xs sm:text-[13px] text-gray-500 leading-relaxed max-w-sm">
+                        Complete registration through the portal, receive your Team ID, and track regional screening results.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Right Challenge Card with Soft Ambient Glow */}
+              <div className="relative flex items-center justify-center lg:justify-end">
+                {/* Soft Rose Ambient Glow behind top-right of the card */}
+                <div className="absolute -top-12 -right-6 sm:-top-16 sm:-right-10 w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-rose-400/20 blur-3xl pointer-events-none" />
+
+                <article className="relative z-10 w-full max-w-[340px] sm:max-w-[370px] rounded-[24px] sm:rounded-[28px] bg-white p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100/90 transition-all duration-300 hover:shadow-[0_25px_60px_rgba(0,0,0,0.12)] hover:-translate-y-1">
+                  <div className="overflow-hidden rounded-2xl aspect-[16/10] w-full bg-gray-100">
+                    <img
+                      src={studentsImage}
+                      alt="Students collaborating on an innovation prototype"
+                      loading="lazy"
+                      width={800}
+                      height={500}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div className="pt-3.5">
+                    <h3 className="text-sm sm:text-[15px] font-bold text-gray-900 tracking-tight">
+                      DTU First Youth Innovation Challenge
+                    </h3>
+                    <p className="mt-1 text-[11px] sm:text-xs text-gray-500 font-medium">
+                      17 Sep – 25 Dec <span className="mx-1.5 text-gray-300 font-light">|</span> Coordinated by DTU
+                    </p>
+
+                    <div className="mt-3.5 flex items-center gap-2">
+                      <div className="size-7 sm:size-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shadow-2xs">
+                        <Compass size={14} strokeWidth={2.2} />
+                      </div>
+                      <div className="size-7 sm:size-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shadow-2xs">
+                        <Map size={14} strokeWidth={2.2} />
+                      </div>
+                      <div className="size-7 sm:size-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shadow-2xs">
+                        <Send size={13} strokeWidth={2.2} />
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex items-center gap-2 text-[11px] sm:text-xs text-gray-500 font-medium">
+                      <BarChart3 size={14} className="text-gray-400 shrink-0" strokeWidth={2.2} />
+                      <span>5 Regional Hubs • 100-Day Journey</span>
+                    </div>
+                  </div>
+                </article>
+              </div>
             </div>
+          </section>
+        )}
 
-            {/* Right Challenge Card with Soft Ambient Glow */}
-            <div className="relative flex items-center justify-center lg:justify-end">
-              {/* Soft Rose Ambient Glow behind top-right of the card */}
-              <div className="absolute -top-12 -right-6 sm:-top-16 sm:-right-10 w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-rose-400/20 blur-3xl pointer-events-none" />
+        {/* ── Organizing Committee ── */}
+        <section id="committee" className="py-20 sm:py-28 scroll-mt-20">
+          <div className="site-shell">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-950 tracking-tight text-center mb-14 sm:mb-20">
+              Organizing Comittee
+            </h2>
 
-              <article className="relative z-10 w-full max-w-[340px] sm:max-w-[370px] rounded-[24px] sm:rounded-[28px] bg-white p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100/90 transition-all duration-300 hover:shadow-[0_25px_60px_rgba(0,0,0,0.12)] hover:-translate-y-1">
-                <div className="overflow-hidden rounded-2xl aspect-[16/10] w-full bg-gray-100">
-                  <img
-                    src={studentsImage}
-                    alt="Students collaborating on an innovation prototype"
-                    loading="lazy"
-                    width={800}
-                    height={500}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                <div className="pt-3.5">
-                  <h3 className="text-sm sm:text-[15px] font-bold text-gray-900 tracking-tight">
-                    DTU First Youth Innovation Challenge
+            {/* 4 columns x 3 rows grid of 12 circular members */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 sm:gap-x-12 md:gap-x-16 gap-y-10 sm:gap-y-12 md:gap-y-16 max-w-4xl mx-auto">
+              {Array.from({ length: 12 }).map((_, idx) => (
+                <div key={idx} className="flex flex-col items-center text-center">
+                  <div className="size-20 sm:size-24 md:size-28 rounded-full bg-[#d2d2d2] mb-3 sm:mb-3.5 transition-transform duration-200 hover:scale-105" />
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 leading-tight">
+                    Name
                   </h3>
-                  <p className="mt-1 text-[11px] sm:text-xs text-gray-500 font-medium">
-                    17 Sep – 25 Dec <span className="mx-1.5 text-gray-300 font-light">|</span> Coordinated by DTU
+                  <p className="text-xs sm:text-sm text-gray-500 font-medium leading-tight mt-1">
+                    Designation
                   </p>
-
-                  <div className="mt-3.5 flex items-center gap-2">
-                    <div className="size-7 sm:size-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shadow-2xs">
-                      <Compass size={14} strokeWidth={2.2} />
-                    </div>
-                    <div className="size-7 sm:size-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shadow-2xs">
-                      <Map size={14} strokeWidth={2.2} />
-                    </div>
-                    <div className="size-7 sm:size-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 shadow-2xs">
-                      <Send size={13} strokeWidth={2.2} />
-                    </div>
-                  </div>
-
-                  <div className="mt-5 flex items-center gap-2 text-[11px] sm:text-xs text-gray-500 font-medium">
-                    <BarChart3 size={14} className="text-gray-400 shrink-0" strokeWidth={2.2} />
-                    <span>5 Regional Hubs • 100-Day Journey</span>
-                  </div>
                 </div>
-              </article>
+              ))}
             </div>
           </div>
         </section>

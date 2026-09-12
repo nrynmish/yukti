@@ -34,43 +34,15 @@ const CATEGORY_OPTIONS = ["General / Open", "OBC", "SC", "ST", "EWS", "Other"];
 const GENDER_OPTIONS = ["Male", "Female", "Other", "Prefer not to say"];
 const NATIONALITY_OPTIONS = ["Indian Citizen (Bharat)", "Other / Foreign National"];
 const COUNTRY_OPTIONS = ["India (Bharat)", "Other"];
-const INDIAN_STATES = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-  "Andaman and Nicobar Islands",
-  "Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu",
-  "Delhi (NCT)",
-  "Jammu and Kashmir",
+const NORTH_STATE_OPTIONS = [
+  "J&K",
   "Ladakh",
-  "Lakshadweep",
-  "Puducherry",
+  "HP",
+  "Punjab",
+  "Haryana",
+  "Delhi",
+  "UP",
+  "Chandigarh",
 ];
 
 const THEMES = [
@@ -1053,7 +1025,7 @@ export function TeamRegisterPage() {
                       onChange={(e) => setPersonal((p) => ({ ...p, state: e.target.value }))}
                     >
                       <option value="">Select…</option>
-                      {INDIAN_STATES.map((s) => (
+                      {NORTH_STATE_OPTIONS.map((s) => (
                         <option key={s} value={s}>
                           {s}
                         </option>

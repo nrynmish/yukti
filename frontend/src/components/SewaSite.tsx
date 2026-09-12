@@ -15,7 +15,10 @@ import {
   FileEdit,
   Instagram,
   Lightbulb,
+  Mail,
   Map,
+  MapPin,
+  Phone,
   Play,
   Rocket,
   Search,
@@ -23,6 +26,7 @@ import {
   ShieldCheck,
   Trophy,
   Twitter,
+  UploadCloud,
   Wrench,
   X,
 } from "lucide-react";
@@ -67,7 +71,7 @@ export function Brand() {
   return (
     <Link
       to="/"
-      className="flex items-center gap-2 sm:gap-2.5 group select-none min-w-0"
+      className="flex items-center gap-2 sm:gap-2.5 group select-none shrink-0"
       aria-label="SEWA 2026 home"
     >
       {/* 1. Indian Satyamev Jayate Emblem */}
@@ -98,11 +102,10 @@ export function Brand() {
         className="h-9 sm:h-11 md:h-13 w-auto object-contain shrink-0"
       />
     </Link>
-
   );
 }
 
-export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" | "signin" | "signup" | "team-register" } = {}) {
+export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" | "contact" | "faq" | "signin" | "signup" | "team-register" } = {}) {
   const { user, isSignedIn, signOut } = useAuth();
 
   return (
@@ -137,13 +140,13 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
         </div>
       </div>
 
-      {/* Main navigation bar + Live updates ticker: stays sticky at top */}
+      {/* Main navigation bar + Live updates ticker: ALWAYS sticky at top */}
       <div className="sticky top-0 z-50">
         <header className="border-b border-gray-100 bg-white shadow-sm">
-          <div className="site-shell flex h-18 sm:h-22 items-center justify-between">
+          <div className="site-shell flex h-18 sm:h-22 items-center justify-between gap-4">
             <Brand />
             <nav
-              className="hidden items-center gap-4 whitespace-nowrap text-sm font-semibold lg:gap-6 md:flex"
+              className="hidden items-center gap-4 whitespace-nowrap text-sm font-semibold lg:gap-6 md:flex shrink-0"
               aria-label="Primary navigation"
             >
               <Link to="/" className={`nav-link ${activeNav === "home" ? "text-primary font-bold" : ""}`}>
@@ -189,8 +192,8 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
                 </div>
               </div>
 
-              <a href="/#announcements" className="nav-link">FAQ</a>
-              <a href="/#about" className="nav-link">Contact Us</a>
+              <Link to="/faq" className={`nav-link ${activeNav === "faq" ? "text-primary font-bold" : ""}`}>FAQ</Link>
+              <Link to="/contact" className={`nav-link ${activeNav === "contact" ? "text-primary font-bold" : ""}`}>Contact Us</Link>
 
               {isSignedIn ? (
                 <>
@@ -208,14 +211,14 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
               ) : (
                 <Link
                   to="/signin"
-                  className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary/90 transition-colors shrink-0 font-['Google_Sans_Code',monospace]"
+                  className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary/90 transition-colors shrink-0"
                 >
                   Login
                 </Link>
               )}
             </nav>
             {!isSignedIn && (
-              <Link to="/signin" className="button button-outline md:hidden font-['Google_Sans_Code',monospace]">
+              <Link to="/signin" className="button button-outline md:hidden">
                 Login
               </Link>
             )}
@@ -228,10 +231,10 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
           <div className="live-updates-ticker-wrap min-w-0 flex-1 overflow-hidden">
             <div className="ticker flex h-full items-center whitespace-nowrap font-medium">
               <span>
-                SEWA 2026 / SEWA Youth Innovation Challenge officially launched at Delhi Technological University on 17 September 2026.
+                SEWA 2026 / SEWA Youth Innovation Challenge officially launched at Delhi Technological University on 19 September 2026.
               </span>
               <span aria-hidden="true">
-                SEWA 2026 / SEWA Youth Innovation Challenge officially launched at Delhi Technological University on 17 September 2026.
+                SEWA 2026 / SEWA Youth Innovation Challenge officially launched at Delhi Technological University on 19 September 2026.
               </span>
             </div>
           </div>
@@ -347,7 +350,7 @@ export function Footer() {
         <div className="md:col-span-3">
           <h3 className="mb-4 text-base font-bold text-gray-900 tracking-tight">Navigation</h3>
 
-          <div className="space-y-2.5 text-sm text-gray-800 font-medium">
+          <div className="space-y-2.5 text-sm text-gray-800 font-medium footer-options">
             <a className="block hover:text-primary transition-colors" href="/#about">
               About Challenge
             </a>
@@ -366,30 +369,22 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Column 3: DTU Delhi Interactive Scrollable Map Card */}
+        {/* Column 3: DTU Delhi Interactive Map Card */}
         <div className="md:col-span-4 flex justify-start md:justify-end">
-          <div className="w-full max-w-[300px] sm:max-w-[320px] rounded-2xl overflow-hidden border border-gray-200/90 hover:border-[#ff4d4f] shadow-[0_14px_35px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.18)] transition-all duration-300 bg-white flex flex-col">
-            {/* Top Bar with Status & Google Maps Link */}
-            <div className="px-3.5 py-2.5 bg-gray-50/90 border-b border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="size-2 rounded-full bg-[#ff4d4f] shrink-0" />
-                <span className="text-xs font-bold text-gray-800 truncate">DTU Campus, Delhi</span>
+          <div className="relative w-full max-w-[280px] h-[190px] rounded-2xl overflow-hidden border border-gray-200 shadow-sm bg-slate-100">
+            {/* DTU Delhi pin label matching screenshot */}
+            <div className="absolute top-3 left-3 z-10 pointer-events-none text-left">
+              <div className="text-xs font-bold text-gray-900 leading-none flex items-center gap-1">
+                DTU
+                <svg width="10" height="13" viewBox="0 0 24 32" fill="none" className="inline-block text-[#ff4d4f]">
+                  <path d="M12 0C5.37258 0 0 5.37258 0 12C0 19.5 12 32 12 32C12 32 24 19.5 24 12C24 5.37258 18.6274 0 12 0Z" fill="currentColor"/>
+                </svg>
               </div>
-              <a
-                href="https://maps.google.com/?q=Delhi+Technological+University"
-                target="_blank"
-                rel="noreferrer"
-                className="text-[11px] font-semibold text-[#ff4d4f] hover:underline shrink-0"
-                title="Open in Google Maps"
-              >
-                Google Maps ↗
-              </a>
+              <div className="text-[11px] font-bold text-gray-900 leading-tight">Delhi</div>
             </div>
 
-            {/* Interactive Scrollable & Zoomable Map */}
-            <div className="relative w-full h-[200px] sm:h-[215px] bg-slate-100">
               <iframe
-                title="DTU Delhi Interactive Map"
+                title="DTU Delhi Map"
                 srcDoc={`<!DOCTYPE html>
 <html>
 <head>
@@ -434,7 +429,6 @@ export function Footer() {
               />
             </div>
           </div>
-        </div>
 
         {/* Bottom copyright line without top border */}
         <p className="mt-14 sm:mt-20 text-center text-xs text-gray-700 font-medium md:col-span-12">
@@ -484,7 +478,7 @@ const notices = [
   ],
 ];
 
-const LAUNCH_DATE = new Date("2026-09-17T00:00:00+05:30");
+const LAUNCH_DATE = new Date("2026-09-19T00:00:00+05:30");
 
 export function CountdownTimer() {
   const calculateTime = () => {
@@ -511,6 +505,7 @@ export function CountdownTimer() {
     const interval = setInterval(() => {
       setTime(calculateTime());
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -518,24 +513,34 @@ export function CountdownTimer() {
     <div
       className="countdown px-5 sm:px-8 md:px-10 py-3 sm:py-3.5 select-none border border-black/[0.04]"
       role="timer"
-      aria-label="Countdown to SEWA 2026 Launch on 17 September 2026"
+      aria-label="Countdown to SEWA 2026 Launch on 19 September 2026"
     >
+      {/* Launch Date Card Above Timer */}
+      <div className="absolute -top-10 sm:-top-12 left-1/2 -translate-x-1/2 whitespace-nowrap">
+        <div className="flex items-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl bg-white px-3.5 sm:px-5 py-1.5 sm:py-2 shadow-[0_10px_28px_rgba(0,0,0,0.10)] border border-black/[0.04]">
+          <Calendar size={13} className="text-primary shrink-0 sm:size-[15px]" />
+          <span className="text-[11px] sm:text-xs md:text-sm font-extrabold tracking-tight text-gray-900">
+            Launching on 19 September 2026
+          </span>
+        </div>
+      </div>
+
       <div className="flex items-center gap-2.5 sm:gap-4 md:gap-6">
         {/* DAYS */}
         <div className="flex flex-col items-center min-w-[40px] sm:min-w-[48px] md:min-w-[56px]">
           <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center">
-            <span className="font-bold text-2xl sm:text-3xl md:text-[36px] text-black tracking-tight tabular-nums leading-none">
+            <span className="font-display font-extrabold text-2xl sm:text-3xl md:text-[38px] text-black tracking-tight tabular-nums leading-none">
               {time.days}
             </span>
           </div>
-          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1">
+          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-black tracking-wider uppercase mt-1">
             DAYS
           </span>
         </div>
 
         {/* COLON */}
         <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center -mt-2.5 sm:-mt-3">
-          <span className="text-lg sm:text-2xl md:text-3xl font-bold text-black leading-none">
+          <span className="text-lg sm:text-2xl md:text-3xl font-extrabold text-black leading-none">
             :
           </span>
         </div>
@@ -543,18 +548,18 @@ export function CountdownTimer() {
         {/* HOURS */}
         <div className="flex flex-col items-center min-w-[40px] sm:min-w-[48px] md:min-w-[56px]">
           <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center">
-            <span className="font-bold text-2xl sm:text-3xl md:text-[36px] text-black tracking-tight tabular-nums leading-none">
+            <span className="font-display font-extrabold text-2xl sm:text-3xl md:text-[38px] text-black tracking-tight tabular-nums leading-none">
               {time.hours}
             </span>
           </div>
-          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1">
+          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-black tracking-wider uppercase mt-1">
             HOURS
           </span>
         </div>
 
         {/* COLON */}
         <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center -mt-2.5 sm:-mt-3">
-          <span className="text-lg sm:text-2xl md:text-3xl font-bold text-black leading-none">
+          <span className="text-lg sm:text-2xl md:text-3xl font-extrabold text-black leading-none">
             :
           </span>
         </div>
@@ -562,18 +567,18 @@ export function CountdownTimer() {
         {/* MINUTES */}
         <div className="flex flex-col items-center min-w-[40px] sm:min-w-[48px] md:min-w-[56px]">
           <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center">
-            <span className="font-bold text-2xl sm:text-3xl md:text-[36px] text-black tracking-tight tabular-nums leading-none">
+            <span className="font-display font-extrabold text-2xl sm:text-3xl md:text-[38px] text-black tracking-tight tabular-nums leading-none">
               {time.minutes}
             </span>
           </div>
-          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1">
+          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-black tracking-wider uppercase mt-1">
             MINUTES
           </span>
         </div>
 
         {/* COLON */}
         <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center -mt-2.5 sm:-mt-3">
-          <span className="text-lg sm:text-2xl md:text-3xl font-bold text-black leading-none">
+          <span className="text-lg sm:text-2xl md:text-3xl font-extrabold text-black leading-none">
             :
           </span>
         </div>
@@ -581,11 +586,11 @@ export function CountdownTimer() {
         {/* SECONDS */}
         <div className="flex flex-col items-center min-w-[40px] sm:min-w-[48px] md:min-w-[56px]">
           <div className="h-7 sm:h-9 md:h-10 flex items-center justify-center">
-            <span className="font-bold text-2xl sm:text-3xl md:text-[36px] text-black tracking-tight tabular-nums leading-none">
+            <span className="font-display font-extrabold text-2xl sm:text-3xl md:text-[38px] text-black tracking-tight tabular-nums leading-none">
               {time.seconds}
             </span>
           </div>
-          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1">
+          <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-black tracking-wider uppercase mt-1">
             SECONDS
           </span>
         </div>
@@ -852,8 +857,8 @@ export function VideoShowcaseSection() {
                 transition: transitionStyle,
               }}
               className={`absolute w-[260px] sm:w-[295px] md:w-[320px] rounded-[24px] bg-white border border-gray-100/90 p-3.5 sm:p-4 flex flex-col transition-shadow ${isActive
-                  ? "shadow-[0_20px_45px_rgba(0,0,0,0.12)] ring-1 ring-black/5"
-                  : "shadow-[0_6px_18px_rgba(0,0,0,0.04)] hover:opacity-95"
+                ? "shadow-[0_20px_45px_rgba(0,0,0,0.12)] ring-1 ring-black/5"
+                : "shadow-[0_6px_18px_rgba(0,0,0,0.04)] hover:opacity-95"
                 }`}
             >
               {/* Video Thumbnail */}
@@ -1049,23 +1054,23 @@ export function HomePage() {
                 />
               </div>
 
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.65rem] font-bold leading-tight text-white drop-shadow-md whitespace-nowrap tracking-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.6rem] font-extrabold leading-tight text-white drop-shadow-lg whitespace-nowrap">
                 Rashtriya Youth Innovation Challenge 2026
               </h1>
 
-              <p className="mt-3 sm:mt-4 text-lg sm:text-xl md:text-2xl font-semibold text-white tracking-normal">
+              <p className="mt-4 text-xl sm:text-2xl md:text-3xl font-bold text-white/90 tracking-wide">
                 Observe. Ideate. Innovate. Impact
               </p>
 
-              <p className="mt-3 sm:mt-4 max-w-2xl text-xs sm:text-sm md:text-[14.5px] leading-relaxed font-normal text-white/90">
+              <p className="mt-5 max-w-2xl text-base sm:text-lg leading-7 font-semibold text-white/85">
                 Young India's Knowledge &amp; Technology Initiative — A 100-Day Innovation Journey empowering students, researchers, and startups to build sustainable working prototypes for Viksit Bharat.
               </p>
 
-              <div className="mt-7 sm:mt-8 flex flex-wrap gap-3 justify-center">
-                <Link to="/signup" className="inline-flex items-center gap-2 rounded-lg bg-[#f04f43] hover:bg-[#d9382c] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 shadow-md">
+              <div className="mt-8 flex flex-wrap gap-3 justify-center">
+                <Link to="/signup" className="inline-flex items-center gap-2 rounded-md bg-[#e53e3e] hover:bg-[#c53030] px-6 py-3 text-sm font-bold text-white transition-all hover:-translate-y-0.5 shadow-lg">
                   Register Your Team
                 </Link>
-                <a href="#about" className="inline-flex items-center gap-2 rounded-lg bg-white/20 hover:bg-white/30 border border-white/40 backdrop-blur-sm px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5">
+                <a href="#about" className="inline-flex items-center gap-2 rounded-md bg-white/15 hover:bg-white/25 border border-white/30 backdrop-blur-sm px-6 py-3 text-sm font-bold text-white transition-all hover:-translate-y-0.5">
                   Latest Updates
                 </a>
               </div>
@@ -1087,7 +1092,7 @@ export function HomePage() {
             {/* Description spans remaining 3 columns */}
             <div className="lg:col-span-3 pt-2">
               <p className="text-[0.95rem] sm:text-base leading-8 text-gray-700 font-medium">
-                <strong className="text-gray-900">SEWA FIRST – Rashtriya Youth Innovation Challenge (RYIC) 2026</strong> is a national platform that empowers India's youth to identify real problems in their own surroundings and transform them into sustainable, affordable and implementable solutions. Launched at Delhi Technological University on 17 September 2026, the 100-day Challenge brings together students, researchers, educational institutions, industry, government and mentors to take innovations from problem identification and ideation to design, prototyping, validation and implementation. Rooted in the spirit of Sewa First, RYIC seeks to nurture innovation, leadership and entrepreneurship while creating solutions that deliver meaningful impact for communities and the nation.
+                <strong className="text-gray-900">SEWA FIRST – Rashtriya Youth Innovation Challenge (RYIC) 2026</strong> is a national platform that empowers India's youth to identify real problems in their own surroundings and transform them into sustainable, affordable and implementable solutions. Launched at Delhi Technological University on 19 September 2026, the 100-day Challenge brings together students, researchers, educational institutions, industry, government and mentors to take innovations from problem identification and ideation to design, prototyping, validation and implementation. Rooted in the spirit of Sewa First, RYIC seeks to nurture innovation, leadership and entrepreneurship while creating solutions that deliver meaningful impact for communities and the nation.
               </p>
             </div>
           </div>
@@ -1110,23 +1115,23 @@ export function HomePage() {
         </section>
 
         {/* ── Themes Section ── */}
-        <section id="themes" className="py-16 sm:py-24 bg-[#ebebeb] scroll-mt-20">
+        <section id="themes" className="py-16 sm:py-24 bg-[#ededed] scroll-mt-20">
           <div className="site-shell max-w-5xl">
-            <h2 className="text-5xl sm:text-6xl md:text-7xl font-black text-black tracking-tight leading-none mb-5">
+            <h2 className="text-6xl sm:text-7xl md:text-8xl font-black text-black tracking-tight leading-none mb-5 sm:mb-6">
               THEMES
             </h2>
 
-            <p className="text-sm sm:text-base font-semibold text-black mb-7">
+            <p className="text-base sm:text-lg md:text-[19px] font-semibold text-black mb-8 sm:mb-10 leading-snug">
               The Rashtriya Youth Innovation Challenge 2026 focuses on two broad themes:
             </p>
 
-            <div className="space-y-6 text-xs sm:text-sm md:text-[14.5px] leading-relaxed sm:leading-7 text-black">
+            <div className="space-y-7 sm:space-y-8 text-sm sm:text-base md:text-[16px] leading-relaxed sm:leading-[1.75] text-black">
               <p>
-                <strong className="font-extrabold text-black">National Level</strong> Innovations addressing critical national priorities in Defence, Space &amp; National Security, Disaster Management, AI, Robotics, Manufacturing, Energy, Environment, Infrastructure and Future Mobility
+                <strong className="font-bold text-black">National Level</strong> Innovations addressing critical national priorities in Defence, Space &amp; National Security, Disaster Management, AI, Robotics, Manufacturing, Energy, Environment, Infrastructure and Future Mobility
               </p>
 
               <p>
-                <strong className="font-extrabold text-black">Local Community</strong> Level Innovations addressing grassroots challenges in Agriculture &amp; Rural Development, Education, Healthcare, Urban Problems, Environment, Sports, Employment &amp; Livelihood, Women &amp; Child Safety, Disaster Management, Transport, Energy and Tourism. The themes encourage youth to develop innovative, affordable, sustainable, scalable and implementable solutions that transform real-world problems into meaningful impact.
+                <strong className="font-bold text-black">Local Community</strong> Level Innovations addressing grassroots challenges in Agriculture &amp; Rural Development, Education, Healthcare, Urban Problems, Environment, Sports, Employment &amp; Livelihood, Women &amp; Child Safety, Disaster Management, Transport, Energy and Tourism. The themes encourage youth to develop innovative, affordable, sustainable, scalable and implementable solutions that transform real-world problems into meaningful impact.
               </p>
             </div>
           </div>
@@ -1295,7 +1300,7 @@ export function HomePage() {
                       DTU First Youth Innovation Challenge
                     </h3>
                     <p className="mt-1 text-[11px] sm:text-xs text-gray-500 font-medium">
-                      17 Sep – 25 Dec <span className="mx-1.5 text-gray-300 font-light">|</span> Coordinated by DTU
+                      19 Sep – 25 Dec <span className="mx-1.5 text-gray-300 font-light">|</span> Coordinated by DTU
                     </p>
 
                     <div className="mt-3.5 flex items-center gap-2">
@@ -2272,7 +2277,7 @@ export function EventsPage() {
                 Kickstarting SEWA 2026<br />At Delhi Technological<br />University
               </h2>
               <p className="mt-5 text-sm sm:text-base text-gray-600 leading-relaxed font-normal">
-                Join us on 17 September 2026 for the grand inaugural ceremony and National Innovation
+                Join us on 19 September 2026 for the grand inaugural ceremony and National Innovation
                 Festival at DTU. The launch brings together leadership from ministries, academia, and
                 industry to unveil the national innovation portal, release the 50 flagship problem
                 statements, and kick off the nationwide 100-day innovation journey toward Viksit Bharat.
@@ -2603,4 +2608,346 @@ export function ForgotPasswordPage() {
     </div>
   );
 }
+
+export function ContactPage() {
+  const [category, setCategory] = useState("General Enquiry");
+  const [fullName, setFullName] = useState("");
+  const [teamId, setTeamId] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col justify-between">
+      <div>
+        <Header activeNav="contact" />
+        <main className="pt-10 sm:pt-14 pb-16 sm:pb-20">
+          <div className="site-shell max-w-4xl">
+            <h1 className="text-2xl sm:text-3xl md:text-[32px] font-black text-center text-gray-950 tracking-tight mb-8 sm:mb-11 uppercase">
+              CONTACT US
+            </h1>
+
+            <div className="grid grid-cols-1 md:grid-cols-[270px_1fr] gap-6 sm:gap-7 items-start">
+              {/* Left Info Card */}
+              <div className="rounded-[20px] bg-white border border-gray-200/80 p-5 sm:p-6 space-y-6">
+                {/* Norther Region Coordinator */}
+                <div className="flex items-start gap-3">
+                  <MapPin size={17} className="text-[#ff4d4f] shrink-0 mt-0.5" strokeWidth={1.8} />
+                  <div>
+                    <h3 className="font-bold text-xs sm:text-[13px] text-gray-900 leading-tight">
+                      Norther Region Coordinator
+                    </h3>
+                    <p className="mt-1 text-[11px] text-gray-500 leading-relaxed font-normal">
+                      Delhi Technological University, Shahbad Daulatpur, Bawana Road, Rohini, Delhi-110042, India
+                    </p>
+                  </div>
+                </div>
+
+                {/* Queries Email */}
+                <div className="flex items-start gap-3">
+                  <Mail size={17} className="text-[#ff4d4f] shrink-0 mt-0.5" strokeWidth={1.8} />
+                  <div>
+                    <h3 className="font-bold text-xs sm:text-[13px] text-gray-900 leading-tight">
+                      For any queries, write to:
+                    </h3>
+                    <a
+                      href="mailto:sewa2026@dtu.ac.in"
+                      className="mt-0.5 text-[11px] font-medium text-[#ff4d4f] hover:underline block"
+                    >
+                      sewa2026@dtu.ac.in
+                    </a>
+                  </div>
+                </div>
+
+                {/* Phone Lines */}
+                <div className="flex items-start gap-3">
+                  <Phone size={17} className="text-[#ff4d4f] shrink-0 mt-0.5" strokeWidth={1.8} />
+                  <div>
+                    <h3 className="font-bold text-xs sm:text-[13px] text-gray-900 leading-tight">
+                      Phone Lines:
+                    </h3>
+                    <p className="mt-0.5 text-[11px] text-gray-500 leading-relaxed font-normal">
+                      +91 11 27871018 (Ext: 442) / +91 11 27871020
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Form Card */}
+              <div className="rounded-[20px] bg-white border border-gray-200/80 p-6 sm:p-8">
+                {submitted ? (
+                  <div className="py-12 text-center">
+                    <div className="size-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+                      <ShieldCheck size={32} />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900">Message Received</h3>
+                    <p className="text-sm text-gray-600 mt-2 max-w-md mx-auto">
+                      Thank you for contacting SEWA 2026. An automated receipt has been registered and our team will review your query within 24–48 hours.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setSubmitted(false)}
+                      className="mt-6 inline-flex items-center px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors"
+                    >
+                      Submit Another Query
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* SELECT QUERY CATEGORY */}
+                    <div>
+                      <label className="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+                        SELECT QUERY CATEGORY
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                          className="w-full h-10 px-3.5 pr-9 rounded-lg bg-[#f8f9fa] border border-gray-200 text-xs sm:text-[13px] font-medium text-gray-800 focus:bg-white focus:border-red-400 outline-none appearance-none cursor-pointer transition-all"
+                        >
+                          <option>General Enquiry</option>
+                          <option>Technical Support</option>
+                          <option>Registration &amp; Eligibility</option>
+                          <option>Problem Statement / Track Query</option>
+                          <option>Grievance / Appeal</option>
+                        </select>
+                        <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Full Name & Team ID */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-800 mb-1">
+                          Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          placeholder="e.g. Aarav Sharma"
+                          className="w-full h-9 sm:h-10 px-3.5 rounded-lg bg-[#f8f9fa] border border-gray-200 text-xs sm:text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-red-400 outline-none transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-800 mb-1">
+                          Team ID / Affiliation ID <span className="font-normal text-gray-400">(Optional)</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={teamId}
+                          onChange={(e) => setTeamId(e.target.value)}
+                          placeholder="e.g. 2K23/CO/145"
+                          className="w-full h-9 sm:h-10 px-3.5 rounded-lg bg-[#f8f9fa] border border-gray-200 text-xs sm:text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-red-400 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Email & Phone */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-800 mb-1">
+                          Registered Email *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="SEWA@dtu.ac.in"
+                          className="w-full h-9 sm:h-10 px-3.5 rounded-lg bg-[#f8f9fa] border border-gray-200 text-xs sm:text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-red-400 outline-none transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-800 mb-1">
+                          Contact Phone Number *
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="+91 98765 43210"
+                          className="w-full h-9 sm:h-10 px-3.5 rounded-lg bg-[#f8f9fa] border border-gray-200 text-xs sm:text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-red-400 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Subject / Matter */}
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-800 mb-1">
+                        Subject / Matter *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
+                        placeholder="Brief summary of your query or grievance"
+                        className="w-full h-9 sm:h-10 px-3.5 rounded-lg bg-[#f8f9fa] border border-gray-200 text-xs sm:text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-red-400 outline-none transition-all"
+                      />
+                    </div>
+
+                    {/* Message / Grievance Description */}
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-800 mb-1">
+                        Message / Grievance Description *
+                      </label>
+                      <textarea
+                        rows={4}
+                        required
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Please provide detailed context regarding your question, prototype issue, or formal grievance..."
+                        className="w-full p-3.5 rounded-lg bg-[#f8f9fa] border border-gray-200 text-xs sm:text-[13px] placeholder:text-gray-400 focus:bg-white focus:border-red-400 outline-none transition-all resize-y"
+                      />
+                    </div>
+
+                    {/* Supporting Document / Screenshot */}
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-800 mb-1">
+                        Supporting Document / Screenshot <span className="font-normal text-gray-400">(PDF, PNG, JPG up to 10MB)</span>
+                      </label>
+                      <label className="border border-dashed border-gray-300 rounded-xl py-6 px-4 flex flex-col items-center justify-center text-center cursor-pointer hover:border-red-400 hover:bg-gray-50/50 transition-all bg-[#fafbfc]">
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept=".pdf,.png,.jpg,.jpeg"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setFileName(e.target.files[0].name);
+                            }
+                          }}
+                        />
+                        <UploadCloud size={24} className="text-gray-400 mb-1" strokeWidth={1.8} />
+                        <span className="text-[11px] sm:text-xs text-gray-500 font-normal">
+                          {fileName ? fileName : "Click to select files or drag & drop here"}
+                        </span>
+                      </label>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="pt-2">
+                      <button
+                        type="submit"
+                        className="w-full py-3 rounded-xl bg-[#ff4d4f] hover:bg-[#e03b40] text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.99]"
+                      >
+                        Submit Message / Grievance →
+                      </button>
+
+                      <p className="mt-2 text-center text-[10px] sm:text-[10.5px] text-gray-400 font-normal">
+                        Turnaround time: Official automated receipt within 5 minutes, review within 24–48 hours.
+                      </p>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <Footer />
+    </div>
+  );
+}
+
+const faqData = [
+  {
+    q: "Who is eligible to participate in SEWA 2026?",
+    a: "The challenge is open to Indian youth across multiple categories: Category A for School Students (Classes 9th to 12th); Category B for Undergraduate & Postgraduate students from any recognized university, college, or technical institute; and Category C for Researchers, Faculty, Innovators, and Early-stage Startups (under 3 years of incorporation). Both individual and interdisciplinary teams are welcome.",
+  },
+  {
+    q: "How do I reach the DTU campus on the event day?",
+    a: "Delhi Technological University (DTU) is located at Shahbad Daulatpur, Bawana Road, Rohini, Delhi-110042. The nearest Metro stations are Samaypur Badli (Yellow Line) and Rithala (Red Line). Feeder buses and battery e-rickshaws operate continuously from Samaypur Badli station directly to the DTU main entrance. Registered participant vehicles can access designated parking at the DTU Sports Complex.",
+  },
+  {
+    q: "Can outside college students and inter-college teams register?",
+    a: "Yes! Inter-college and cross-institutional team formations are fully allowed and actively encouraged. Team members can represent different universities, colleges, departments, or even different states across India. One member should be designated as the Team Leader for all primary communications and submission tracking.",
+  },
+  {
+    q: "How can teams submit complaints or technical grievances regarding evaluation?",
+    a: "Teams can submit queries, evaluation appeals, or technical grievances through the dedicated Contact Us / Grievance form on the portal. Every submission receives an automated official acknowledgement within 5 minutes, and our expert jury and redressal committee reviews each matter within 24–48 hours.",
+  },
+  {
+    q: "Are travel allowances or hostel accommodations provided for shortlisted participants?",
+    a: "Shortlisted finalists invited to the physical Grand Finale and National Prototype Showcase at DTU campus will be provided subsidized accommodation in the university guest house and student hostels. Details regarding travel allowances and reimbursements for eligible outstation teams will be issued along with the Regional Hub results circular.",
+  },
+  {
+    q: "Who can I contact for urgent event day assistance?",
+    a: "For immediate assistance, contact the Northern Region Coordinator Helpdesk at +91 11 27871018 (Ext: 442) or +91 11 27871020, or email sewa2026@dtu.ac.in. On-site physical helpdesk booths will also be stationed at the DTU Student Activity Centre (SAC) and main reception foyer throughout the event days.",
+  },
+];
+
+export function FaqPage() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggle = (idx: number) => {
+    setOpenIndex((curr) => (curr === idx ? null : idx));
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col justify-between">
+      <div>
+        <Header activeNav="faq" />
+        <main className="pt-10 sm:pt-14 pb-20 sm:pb-24">
+          <div className="site-shell max-w-[760px]">
+            <h1 className="text-3xl sm:text-4xl md:text-[40px] font-black text-center text-[#0e1726] tracking-tight mb-2.5">
+              Frequently Asked Questions
+            </h1>
+            <p className="text-center text-sm sm:text-[15px] md:text-base text-gray-500 max-w-lg mx-auto mb-10 sm:mb-12 font-normal leading-relaxed">
+              Everything you need to know about participating, campus visits, support, and evaluation criteria.
+            </p>
+
+            <div className="space-y-3.5 sm:space-y-4">
+              {faqData.map((item, idx) => {
+                const isOpen = openIndex === idx;
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => toggle(idx)}
+                    className="rounded-[18px] bg-[#fbfbfb] border border-[#eaecf0] px-6 sm:px-7 py-4 sm:py-4.5 transition-all cursor-pointer hover:border-gray-300 hover:shadow-2xs select-none"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="font-bold text-sm sm:text-[15px] md:text-[16px] text-[#0e1726] leading-snug">
+                        {item.q}
+                      </h3>
+                      <ChevronDown
+                        size={18}
+                        strokeWidth={2}
+                        className={`text-slate-400 shrink-0 transition-transform duration-200 ${
+                          isOpen ? "rotate-180 text-primary" : ""
+                        }`}
+                      />
+                    </div>
+
+                    {isOpen && (
+                      <div className="mt-3.5 pt-3.5 border-t border-gray-200/60 text-xs sm:text-sm md:text-[14px] text-gray-600 leading-relaxed font-normal animate-fade-in">
+                        {item.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <Footer />
+    </div>
+  );
+}
+
 

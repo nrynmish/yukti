@@ -19,8 +19,8 @@
  */
 
 @theme inline {
-  --font-sans: "Inter", "Manrope", sans-serif;
-  --font-display: "Inter", "Sora", sans-serif;
+  --font-sans: "Manrope", sans-serif;
+  --font-display: "Sora", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -161,7 +161,7 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 
   button,
@@ -267,7 +267,7 @@
   }
 
   .nav-link {
-    font-family: "Google Sans Code", monospace;
+    font-family: "Google Sans Code", monospace, sans-serif;
     color: var(--foreground);
     transition: color 0.2s ease;
   }
@@ -277,15 +277,21 @@
     color: var(--primary);
   }
 
+  header nav,
+  header nav a,
+  header nav button {
+    font-family: "Google Sans Code", monospace, sans-serif;
+  }
+
   .live-updates-bar {
     position: relative;
-    font-family: "Google Sans Code", monospace;
+    font-family: "Google Sans Code", monospace, sans-serif;
   }
 
   .live-updates-label {
     position: relative;
     z-index: 2;
-    font-family: "Google Sans Code", monospace;
+    font-family: "Google Sans Code", monospace, sans-serif;
   }
 
   .live-updates-ticker-wrap {
@@ -298,7 +304,7 @@
     min-width: max-content;
     will-change: transform;
     animation: ticker 32s linear infinite;
-    font-family: "Google Sans Code", monospace;
+    font-family: "Google Sans Code", monospace, sans-serif;
   }
 
   .ticker span {
@@ -385,8 +391,8 @@
 
   /* Top utility bar */
   .top-bar {
-    background: #F3F3F3;
-    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
     color: #1e293b;
     font-size: 0.72rem;
     font-weight: 600;
@@ -439,7 +445,7 @@
     padding: 0.45rem 1rem;
     font-size: 0.78rem;
     font-weight: 600;
-    font-family: "Google Sans Code", monospace;
+    font-family: "Google Sans Code", monospace, sans-serif;
     color: var(--foreground);
     transition: background 0.15s ease, color 0.15s ease;
   }
@@ -607,6 +613,20 @@
     background: #ffffff;
     border: none;
     margin: 0;
+  }
+
+  /* Footer options styled with Google Sans Code matching screenshot */
+  footer,
+  footer a,
+  footer p,
+  footer h2,
+  footer h3,
+  .footer-texture,
+  .footer-texture a,
+  .footer-nav a,
+  .footer-options,
+  .footer-options a {
+    font-family: "Google Sans Code", monospace, sans-serif;
   }
 
   .social {

@@ -1,5 +1,6 @@
 import { prisma } from '../config/prisma.js';
 import { env } from '../config/env.js';
+import { logger } from '../config/logger.js';
 import cron from 'node-cron';
 
 /**
@@ -21,11 +22,8 @@ export async function cleanupOldOtps(): Promise<void> {
     },
   });
 
-  // Optional: log for observability
   if (result.count > 0) {
-    console.info(
-      `[OTP Cleanup] Deleted ${result.count} OTP rows older than ${retentionMinutes} min`
-    );
+    logger.info({ deleted: result.count, retentionMinutes }, 'otp_cleanup_deleted');
   }
 }
 
@@ -35,11 +33,10 @@ export async function cleanupOldOtps(): Promise<void> {
 export function startOtpCleanupJob(): void {
   // Runs every 5 minutes; adjust the schedule if you want more/less frequent runs.
   cron.schedule('*/5 * * * *', () => {
-    console.info('[OTP Cleanup] Running scheduled cleanup…');
     cleanupOldOtps().catch((err) => {
-      console.error('[OTP Cleanup] Error during cleanup:', err);
+      logger.error({ err }, 'otp_cleanup_failed');
     });
   });
 
-  console.info('[OTP Cleanup] Scheduled job started (runs every 5 minutes).');
+  logger.info('otp_cleanup_scheduled');
 }

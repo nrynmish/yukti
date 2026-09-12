@@ -1,7 +1,5 @@
 import { z } from "zod";
-
-// Indian mobile number: optional +91, then a 10-digit number starting 6-9.
-const phoneRegex = /^(\+91)?[6-9]\d{9}$/;
+import { phoneSchema } from "./phone.js";
 
 // At least one lowercase, one uppercase, one digit, one special char.
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
@@ -11,7 +9,7 @@ export const signupSchema = z
     firstName: z.string().trim().min(1).max(100),
     lastName: z.string().trim().min(1).max(100),
     email: z.string().trim().toLowerCase().email().max(255),
-    phone: z.string().trim().regex(phoneRegex, "Invalid Indian mobile number").optional(),
+    phone: phoneSchema.optional(),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")

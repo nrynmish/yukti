@@ -85,8 +85,11 @@ export function RequireAuth({ children }: { children: ReactNode }) {
           <p className="mt-2 text-sm text-gray-500">
             Team registration opens once your email address is confirmed.
           </p>
+          {/* /signin, not /signup: the account already exists, so re-submitting
+              the signup form just 409s. Signing in with an unverified account
+              returns 403, which AuthPage turns into the OTP screen. */}
           <Link
-            to="/signup"
+            to="/signin"
             className="mt-5 inline-flex h-10 items-center rounded-md bg-[#ff5a5f] px-5 text-sm font-semibold text-white"
           >
             Verify now

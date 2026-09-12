@@ -857,11 +857,23 @@
  * step — `.print-area` is the only thing left visible when the browser's
  * print dialog opens, so "Print" doubles as "Save as PDF" with no extra
  * dependency. `.no-print` hides chrome (nav, sidebar, buttons) that has no
- * business on a printed page.
+ * business on a printed page, and `.print-only` is the inverse: absent on
+ * screen, present when printing. `.print-only` must NOT be `display: none`
+ * on screen and merely made `visible` in print -- a `display: none` ancestor
+ * removes its subtree from layout entirely, so `visibility: visible` on the
+ * descendants prints nothing at all.
  */
+.print-only {
+  display: none;
+}
+
 @media print {
   body * {
     visibility: hidden;
+  }
+
+  .print-only {
+    display: block;
   }
 
   .print-area,

@@ -77,6 +77,7 @@ OTP_LENGTH=6
 OTP_EXPIRY_MINUTES=10
 OTP_MAX_ATTEMPTS=5
 OTP_RESEND_COOLDOWN_SECONDS=60
+OTP_CLEANUP_RETENTION_MINUTES=20
 
 SMTP_HOST=...
 SMTP_PORT=587
@@ -182,14 +183,21 @@ GET  /api/auth/me
 POST /api/auth/password/forgot
 POST /api/auth/password/reset
 
-POST   /api/register                          create team (leader = current user)
+GET  /api/profile                              current user + candidate profile
+PUT  /api/profile                              upsert the "Personal Details" step
+
+POST   /api/register                           create team (leader = current user)
 GET    /api/register/me                        current user's team + members
+PATCH  /api/register/:teamId                   edit a draft team (409 once submitted)
 POST   /api/register/:teamId/members           add a member
 DELETE /api/register/:teamId/members/:memberId remove a member
 POST   /api/register/:teamId/submit            lock and submit
+
+GET  /api/health                               liveness + database connectivity
 ```
 
-All `/api/register/*` routes require a signed-in, email-verified user.
+All `/api/register/*` and `/api/profile` routes require a signed-in,
+email-verified user.
 
 ## Known gaps
 

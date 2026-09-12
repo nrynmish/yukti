@@ -40,8 +40,19 @@ export async function upsertProfile(userId: string, input: UpsertProfileInput) {
     backupEmail: backupEmail ?? null,
   };
 
-  const [, profile] = await prisma.$transaction([
+  const [, , profile] = await prisma.$transaction([
     prisma.user.update({ where: { id: userId }, data: { firstName, lastName, phone } }),
+    // The leader's team_members row is copied from User at team-creation time
+    // and is never re-sent by the client (the wizard treats roster slot 0 as
+    // display-only). Without this, correcting your name or phone in Step 1
+    // after a draft team already exists leaves the stored roster showing what
+    // you signed up with, while the reviewed and printed confirmation shows
+    // the corrected values. Scoped to draft teams so a submitted roster stays
+    // locked.
+    prisma.teamMember.updateMany({
+      where: { userId, role: "leader", team: { status: "draft" } },
+      data: { firstName, lastName, phone },
+    }),
     prisma.candidateProfile.upsert({
       where: { userId },
       create: { userId, ...profileData },

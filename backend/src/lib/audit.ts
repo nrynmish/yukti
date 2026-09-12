@@ -17,6 +17,7 @@ type AuditAction =
   | "team_create"
   | "team_update"
   | "team_member_add"
+  | "team_member_remove"
   | "team_submit"
   | "profile_update";
 

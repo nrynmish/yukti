@@ -1,6 +1,5 @@
 import { z } from "zod";
-
-const phoneRegex = /^(\+91)?[6-9]\d{9}$/;
+import { phoneSchema } from "./phone.js";
 
 // Adjust MIN/MAX to SEWA 2026's actual team-size rules.
 export const TEAM_MIN_MEMBERS = 2; // leader + at least 1 other
@@ -24,7 +23,7 @@ export const addMemberSchema = z
     firstName: z.string().trim().min(1).max(100),
     lastName: z.string().trim().min(1).max(100),
     email: z.string().trim().toLowerCase().email(),
-    phone: z.string().trim().regex(phoneRegex, "Invalid Indian mobile number").optional(),
+    phone: phoneSchema.optional(),
   })
   .strict();
 

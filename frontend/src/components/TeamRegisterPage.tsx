@@ -150,23 +150,45 @@ interface MemberDraft {
 
 const emptyMember = (): MemberDraft => ({ firstName: "", lastName: "", email: "", phone: "" });
 
+// These mirror the server's schemas (backend/src/schemas/phone.ts plus
+// profile.schema.ts / team.schema.ts). The wizard's gates used to check only
+// that a field was non-empty, so a 5-digit Aadhaar or a 2-character team name
+// passed "Next" and then came back as a 400 from the endpoint. Keeping the
+// shapes in sync means the button is disabled for exactly the input the
+// server would reject. The server remains the real validator.
+const PHONE_RE = /^(\+91)?[6-9]\d{9}$/;
+const AADHAAR_RE = /^\d{12}$/;
+const PIN_RE = /^\d{6}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Whitespace is stripped first, matching the server's phone schema. */
+const phoneOk = (v: string) => PHONE_RE.test(v.replace(/\s+/g, ""));
+
+const TEAM_NAME_MIN = 3; // createTeamSchema.name.min(3)
+const INSTITUTE_MIN = 2; // createTeamSchema.institute.min(2)
+
 const personalComplete = (p: PersonalDraft) =>
   !!(
-    p.firstName &&
-    p.lastName &&
+    p.firstName.trim() &&
+    p.lastName.trim() &&
     p.nationality &&
     p.dateOfBirth &&
     p.gender &&
-    p.aadhaarNumber &&
-    p.addressLine1 &&
-    p.pinCode &&
-    p.city &&
     p.state &&
-    p.country &&
-    p.phone
-  );
+    p.country
+  ) &&
+  p.addressLine1.trim().length >= 3 &&
+  p.city.trim().length >= 2 &&
+  AADHAAR_RE.test(p.aadhaarNumber) &&
+  PIN_RE.test(p.pinCode) &&
+  phoneOk(p.phone) &&
+  (!p.alternatePhone.trim() || phoneOk(p.alternatePhone)) &&
+  (!p.backupEmail.trim() || EMAIL_RE.test(p.backupEmail.trim()));
 
-const memberComplete = (m: MemberDraft) => !!(m.firstName && m.lastName && m.email);
+const memberComplete = (m: MemberDraft) =>
+  !!(m.firstName.trim() && m.lastName.trim()) &&
+  EMAIL_RE.test(m.email.trim()) &&
+  (!m.phone.trim() || phoneOk(m.phone));
 
 /** First duplicate email among members (leader included), or null. */
 function findDuplicateEmail(members: MemberDraft[]): string | null {
@@ -456,7 +478,7 @@ function ConfirmationSummary({
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export function TeamRegisterPage() {
-  const { user } = useAuth();
+  const { user, refresh } = useAuth();
 
   const [step, setStep] = useState<WizardStep>(1);
   const [personal, setPersonal] = useState<PersonalDraft>(emptyPersonal());
@@ -637,6 +659,10 @@ export function TeamRegisterPage() {
             : m,
         ),
       );
+      // Step 1 writes firstName/lastName/phone back to the User record, so the
+      // cached `me` query is now stale -- without this the header and any other
+      // consumer keep showing the pre-edit name until the 30s staleTime lapses.
+      await refresh();
       return true;
     } catch (err) {
       setError(
@@ -825,7 +851,10 @@ export function TeamRegisterPage() {
             </div>
           </div>
 
-          <div className="hidden">
+          {/* Hidden on screen but still laid out when printing. `hidden`
+              (display:none) would keep this out of the print layout too, so
+              "Download / Print Confirmation" produced a blank page. */}
+          <div className="print-only">
             <ConfirmationSummary
               personal={personal}
               email={user?.email ?? ""}
@@ -1200,7 +1229,7 @@ export function TeamRegisterPage() {
               <div className="space-y-7 px-6 py-8 sm:px-8">
                 <SectionHeader n={1} icon={IdCard} title="Team Identity" />
                 <div className="-mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <Field label="Team Name" required>
+                  <Field label="Team Name" required hint="At least 3 characters.">
                     <input
                       className={inputClass}
                       value={teamName}
@@ -1288,7 +1317,11 @@ export function TeamRegisterPage() {
                     setError("");
                     setStep(4);
                   }}
-                  nextDisabled={!teamName || !institute || members.some((m) => !memberComplete(m))}
+                  nextDisabled={
+                    teamName.trim().length < TEAM_NAME_MIN ||
+                    institute.trim().length < INSTITUTE_MIN ||
+                    members.some((m) => !memberComplete(m))
+                  }
                 />
               </div>
             )}

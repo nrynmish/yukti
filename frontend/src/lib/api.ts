@@ -10,7 +10,7 @@
  *    `CLIENT_ORIGIN` must agree about the pair of origins in play.
  */
 
-const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:4000").replace(/\/$/, "");
+const API_URL = (import.meta.env["VITE_API_URL"] ?? "http://localhost:4000").replace(/\/$/, "");
 
 /** A non-2xx response. `details` carries Zod's per-field errors when present. */
 export class ApiError extends Error {
@@ -65,8 +65,14 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return body as T;
 }
 
+// `body` is omitted entirely rather than passed as `undefined`: under
+// `exactOptionalPropertyTypes`, RequestInit.body is `BodyInit | null` and
+// will not accept an explicit `undefined`.
 const post = <T>(path: string, body?: unknown) =>
-  request<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined });
+  request<T>(
+    path,
+    body === undefined ? { method: "POST" } : { method: "POST", body: JSON.stringify(body) },
+  );
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

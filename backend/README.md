@@ -6,21 +6,30 @@ registration portal.
 ## Flow
 
 ```
-POST /api/auth/signup        -> create account (unverified)
-POST /api/auth/otp/send      -> (re)send email OTP
-POST /api/auth/otp/verify    -> verify OTP, activates account, sets session cookie
-POST /api/auth/signin        -> sign in, sets session cookie
-POST /api/auth/signout       -> clear session
-GET  /api/auth/me            -> current user
+POST /api/auth/signup           -> create account (unverified)
+POST /api/auth/otp/send         -> (re)send email OTP
+POST /api/auth/otp/verify       -> verify OTP, activates account, sets session cookie
+POST /api/auth/signin           -> sign in, sets session cookie
+POST /api/auth/signout          -> clear session
+GET  /api/auth/me               -> current user
+POST /api/auth/password/forgot  -> send a password-reset OTP
+POST /api/auth/password/reset   -> consume the OTP, set a new password
 
-POST   /api/register              -> create team (leader = current user)
-GET    /api/register/me           -> current user's team + members
-POST   /api/register/:teamId/members         -> add a member (no account required)
+GET  /api/profile               -> current user + candidate profile (null until saved)
+PUT  /api/profile               -> full-replace upsert of the "Personal Details" step
+
+POST   /api/register                           -> create team (leader = current user)
+GET    /api/register/me                        -> current user's team + members
+PATCH  /api/register/:teamId                   -> edit a draft team's name/institute/theme/PS
+POST   /api/register/:teamId/members           -> add a member (no account required)
 DELETE /api/register/:teamId/members/:memberId -> remove a member
-POST   /api/register/:teamId/submit           -> lock and submit the team
+POST   /api/register/:teamId/submit            -> lock and submit the team
+
+GET  /api/health                -> liveness + database connectivity
 ```
 
-All `/api/register/*` routes require a signed-in, **email-verified** user.
+All `/api/register/*` and `/api/profile` routes require a signed-in,
+**email-verified** user.
 
 ## Setup
 
@@ -48,9 +57,6 @@ npm run dev
 
 ## What's deliberately NOT here yet
 
-- **Password reset flow** — the `OtpPurpose.password_reset` enum value and
-  `AppError`/audit scaffolding are in place, but the endpoints aren't wired
-  up. Same OTP service handles both purposes already.
 - **Rate limiter store** — uses in-memory `express-rate-limit`. If you
   deploy more than one instance behind a load balancer, swap in
   `rate-limit-redis` (limits won't be shared across processes otherwise).

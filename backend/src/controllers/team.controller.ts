@@ -36,6 +36,12 @@ export async function addMember(req: Request, res: Response) {
 
 export async function removeMember(req: Request, res: Response) {
   await teamService.removeTeamMember(req.params.teamId!, req.user!.id, req.params.memberId!);
+  await writeAuditLog({
+    req,
+    userId: req.user!.id,
+    action: "team_member_remove",
+    metadata: { teamId: req.params.teamId, memberId: req.params.memberId },
+  });
   res.status(204).send();
 }
 

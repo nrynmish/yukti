@@ -1,6 +1,6 @@
 import { z } from "zod";
+import { phoneSchema } from "./phone.js";
 
-const phoneRegex = /^(\+91)?[6-9]\d{9}$/;
 const aadhaarRegex = /^\d{12}$/;
 const pinRegex = /^\d{6}$/;
 const dobRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -14,15 +14,6 @@ const ELIGIBLE_STATES = [
   "UP",
   "Chandigarh",
 ] as const;
-
-// The registration form's phone placeholders show a spaced-out format
-// ("+91 98765 43210") for readability, so accept that on input rather than
-// rejecting a value the UI itself suggested — strip whitespace before
-// checking shape.
-const phoneSchema = z
-  .string()
-  .transform((v) => v.replace(/\s+/g, ""))
-  .pipe(z.string().regex(phoneRegex, "Invalid Indian mobile number"));
 
 // Category / nationality / gender / state are kept as free text rather than
 // enums — same rationale as team.schema's theme/problemStatement: these

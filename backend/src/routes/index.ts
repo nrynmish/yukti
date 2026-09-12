@@ -3,6 +3,7 @@ import { authRouter } from "./auth.routes.js";
 import { teamRouter } from "./team.routes.js";
 import { profileRouter } from "./profile.routes.js";
 import { prisma } from "../config/prisma.js";
+import { logger } from "../config/logger.js";
 
 export const apiRouter = Router();
 
@@ -19,8 +20,8 @@ apiRouter.get("/health", async (_req, res) => {
       status: "OK",
       message: "SEWA 2026 backend and database are connected!",
     });
-  } catch (error) {
-    console.error("Health check failed:", error);
+  } catch (err) {
+    logger.error({ err }, "health_check_failed");
 
     res.status(500).json({
       status: "ERROR",

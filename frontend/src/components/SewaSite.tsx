@@ -27,6 +27,8 @@ import {
   Trophy,
   Twitter,
   UploadCloud,
+  User,
+  Server,
   Wrench,
   X,
 } from "lucide-react";
@@ -105,19 +107,19 @@ export function Brand() {
   );
 }
 
-export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" | "contact" | "faq" | "signin" | "signup" | "team-register" } = {}) {
+export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" | "problems" | "contact" | "faq" | "signin" | "signup" | "team-register" | string } = {}) {
   const { user, isSignedIn, signOut } = useAuth();
 
   return (
     <>
       {/* Top utility bar (dtu.ac.in + social handles): scrolls away and hides naturally on scroll */}
-      <div className="top-bar">
+      <div className="top-bar bg-[#F3F3F3]">
         <div className="site-shell flex h-9 items-center justify-between">
           <a
             href="https://dtu.ac.in"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1 text-[#ff4d4f] font-bold text-xs hover:underline"
+            className="flex items-center gap-1 text-[#ff4d4f] font-bold text-xs underline underline-offset-2 hover:opacity-80 transition-opacity"
           >
             dtu.ac.in
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="inline-block">
@@ -143,52 +145,65 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
       {/* Main navigation bar + Live updates ticker: ALWAYS sticky at top */}
       <div className="sticky top-0 z-50">
         <header className="border-b border-gray-100 bg-white shadow-sm">
-          <div className="site-shell flex h-18 sm:h-22 items-center justify-between gap-4">
+          <div className="site-shell flex h-18 sm:h-22 items-center justify-between lg:justify-start lg:gap-10 xl:gap-12">
             <Brand />
             <nav
-              className="hidden items-center gap-4 whitespace-nowrap text-sm font-semibold lg:gap-6 md:flex shrink-0"
+              className="hidden items-center gap-2.5 lg:gap-3 xl:gap-5 whitespace-nowrap text-[13px] lg:text-sm font-semibold lg:flex shrink-0"
               aria-label="Primary navigation"
             >
               <Link to="/" className={`nav-link ${activeNav === "home" ? "text-primary font-bold" : ""}`}>
                 Home
               </Link>
 
+              {/* About dropdown */}
+              <div className="nav-dropdown flex items-center gap-0.5 cursor-pointer">
+                <a href="/#about" className={`nav-link ${activeNav === "about" ? "text-primary font-bold" : ""}`}>
+                  About
+                </a>
+                <ChevronDown size={14} className="text-muted-foreground mt-0.5" />
+                <div className="nav-dropdown-menu">
+                  <a href="/#about">About SEWA</a>
+                  <a href="https://dtu.ac.in" target="_blank" rel="noreferrer">About DTU</a>
+                  <a href="/#committee">Our Team</a>
+                </div>
+              </div>
+
               {/* Events dropdown */}
               <div className="nav-dropdown flex items-center gap-0.5 cursor-pointer">
                 <Link to="/events" className={`nav-link ${activeNav === "events" ? "text-primary font-bold" : ""}`}>
                   Events
                 </Link>
-                <ChevronDown size={13} className="text-muted-foreground mt-0.5" />
+                <ChevronDown size={14} className="text-muted-foreground mt-0.5" />
                 <div className="nav-dropdown-menu">
-                  <a href="/events">All Events</a>
+                  <Link to="/events">All Events</Link>
                   <a href="/#steps">Timeline</a>
                   <a href="/#announcements">Announcements</a>
                 </div>
               </div>
 
-              {/* Guidelines dropdown */}
+              {/* Problem Statements dropdown */}
               <div className="nav-dropdown flex items-center gap-0.5 cursor-pointer">
-                <a href="/#steps" className={`nav-link ${activeNav === "guidelines" ? "text-primary font-bold" : ""}`}>
-                  Guidelines
+                <a href="/#themes" className={`nav-link ${activeNav === "problems" ? "text-primary font-bold" : ""}`}>
+                  Problem Statements
                 </a>
-                <ChevronDown size={13} className="text-muted-foreground mt-0.5" />
+                <ChevronDown size={14} className="text-muted-foreground mt-0.5" />
                 <div className="nav-dropdown-menu">
-                  <a href="/#steps">Eligibility</a>
-                  <a href="/#themes">Themes</a>
-                  <a href="/#steps">Submission Rules</a>
+                  <a href="/#themes">All Themes</a>
+                  <a href="/#themes">National Level Priorities</a>
+                  <a href="/#themes">Local Community Challenges</a>
                 </div>
               </div>
 
-              {/* About dropdown */}
+              {/* Guidelines dropdown */}
               <div className="nav-dropdown flex items-center gap-0.5 cursor-pointer">
-                <a href="https://dtu.ac.in" target="_blank" rel="noreferrer" className="nav-link">
-                  About
+                <a href="/#benefits" className={`nav-link ${activeNav === "guidelines" ? "text-primary font-bold" : ""}`}>
+                  Guidelines
                 </a>
-                <ChevronDown size={13} className="text-muted-foreground mt-0.5" />
+                <ChevronDown size={14} className="text-muted-foreground mt-0.5" />
                 <div className="nav-dropdown-menu">
-                  <a href="/#about">About SEWA</a>
-                  <a href="https://dtu.ac.in" target="_blank" rel="noreferrer">About DTU</a>
-                  <a href="/#committee">Our Team</a>
+                  <a href="/#benefits">Benefits</a>
+                  <a href="/#steps">Eligibility</a>
+                  <a href="/#steps">Submission Rules</a>
                 </div>
               </div>
 
@@ -211,14 +226,14 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
               ) : (
                 <Link
                   to="/signin"
-                  className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary/90 transition-colors shrink-0"
+                  className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-[13px] lg:text-sm font-bold text-white hover:bg-primary/90 transition-colors shrink-0"
                 >
                   Login
                 </Link>
               )}
             </nav>
             {!isSignedIn && (
-              <Link to="/signin" className="button button-outline md:hidden">
+              <Link to="/signin" className="button button-outline lg:hidden">
                 Login
               </Link>
             )}
@@ -970,6 +985,279 @@ export function VideoShowcaseSection() {
   );
 }
 
+export function StatisticsSection() {
+  return (
+    <section id="statistics" className="py-16 sm:py-24 bg-white scroll-mt-20">
+      <div className="site-shell max-w-6xl">
+        {/* Title */}
+        <h2 className="text-center text-3xl sm:text-4xl md:text-5xl font-black tracking-tight uppercase text-black mb-12 sm:mb-16">
+          STATISTICS
+        </h2>
+
+        {/* 6 Key Metrics Grid: 2 rows x 3 columns */}
+        <div className="max-w-4xl mx-auto">
+          {/* Row 1 */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-0 pb-6 sm:pb-8">
+            {/* 1. 9000 Entries */}
+            <div className="flex items-center gap-3.5 sm:gap-4 sm:pr-8 sm:border-r border-gray-200">
+              <div className="size-11 sm:size-12 rounded-full bg-[#fde8e8] flex items-center justify-center text-[#ff3366] shrink-0">
+                <User size={20} strokeWidth={2.5} />
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-black text-black leading-none">9000</div>
+                <div className="text-xs font-semibold text-gray-500 tracking-wider uppercase mt-1">
+                  ENTRIES
+                </div>
+              </div>
+            </div>
+
+            {/* 2. 30+ Shortlisted */}
+            <div className="flex items-center gap-3.5 sm:gap-4 sm:px-8 sm:border-r border-gray-200">
+              <div className="size-11 sm:size-12 rounded-full bg-[#fde8e8] flex items-center justify-center text-[#ff3366] shrink-0">
+                <MapPin size={20} strokeWidth={2.5} />
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-black text-black leading-none">30+</div>
+                <div className="text-xs font-semibold text-gray-500 tracking-wider uppercase mt-1">
+                  SHORTLISTED
+                </div>
+              </div>
+            </div>
+
+            {/* 3. 1 lakh + Mentored */}
+            <div className="flex items-center gap-3.5 sm:gap-4 sm:pl-8">
+              <div className="size-11 sm:size-12 rounded-full bg-[#fde8e8] flex items-center justify-center text-[#ff3366] shrink-0">
+                <Server size={20} strokeWidth={2.5} />
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-black text-black leading-none">1 lakh +</div>
+                <div className="text-xs font-semibold text-gray-500 tracking-wider uppercase mt-1">
+                  MENTORED
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2 */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-0 pt-2 sm:pt-4">
+            {/* 4. 9000 Prototypes */}
+            <div className="flex items-center gap-3.5 sm:gap-4 sm:pr-8 sm:border-r border-gray-200">
+              <div className="size-11 sm:size-12 rounded-full bg-[#fde8e8] flex items-center justify-center text-[#ff3366] shrink-0">
+                <User size={20} strokeWidth={2.5} />
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-black text-black leading-none">9000</div>
+                <div className="text-xs font-semibold text-gray-500 tracking-wider uppercase mt-1">
+                  PROTOTYPES
+                </div>
+              </div>
+            </div>
+
+            {/* 5. 30+ Tested */}
+            <div className="flex items-center gap-3.5 sm:gap-4 sm:px-8 sm:border-r border-gray-200">
+              <div className="size-11 sm:size-12 rounded-full bg-[#fde8e8] flex items-center justify-center text-[#ff3366] shrink-0">
+                <MapPin size={20} strokeWidth={2.5} />
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-black text-black leading-none">30+</div>
+                <div className="text-xs font-semibold text-gray-500 tracking-wider uppercase mt-1">
+                  TESTED
+                </div>
+              </div>
+            </div>
+
+            {/* 6. 1 lakh + Validated */}
+            <div className="flex items-center gap-3.5 sm:gap-4 sm:pl-8">
+              <div className="size-11 sm:size-12 rounded-full bg-[#fde8e8] flex items-center justify-center text-[#ff3366] shrink-0">
+                <Server size={20} strokeWidth={2.5} />
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-black text-black leading-none">1 lakh +</div>
+                <div className="text-xs font-semibold text-gray-500 tracking-wider uppercase mt-1">
+                  VALIDATED
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Charts Container with light background */}
+        <div className="mt-14 sm:mt-18 rounded-2xl bg-[#f8fafc] border border-gray-200/70 p-4 sm:p-6 lg:p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+            {/* Card 1: Entries by Level */}
+            <div className="rounded-2xl bg-white p-5 sm:p-6 border border-gray-200/90 shadow-2xs flex flex-col justify-between">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-800">
+                Entries by Level
+              </h3>
+              <div className="py-4 flex flex-col items-center justify-center">
+                <div className="relative size-44 sm:size-48 flex items-center justify-center">
+                  <svg viewBox="0 0 160 160" className="size-full">
+                    {/* Left half - Blue (National) */}
+                    <path
+                      d="M 80 18 A 62 62 0 0 0 80 142"
+                      fill="none"
+                      stroke="#2f70f2"
+                      strokeWidth="24"
+                    />
+                    {/* Right half - Pink-Red (Local) */}
+                    <path
+                      d="M 80 18 A 62 62 0 0 1 80 142"
+                      fill="none"
+                      stroke="#ff3366"
+                      strokeWidth="24"
+                    />
+                  </svg>
+                  {/* Center Text */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                    <span className="text-sm font-bold text-gray-800 leading-tight">50%</span>
+                    <span className="text-[11px] text-gray-500 font-medium">National</span>
+                  </div>
+                </div>
+                {/* Legend */}
+                <div className="flex items-center justify-center gap-5 text-xs text-gray-600 font-medium mt-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="size-2.5 rounded-full bg-[#2f70f2]" />
+                    <span>National (50%)</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="size-2.5 rounded-full bg-[#ff3366]" />
+                    <span>Local (50%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Entries by Participant Category */}
+            <div className="rounded-2xl bg-white p-5 sm:p-6 border border-gray-200/90 shadow-2xs flex flex-col justify-between">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-800">
+                Entries by Participant Category
+              </h3>
+              <div className="py-4">
+                <svg viewBox="0 0 320 200" className="w-full h-auto">
+                  {/* Grid lines and Y axis labels */}
+                  <text x="18" y="30" fontSize="11" fill="#9ca3af" textAnchor="end">1.5</text>
+                  <line x1="28" y1="26" x2="305" y2="26" stroke="#f3f4f6" strokeDasharray="3 3" />
+
+                  <text x="18" y="78" fontSize="11" fill="#9ca3af" textAnchor="end">1.0</text>
+                  <line x1="28" y1="74" x2="305" y2="74" stroke="#f3f4f6" strokeDasharray="3 3" />
+
+                  <text x="18" y="126" fontSize="11" fill="#9ca3af" textAnchor="end">0.5</text>
+                  <line x1="28" y1="122" x2="305" y2="122" stroke="#f3f4f6" strokeDasharray="3 3" />
+
+                  <text x="18" y="174" fontSize="11" fill="#9ca3af" textAnchor="end">0.0</text>
+                  <line x1="28" y1="170" x2="305" y2="170" stroke="#f3f4f6" strokeDasharray="3 3" />
+
+                  {/* Bar 1: School (Blue) */}
+                  <text x="85" y="62" fontSize="11" fontWeight="600" fill="#1f2937" textAnchor="middle">1</text>
+                  <rect x="67" y="74" width="36" height="96" fill="#2f70f2" rx="2" />
+                  <text x="85" y="190" fontSize="11" fill="#6b7280" textAnchor="middle">School</text>
+
+                  {/* Bar 2: HEI (Pink-Red) */}
+                  <text x="170" y="62" fontSize="11" fontWeight="600" fill="#1f2937" textAnchor="middle">1</text>
+                  <rect x="152" y="74" width="36" height="96" fill="#ff3366" rx="2" />
+                  <text x="170" y="190" fontSize="11" fill="#6b7280" textAnchor="middle">HEI</text>
+
+                  {/* Bar 3: Industry (Green) */}
+                  <text x="255" y="62" fontSize="11" fontWeight="600" fill="#1f2937" textAnchor="middle">1</text>
+                  <rect x="237" y="74" width="36" height="96" fill="#00c48c" rx="2" />
+                  <text x="255" y="190" fontSize="11" fill="#6b7280" textAnchor="middle">Industry</text>
+                </svg>
+              </div>
+            </div>
+
+            {/* Card 3: Cumulative Entries */}
+            <div className="rounded-2xl bg-white p-5 sm:p-6 border border-gray-200/90 shadow-2xs flex flex-col justify-between">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-800">
+                Cumulative Entries
+              </h3>
+              <div className="py-4">
+                <svg viewBox="0 0 320 200" className="w-full h-auto">
+                  <defs>
+                    <linearGradient id="redAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#ff3366" stopOpacity="0.16" />
+                      <stop offset="100%" stopColor="#ff3366" stopOpacity="0.02" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Y Axis Grid & Labels */}
+                  <text x="14" y="28" fontSize="11" fill="#9ca3af" textAnchor="end">8</text>
+                  <line x1="22" y1="24" x2="305" y2="24" stroke="#f3f4f6" strokeDasharray="3 3" />
+
+                  <text x="14" y="65" fontSize="11" fill="#9ca3af" textAnchor="end">6</text>
+                  <line x1="22" y1="61" x2="305" y2="61" stroke="#f3f4f6" strokeDasharray="3 3" />
+
+                  <text x="14" y="102" fontSize="11" fill="#9ca3af" textAnchor="end">4</text>
+                  <line x1="22" y1="98" x2="305" y2="98" stroke="#f3f4f6" strokeDasharray="3 3" />
+
+                  <text x="14" y="139" fontSize="11" fill="#9ca3af" textAnchor="end">2</text>
+                  <line x1="22" y1="135" x2="305" y2="135" stroke="#f3f4f6" strokeDasharray="3 3" />
+
+                  <text x="14" y="174" fontSize="11" fill="#9ca3af" textAnchor="end">0</text>
+                  <line x1="22" y1="170" x2="305" y2="170" stroke="#f3f4f6" strokeDasharray="3 3" />
+
+                  {/* Area fill */}
+                  <polygon
+                    points="38,152 90,133 142,115 195,96 248,77 300,59 300,170 38,170"
+                    fill="url(#redAreaGrad)"
+                  />
+
+                  {/* Line */}
+                  <polyline
+                    points="38,152 90,133 142,115 195,96 248,77 300,59"
+                    fill="none"
+                    stroke="#ff3366"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  {/* Points & Values */}
+                  {/* W1: 1 */}
+                  <text x="38" y="142" fontSize="11" fontWeight="600" fill="#ff3366" textAnchor="middle">1</text>
+                  <circle cx="38" cy="152" r="3.5" fill="#fff" stroke="#ff3366" strokeWidth="2" />
+                  <text x="38" y="188" fontSize="11" fill="#6b7280" textAnchor="middle">W1</text>
+
+                  {/* W2: 2 */}
+                  <text x="90" y="123" fontSize="11" fontWeight="600" fill="#ff3366" textAnchor="middle">2</text>
+                  <circle cx="90" cy="133" r="3.5" fill="#fff" stroke="#ff3366" strokeWidth="2" />
+                  <text x="90" y="188" fontSize="11" fill="#6b7280" textAnchor="middle">W2</text>
+
+                  {/* W3: 3 */}
+                  <text x="142" y="105" fontSize="11" fontWeight="600" fill="#ff3366" textAnchor="middle">3</text>
+                  <circle cx="142" cy="115" r="3.5" fill="#fff" stroke="#ff3366" strokeWidth="2" />
+                  <text x="142" y="188" fontSize="11" fill="#6b7280" textAnchor="middle">W3</text>
+
+                  {/* W4: 4 */}
+                  <text x="195" y="86" fontSize="11" fontWeight="600" fill="#ff3366" textAnchor="middle">4</text>
+                  <circle cx="195" cy="96" r="3.5" fill="#fff" stroke="#ff3366" strokeWidth="2" />
+                  <text x="195" y="188" fontSize="11" fill="#6b7280" textAnchor="middle">W4</text>
+
+                  {/* W5: 5 */}
+                  <text x="248" y="67" fontSize="11" fontWeight="600" fill="#ff3366" textAnchor="middle">5</text>
+                  <circle cx="248" cy="77" r="3.5" fill="#fff" stroke="#ff3366" strokeWidth="2" />
+                  <text x="248" y="188" fontSize="11" fill="#6b7280" textAnchor="middle">W5</text>
+
+                  {/* W6: 6 */}
+                  <text x="300" y="49" fontSize="11" fontWeight="600" fill="#ff3366" textAnchor="middle">6</text>
+                  <circle cx="300" cy="59" r="3.5" fill="#fff" stroke="#ff3366" strokeWidth="2" />
+                  <text x="300" y="188" fontSize="11" fill="#6b7280" textAnchor="middle">W6</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom live portal badge */}
+          <div className="mt-6 sm:mt-8 flex justify-center">
+            <div className="inline-flex items-center px-4 py-2 rounded-lg bg-white border border-gray-200/90 text-[11px] sm:text-xs text-gray-500 font-medium shadow-2xs text-center">
+              Numbers are live portal fields; charts update automatically as entries and stage results are received.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function HomePage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All Categories");
@@ -1152,6 +1440,9 @@ export function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* ── Statistics Section ── */}
+        <StatisticsSection />
 
         {/* Live Announcements — hidden for now */}
         {false && (

@@ -7,7 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const profileRouter = Router();
 
-// Same gate as team registration — the dossier only opens once signup +
+// Same gate as team registration - the dossier only opens once signup +
 // email verification are done.
 profileRouter.use(requireAuth, requireVerifiedEmail);
 

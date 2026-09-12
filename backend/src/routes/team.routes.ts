@@ -7,13 +7,13 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const teamRouter = Router();
 
-// Every route here requires a signed-in, email-verified user — team
+// Every route here requires a signed-in, email-verified user - team
 // registration is only reachable after signup + OTP verification + signin.
 teamRouter.use(requireAuth, requireVerifiedEmail);
 
 teamRouter.post("/", validateBody(createTeamSchema), asyncHandler(teamController.createTeam));
 teamRouter.get("/me", asyncHandler(teamController.getMyTeam));
-// Draft-only — getOwnedTeamOrThrow (via updateTeam) 409s once the team is submitted.
+// Draft-only - getOwnedTeamOrThrow (via updateTeam) 409s once the team is submitted.
 teamRouter.patch("/:teamId", validateBody(createTeamSchema), asyncHandler(teamController.updateTeam));
 teamRouter.post(
   "/:teamId/members",

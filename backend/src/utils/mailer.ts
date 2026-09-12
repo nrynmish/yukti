@@ -82,7 +82,7 @@ export async function sendTeamRegistrationEmail(
           }; text-transform: uppercase;">${m.role}</span>
         </td>
         <td style="padding: 10px 12px; color: #4b5563;">${m.email}</td>
-        <td style="padding: 10px 12px; color: #4b5563;">${m.phone || "—"}</td>
+        <td style="padding: 10px 12px; color: #4b5563;">${m.phone || "-"}</td>
       </tr>`,
     )
     .join("");
@@ -303,5 +303,94 @@ DTU Youth Innovation Challenge
     logger.info({ to, teamName: team.name }, "team_member_added_email_sent");
   } catch (error) {
     logger.error({ err: error, to, teamName: team.name }, "failed_to_send_team_member_added_email");
+  }
+}
+
+export interface ContactMessagePayload {
+  category: string;
+  fullName: string;
+  subject: string;
+}
+
+/**
+ * Sends the "Official automated receipt" the Contact Us page's copy
+ * promises ("within 5 minutes"). Failures are logged, not thrown \u2014 same
+ * pattern as the team emails above: a mail-provider hiccup here shouldn't
+ * turn into a 500 for someone who just successfully filed a grievance, and
+ * the row is already durably saved in contact_messages regardless.
+ */
+export async function sendContactReceiptEmail(
+  to: string,
+  message: ContactMessagePayload,
+): Promise<void> {
+  const subject = `SEWA 2026: We've received your message - ${message.subject}`;
+
+  const textBody = `
+Dear ${message.fullName},
+
+This confirms we've received your message to SEWA 2026.
+
+Category: ${message.category}
+Subject: ${message.subject}
+
+Our team reviews every submission within 24-48 hours. If your query is
+urgent, call the Northern Region Coordinator Helpdesk at
++91 11 27871018 (Ext: 442) or +91 11 27871020.
+
+Best regards,
+SEWA 2026 Organizing Committee
+DTU Youth Innovation Challenge
+`.trim();
+
+  const htmlBody = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px; }
+    .container { max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
+    .header { background: #1e3a8a; color: #ffffff; padding: 24px; text-align: center; }
+    .content { padding: 24px; color: #374151; font-size: 15px; line-height: 1.6; }
+    .card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; font-size: 14px; }
+    .footer { text-align: center; padding: 16px; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2 style="margin: 0; font-size: 20px;">SEWA 2026</h2>
+      <p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.9;">DTU Youth Innovation Challenge</p>
+    </div>
+    <div class="content">
+      <p>Dear <strong>${message.fullName}</strong>,</p>
+      <p>This confirms we've received your message to SEWA 2026.</p>
+
+      <div class="card">
+        <p style="margin: 0 0 6px 0;"><strong>Category:</strong> ${message.category}</p>
+        <p style="margin: 0;"><strong>Subject:</strong> ${message.subject}</p>
+      </div>
+
+      <p style="font-size: 14px; color: #6b7280;">Our team reviews every submission within 24\u201348 hours. If your query is urgent, call the Northern Region Coordinator Helpdesk at +91 11 27871018 (Ext: 442) or +91 11 27871020.</p>
+    </div>
+    <div class="footer">
+      <p style="margin: 0;">SEWA 2026 Organizing Committee</p>
+    </div>
+  </div>
+</body>
+</html>
+`.trim();
+
+  try {
+    await transporter.sendMail({
+      from: env.SMTP_FROM,
+      to,
+      subject,
+      text: textBody,
+      html: htmlBody,
+    });
+    logger.info({ to }, "contact_receipt_email_sent");
+  } catch (error) {
+    logger.error({ err: error, to }, "failed_to_send_contact_receipt_email");
   }
 }

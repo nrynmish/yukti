@@ -17,7 +17,7 @@ shadcn/Radix UI, Vite, TanStack Query.
 - Node.js and npm
 - PostgreSQL, running locally or reachable via connection string
 - An SMTP provider that will actually deliver mail (see the SMTP section
-  below — most marketing/newsletter tools will not work for this)
+  below - most marketing/newsletter tools will not work for this)
 
 ## Repository layout
 
@@ -45,7 +45,7 @@ GRANT ALL ON SCHEMA public TO admin;
 \q
 ```
 
-Do not manually run `CREATE EXTENSION citext` — the Prisma schema
+Do not manually run `CREATE EXTENSION citext` - the Prisma schema
 declares it and will create it during migration. Creating it by hand
 first causes a "drift detected" error on the next `migrate dev` because
 Prisma's migration history won't account for it.
@@ -69,7 +69,7 @@ CLIENT_ORIGIN=http://localhost:8080
 
 DATABASE_URL=postgresql://admin:admin@localhost:5432/sewa2026?schema=public
 
-JWT_SECRET=<32+ random characters — generate with `openssl rand -base64 48`>
+JWT_SECRET=<32+ random characters - generate with `openssl rand -base64 48`>
 JWT_EXPIRES_IN=7d
 COOKIE_NAME=sewa_session
 
@@ -92,7 +92,7 @@ is locked to this single origin with credentials enabled.
 ### SMTP
 
 OTP emails are sent through nodemailer over SMTP. This needs a real
-transactional email provider — most email marketing/newsletter tools
+transactional email provider - most email marketing/newsletter tools
 (built for bulk campaigns) either block or flag OTP-style auth email as
 abuse.
 
@@ -100,17 +100,17 @@ Brevo's transactional email product works and has a usable free tier:
 
 1. Sign up at brevo.com
 2. Settings → SMTP & API → SMTP, to get the SMTP login
-3. Generate an SMTP key (this is the password — separate from your
+3. Generate an SMTP key (this is the password - separate from your
    account login password)
-4. Settings → Senders & IP → Senders — verify the address you put in
+4. Settings → Senders & IP → Senders - verify the address you put in
    `SMTP_FROM`, or Brevo will reject sends with "sender not valid"
-5. Settings → Security → Authorized IPs — Brevo blocks sending from
+5. Settings → Security → Authorized IPs - Brevo blocks sending from
    IPs it doesn't recognize by default; authorize your current IP
    (`curl ifconfig.me` to find it) or you'll see `525 Unauthorized IP
    address` on send
 
 For pure local testing without touching real domains, Mailtrap's sandbox
-SMTP is a faster alternative — it captures mail in a fake inbox instead
+SMTP is a faster alternative - it captures mail in a fake inbox instead
 of sending it anywhere.
 
 ## 3. Run the migration
@@ -164,11 +164,11 @@ It's a dev-only dependency for readable console logs; production
 
 1. Open `http://localhost:8080/signup`, submit the form
 2. Check the inbox you signed up with for the OTP email
-3. Enter the code — this signs you in and sets the session cookie
+3. Enter the code - this signs you in and sets the session cookie
 4. Go to `/team-register` and submit a full team, with a different
    email per member (the leader is auto-added as the first member
    server-side, so reusing the leader's email for another member will
-   silently fail to register that member — the form validates against
+   silently fail to register that member - the form validates against
    this before submit)
 
 ## API surface
@@ -185,6 +185,8 @@ POST /api/auth/password/reset
 
 GET  /api/profile                              current user + candidate profile
 PUT  /api/profile                              upsert the "Personal Details" step
+
+POST /api/contact                              submit Contact Us / Grievance form (no auth)
 
 POST   /api/register                           create team (leader = current user)
 GET    /api/register/me                        current user's team + members

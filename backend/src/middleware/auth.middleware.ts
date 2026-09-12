@@ -21,7 +21,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   try {
     const payload = verifySession(token);
     // Re-fetch current status on every request rather than trusting the
-    // JWT claims alone — a suspended account must lose access immediately,
+    // JWT claims alone - a suspended account must lose access immediately,
     // not just after the token expires.
     const user = await prisma.user.findUnique({
       where: { id: payload.sub },

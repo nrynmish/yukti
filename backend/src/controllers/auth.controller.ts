@@ -50,7 +50,7 @@ export async function resendOtp(req: Request, res: Response) {
   const { email } = req.body as OtpSendInput;
 
   const user = await prisma.user.findUnique({ where: { email } });
-  // Don't reveal whether the account exists — always respond the same way.
+  // Don't reveal whether the account exists - always respond the same way.
   if (user && !user.emailVerified) {
     await issueOtp(user.id, user.email, "email_verify");
     await writeAuditLog({ req, userId: user.id, action: "otp_send" });

@@ -80,7 +80,7 @@ export async function addTeamMember(teamId: string, leaderUserId: string, input:
 
   // Members are recorded as data, not required to hold a user account.
   // If someone with this email has an account, we still don't auto-link
-  // it — see design note in memory: identity claiming is a separate,
+  // it - see design note in memory: identity claiming is a separate,
   // explicit flow (not implemented here), not an automatic email match.
   const newMember = await prisma.teamMember.create({
     data: {

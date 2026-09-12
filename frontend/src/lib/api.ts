@@ -2,7 +2,7 @@
  * Single entry point for every call to the SEWA backend.
  *
  * Two things every request here depends on:
- *  - `credentials: "include"` — the session is an httpOnly cookie, so it is
+ *  - `credentials: "include"` - the session is an httpOnly cookie, so it is
  *    never readable from JS and must be sent explicitly on a cross-origin
  *    request. Omitting it silently produces a 401 on every authed call.
  *  - The backend's CORS is locked to a single `CLIENT_ORIGIN` with
@@ -23,7 +23,7 @@ export class ApiError extends Error {
     this.name = "ApiError";
   }
 
-  /** First field-level message, if the backend sent one — handy for forms. */
+  /** First field-level message, if the backend sent one - handy for forms. */
   get firstFieldError(): string | undefined {
     if (!this.details) return undefined;
     for (const messages of Object.values(this.details)) {
@@ -127,7 +127,7 @@ export interface CandidateProfile {
 }
 
 // Separate from CandidateProfile (the read shape, where the backend sends
-// `null` for an absent optional field) — a PUT omits absent optional fields
+// `null` for an absent optional field) - a PUT omits absent optional fields
 // entirely, so those are typed `| undefined` here.
 export interface UpsertProfileInput {
   firstName: string;
@@ -163,7 +163,7 @@ export const authApi = {
   /** Resend the email-verification OTP. Always 200, even for unknown emails. */
   resendOtp: (email: string) => post<{ message: string }>("/api/auth/otp/send", { email }),
 
-  /** On success the backend sets the session cookie — the user is signed in. */
+  /** On success the backend sets the session cookie - the user is signed in. */
   verifyOtp: (email: string, code: string) =>
     post<{ message: string; user: User }>("/api/auth/otp/verify", { email, code }),
 
@@ -190,7 +190,7 @@ export const teamApi = {
   /** Returns `{ team: null }` when the signed-in user hasn't created one. */
   getMine: () => request<{ team: Team | null }>("/api/register/me"),
 
-  /** Draft-only — 409s once the team has been submitted. */
+  /** Draft-only - 409s once the team has been submitted. */
   update: (
     teamId: string,
     input: { name: string; institute: string; theme: string; problemStatement: string },
@@ -222,4 +222,32 @@ export const profileApi = {
       method: "PUT",
       body: JSON.stringify(input),
     }),
+};
+
+// ─── Contact Us / Grievance form ─────────────────────────────────────────────
+
+// Keep in sync with backend/src/schemas/contact.schema.ts's CONTACT_CATEGORIES.
+export const CONTACT_CATEGORIES = [
+  "General Enquiry",
+  "Technical Support",
+  "Registration & Eligibility",
+  "Problem Statement / Track Query",
+  "Grievance / Appeal",
+] as const;
+
+export type ContactCategory = (typeof CONTACT_CATEGORIES)[number];
+
+export interface ContactMessageInput {
+  category: ContactCategory;
+  fullName: string;
+  teamOrAffiliationId?: string | undefined;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+}
+
+export const contactApi = {
+  submit: (input: ContactMessageInput) =>
+    post<{ message: string }>("/api/contact", input),
 };

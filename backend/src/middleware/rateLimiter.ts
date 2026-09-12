@@ -61,3 +61,15 @@ export const passwordResetConfirmLimiter = rateLimit({
   keyGenerator: (req) => `${req.ip}:${req.body?.email ?? "unknown"}`,
   message: { error: "Too many reset attempts. Try again later." },
 });
+
+// Public and unauthenticated (an applicant might be filing a grievance
+// about being locked out), so this is keyed by IP alone rather than email
+// \u2014 an attacker can trivially vary the email field, and a per-IP cap is
+// what actually limits spam/abuse of the notification email this triggers.
+export const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many messages sent. Please try again later." },
+});

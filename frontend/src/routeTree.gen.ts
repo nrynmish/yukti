@@ -14,6 +14,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TeamRegisterRouteImport } from './routes/team-register'
@@ -43,6 +44,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
   path: '/signin',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/resources': typeof ResourcesRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/team-register': typeof TeamRegisterRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/resources': typeof ResourcesRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/team-register': typeof TeamRegisterRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/resources': typeof ResourcesRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/team-register': typeof TeamRegisterRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/faq'
     | '/forgot-password'
+    | '/resources'
     | '/signin'
     | '/signup'
     | '/team-register'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/faq'
     | '/forgot-password'
+    | '/resources'
     | '/signin'
     | '/signup'
     | '/team-register'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/faq'
     | '/forgot-password'
+    | '/resources'
     | '/signin'
     | '/signup'
     | '/team-register'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  ResourcesRoute: typeof ResourcesRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
   TeamRegisterRoute: typeof TeamRegisterRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signin': {
       id: '/signin'
       path: '/signin'
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  ResourcesRoute: ResourcesRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   TeamRegisterRoute: TeamRegisterRoute,

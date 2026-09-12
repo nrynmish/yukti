@@ -19,7 +19,8 @@ type AuditAction =
   | "team_member_add"
   | "team_member_remove"
   | "team_submit"
-  | "profile_update";
+  | "profile_update"
+  | "contact_message_submit";
 
 interface AuditParams {
   req: Request;
@@ -30,7 +31,7 @@ interface AuditParams {
 
 /**
  * Writes an append-only audit trail entry. Failures here are logged but
- * never thrown — an audit log write must not be able to fail the request
+ * never thrown - an audit log write must not be able to fail the request
  * it's describing.
  */
 export async function writeAuditLog({ req, userId, action, metadata }: AuditParams): Promise<void> {

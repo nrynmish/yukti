@@ -8,7 +8,7 @@ import type { OtpPurpose } from "@prisma/client";
 
 /**
  * Issues a new OTP for the given user, enforcing the resend cooldown
- * server-side (the frontend timer is UX only — this is the real check).
+ * server-side (the frontend timer is UX only - this is the real check).
  * Invalidates any prior unconsumed OTP of the same purpose.
  */
 export async function issueOtp(userId: string, email: string, purpose: OtpPurpose): Promise<void> {

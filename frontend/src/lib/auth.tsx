@@ -35,7 +35,7 @@ export function useAuth() {
 
   const signOut = useMutation({
     mutationFn: () => authApi.signout(),
-    // Clear local session state even if the call failed — the user asked to
+    // Clear local session state even if the call failed - the user asked to
     // leave, and a stale "signed in" UI is worse than an orphaned cookie.
     onSettled: () => queryClient.setQueryData(meQueryKey, null),
   });
@@ -44,7 +44,7 @@ export function useAuth() {
     user: query.data ?? null,
     isLoading: query.isLoading,
     isSignedIn: !!query.data,
-    /** Re-read the session — call after signin/OTP verify sets the cookie. */
+    /** Re-read the session - call after signin/OTP verify sets the cookie. */
     refresh: () => queryClient.invalidateQueries({ queryKey: meQueryKey }),
     setUser: (user: User | null) => queryClient.setQueryData(meQueryKey, user),
     signOut: signOut.mutateAsync,
@@ -52,7 +52,7 @@ export function useAuth() {
 }
 
 /**
- * Gate for pages that need a signed-in, email-verified user — mirrors the
+ * Gate for pages that need a signed-in, email-verified user - mirrors the
  * `requireAuth` + `requireVerifiedEmail` pair the backend puts in front of
  * every `/api/register/*` route. This is UX, not security: the server check
  * is the one that matters.

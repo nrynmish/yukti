@@ -11,8 +11,10 @@ import {
   Compass,
   Eye,
   EyeOff,
+  ExternalLink,
   Facebook,
   FileEdit,
+  FileText,
   Instagram,
   Lightbulb,
   Mail,
@@ -33,7 +35,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ApiError, authApi } from "../lib/api";
+import { ApiError, authApi, contactApi, CONTACT_CATEGORIES, type ContactCategory } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import campusImage from "../assets/dtu-campus-aerial.jpeg";
 import campus2Image from "../assets/campus2.jpeg";
@@ -107,7 +109,7 @@ export function Brand() {
   );
 }
 
-export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" | "problems" | "contact" | "faq" | "signin" | "signup" | "team-register" | string } = {}) {
+export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" | "guidelines" | "about" | "problems" | "contact" | "faq" | "resources" | "signin" | "signup" | "team-register" | string } = {}) {
   const { user, isSignedIn, signOut } = useAuth();
 
   return (
@@ -145,10 +147,55 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
       {/* Main navigation bar + Live updates ticker: ALWAYS sticky at top */}
       <div className="sticky top-0 z-50">
         <header className="border-b border-gray-100 bg-white shadow-sm">
-          <div className="site-shell flex h-18 sm:h-22 items-center justify-between lg:justify-start lg:gap-10 xl:gap-12">
-            <Brand />
+          <div className="site-shell py-2.5 sm:py-3">
+            {/* Row 1: the logo lockup, centered. The auth control is
+                absolutely positioned at the right rather than laid out as a
+                flex sibling, so the logo block stays visually centered
+                regardless of whether it's showing "Login" or "Hi, <name> /
+                Sign Out" -- a flex `justify-between` would re-center the
+                logo every time that content's width changed. */}
+            <div className="relative flex items-center justify-center">
+              <Brand />
+              <div className="absolute right-0 top-1/2 flex -translate-y-1/2 items-center">
+                {isSignedIn ? (
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="hidden max-w-[110px] truncate text-xs text-muted-foreground sm:inline"
+                      title={user?.firstName}
+                    >
+                      Hi, {user?.firstName}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => signOut()}
+                      className="button button-outline shrink-0 cursor-pointer text-xs sm:text-sm"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    to="/signin"
+                    className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary/90 transition-colors sm:px-5 sm:py-2 sm:text-sm"
+                  >
+                    Login
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* Row 2: primary nav. This used to share row 1 with the logo
+                lockup on one line -- once every dropdown label was
+                accounted for, the combined width ran past the viewport
+                ("nav bar out of visible range"). Splitting it onto its own
+                row, and letting it wrap (`flex-wrap` instead of the old
+                `whitespace-nowrap`/`shrink-0`) rather than forcing a single
+                line, keeps it on screen at every width it's shown at.
+                Still hidden below `lg`, unchanged from before: there's no
+                mobile nav/hamburger menu yet, so small screens fall back to
+                just the logo + auth control from row 1. */}
             <nav
-              className="hidden items-center gap-2.5 lg:gap-3 xl:gap-5 whitespace-nowrap text-[13px] lg:text-sm font-semibold lg:flex shrink-0"
+              className="mt-2.5 hidden flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[13px] font-semibold lg:flex lg:text-sm xl:gap-x-5"
               aria-label="Primary navigation"
             >
               <Link to="/" className={`nav-link ${activeNav === "home" ? "text-primary font-bold" : ""}`}>
@@ -207,36 +254,12 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
                 </div>
               </div>
 
+              <Link to="/resources" className={`nav-link ${activeNav === "resources" ? "text-primary font-bold" : ""}`}>
+                Additional Resources
+              </Link>
               <Link to="/faq" className={`nav-link ${activeNav === "faq" ? "text-primary font-bold" : ""}`}>FAQ</Link>
               <Link to="/contact" className={`nav-link ${activeNav === "contact" ? "text-primary font-bold" : ""}`}>Contact Us</Link>
-
-              {isSignedIn ? (
-                <>
-                  <span className="max-w-[110px] truncate text-muted-foreground" title={user?.firstName}>
-                    Hi, {user?.firstName}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => signOut()}
-                    className="button button-outline shrink-0 cursor-pointer"
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <Link
-                  to="/signin"
-                  className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-[13px] lg:text-sm font-bold text-white hover:bg-primary/90 transition-colors shrink-0"
-                >
-                  Login
-                </Link>
-              )}
             </nav>
-            {!isSignedIn && (
-              <Link to="/signin" className="button button-outline lg:hidden">
-                Login
-              </Link>
-            )}
           </div>
         </header>
         <div className="live-updates-bar flex h-10 overflow-hidden bg-muted text-xs">
@@ -325,7 +348,7 @@ export function Footer() {
         <div className="md:col-span-5">
           <h2 className="mb-2.5 text-xl font-bold text-gray-900 tracking-tight">DTU – SEWA 2026</h2>
           <p className="max-w-md text-sm leading-relaxed text-gray-800 font-medium">
-            Young India&apos;s Knowledge &amp; Technology Initiative — SEWA Youth Innovation
+            Young India&apos;s Knowledge &amp; Technology Initiative - SEWA Youth Innovation
             Challenge. Empowering youth to create sustainable, prototype-driven solutions for Viksit
             Bharat.
           </p>
@@ -378,6 +401,9 @@ export function Footer() {
             <a className="block hover:text-primary transition-colors" href="/#steps">
               100-Day Timeline
             </a>
+            <Link className="block hover:text-primary transition-colors" to="/resources">
+              Additional Resources
+            </Link>
             <Link className="block hover:text-primary transition-colors" to="/signin">
               Login
             </Link>
@@ -1329,7 +1355,7 @@ export function HomePage() {
             <ChevronRight size={36} strokeWidth={2.5} className="sm:size-[42px]" />
           </button>
 
-          {/* Hero content — centered */}
+          {/* Hero content - centered */}
           <div className="site-shell relative flex min-h-[580px] items-start justify-center z-10">
             <div className="animate-rise flex flex-col items-center text-center pt-10 pb-20 max-w-3xl w-full">
 
@@ -1351,7 +1377,7 @@ export function HomePage() {
               </p>
 
               <p className="mt-5 max-w-2xl text-base sm:text-lg leading-7 font-semibold text-white/85">
-                Young India's Knowledge &amp; Technology Initiative — A 100-Day Innovation Journey empowering students, researchers, and startups to build sustainable working prototypes for Viksit Bharat.
+                Young India's Knowledge &amp; Technology Initiative - A 100-Day Innovation Journey empowering students, researchers, and startups to build sustainable working prototypes for Viksit Bharat.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3 justify-center">
@@ -1368,7 +1394,7 @@ export function HomePage() {
         </section>
         <section id="about" className="pt-36 sm:pt-[200px] pb-0">
           <div className="site-shell grid grid-cols-1 lg:grid-cols-4 gap-10 lg:gap-16 items-start">
-            {/* Heading — unchanged */}
+            {/* Heading - unchanged */}
             <h2 className="text-4xl font-extrabold leading-[1.15]">
               What
               <br />
@@ -1385,7 +1411,7 @@ export function HomePage() {
             </div>
           </div>
 
-          {/* Video Showcase Section — hidden for now */}
+          {/* Video Showcase Section - hidden for now */}
           {/* <VideoShowcaseSection /> */}
         </section>
 
@@ -1395,7 +1421,7 @@ export function HomePage() {
             <div className="w-full flex items-center justify-center">
               <img
                 src={benefitsSvg}
-                alt="Participation Benefits — SEWA FIRST RYIC 2026"
+                alt="Participation Benefits - SEWA FIRST RYIC 2026"
                 className="w-full h-auto object-contain max-w-[1200px] select-none"
               />
             </div>
@@ -1434,7 +1460,7 @@ export function HomePage() {
             <div className="flex items-center justify-center">
               <img
                 src={timelineImg}
-                alt="Timeline of 100 Day Journey — SEWA FIRST RYIC 2026"
+                alt="Timeline of 100 Day Journey - SEWA FIRST RYIC 2026"
                 className="w-full max-w-5xl h-auto object-contain mix-blend-multiply"
               />
             </div>
@@ -1444,7 +1470,7 @@ export function HomePage() {
         {/* ── Statistics Section ── */}
         <StatisticsSection />
 
-        {/* Live Announcements — hidden for now */}
+        {/* Live Announcements - hidden for now */}
         {false && (
           <section id="announcements" className="live-announcements pt-20 sm:pt-[100px] pb-0 scroll-mt-20">
             <div className="site-shell">
@@ -1507,7 +1533,7 @@ export function HomePage() {
             </div>
           </section>
         )}
-        {/* Join The Challenge — hidden for now */}
+        {/* Join The Challenge - hidden for now */}
         {false && (
           <section id="steps" className="pt-20 sm:pt-[100px] pb-20 sm:pb-[100px] overflow-hidden scroll-mt-20">
             <div className="site-shell grid items-center gap-12 lg:gap-16 lg:grid-cols-2">
@@ -1702,7 +1728,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
     setMessage("");
     try {
       // A successful verify sets the session cookie server-side, so the
-      // user is signed in from here — no separate signin call needed.
+      // user is signed in from here - no separate signin call needed.
       await authApi.verifyOtp(email, code);
       await refresh();
       setMessage("Email verified! Welcome to SEWA 2026.");
@@ -1753,7 +1779,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
           phone: phone || undefined,
           password,
         });
-        // Signup already issued the OTP — this screen only collects it.
+        // Signup already issued the OTP - this screen only collects it.
         setEmailDigits(["", "", "", "", "", ""]);
         setEmailOtpTimer(60);
         setEmailOtpStep(true);
@@ -1761,7 +1787,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        // Prefer the field-level message when Zod rejected the input —
+        // Prefer the field-level message when Zod rejected the input -
         // "Validation failed" on its own tells the user nothing.
         setError(err.firstFieldError ?? err.message);
 
@@ -1771,7 +1797,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
           try {
             await authApi.resendOtp(email);
           } catch {
-            /* cooldown — the existing code is still valid */
+            /* cooldown - the existing code is still valid */
           }
           setEmailDigits(["", "", "", "", "", ""]);
           setEmailOtpTimer(60);
@@ -1793,7 +1819,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
         <main className="flex-1 w-full max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex items-start justify-center">
           <div className="w-full flex flex-col lg:flex-row items-stretch gap-6">
 
-            {/* Left: Aerial DTU campus photo — same layout as the signup card */}
+            {/* Left: Aerial DTU campus photo - same layout as the signup card */}
             <div className="flex-1 min-h-[440px] sm:min-h-[600px] lg:min-h-[660px] rounded-[18px] overflow-hidden shadow-[0_8px_28px_rgba(0,0,0,0.10)]">
               <img
                 src={campusImage}
@@ -1928,7 +1954,7 @@ export function AuthPage({ mode }: { mode: "login" | "register" }) {
             />
           </div>
 
-          {/* Right: Form card — switches between signup form and OTP verification */}
+          {/* Right: Form card - switches between signup form and OTP verification */}
           <div className="w-full lg:w-[480px] shrink-0 rounded-[18px] border border-[#ff5a5f]/70 bg-white px-8 py-9 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col justify-center">
             {/* Brand header */}
             <div className="mb-6">
@@ -2504,7 +2530,7 @@ export function EventsPage() {
                 <span className="block text-[#ff3b30] mt-1.5 sm:mt-2">Happening</span>
               </h1>
               <p className="mt-5 sm:mt-6 text-sm sm:text-base text-gray-600 leading-relaxed max-w-lg font-normal">
-                Discover the key events of the SEWA Youth Innovation Challenge—from the launch and
+                Discover the key events of the SEWA Youth Innovation Challenge - from the launch and
                 innovation showcase to mentoring, prototype development, regional demonstrations, and
                 the Grand Finale.
               </p>
@@ -2683,7 +2709,7 @@ export function ForgotPasswordPage() {
     setError("");
     try {
       await authApi.forgotPassword(contact);
-      // Always advances, even for an unregistered email — the backend
+      // Always advances, even for an unregistered email - the backend
       // answers identically either way so this page can't be used to
       // check whether an address has an account.
       setStage("reset");
@@ -2901,7 +2927,7 @@ export function ForgotPasswordPage() {
 }
 
 export function ContactPage() {
-  const [category, setCategory] = useState("General Enquiry");
+  const [category, setCategory] = useState<ContactCategory>(CONTACT_CATEGORIES[0]);
   const [fullName, setFullName] = useState("");
   const [teamId, setTeamId] = useState("");
   const [email, setEmail] = useState("");
@@ -2910,10 +2936,35 @@ export function ContactPage() {
   const [message, setMessage] = useState("");
   const [fileName, setFileName] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (busy) return;
+    setBusy(true);
+    setError("");
+
+    try {
+      await contactApi.submit({
+        category,
+        fullName,
+        teamOrAffiliationId: teamId || undefined,
+        email,
+        phone,
+        subject,
+        message,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? (err.firstFieldError ?? err.message)
+          : "Could not send your message. Please try again.",
+      );
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -2985,7 +3036,18 @@ export function ContactPage() {
                     </p>
                     <button
                       type="button"
-                      onClick={() => setSubmitted(false)}
+                      onClick={() => {
+                        setSubmitted(false);
+                        setCategory(CONTACT_CATEGORIES[0]);
+                        setFullName("");
+                        setTeamId("");
+                        setEmail("");
+                        setPhone("");
+                        setSubject("");
+                        setMessage("");
+                        setFileName("");
+                        setError("");
+                      }}
                       className="mt-6 inline-flex items-center px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors"
                     >
                       Submit Another Query
@@ -3001,14 +3063,14 @@ export function ContactPage() {
                       <div className="relative">
                         <select
                           value={category}
-                          onChange={(e) => setCategory(e.target.value)}
+                          onChange={(e) => setCategory(e.target.value as ContactCategory)}
                           className="w-full h-10 px-3.5 pr-9 rounded-lg bg-[#f8f9fa] border border-gray-200 text-xs sm:text-[13px] font-medium text-gray-800 focus:bg-white focus:border-red-400 outline-none appearance-none cursor-pointer transition-all"
                         >
-                          <option>General Enquiry</option>
-                          <option>Technical Support</option>
-                          <option>Registration &amp; Eligibility</option>
-                          <option>Problem Statement / Track Query</option>
-                          <option>Grievance / Appeal</option>
+                          {CONTACT_CATEGORIES.map((c) => (
+                            <option key={c} value={c}>
+                              {c}
+                            </option>
+                          ))}
                         </select>
                         <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                       </div>
@@ -3126,15 +3188,31 @@ export function ContactPage() {
                           {fileName ? fileName : "Click to select files or drag & drop here"}
                         </span>
                       </label>
+                      {/* Attachment upload isn't wired to the backend yet (the API
+                          takes a small JSON body only, no multipart handling) - say
+                          so rather than silently dropping whatever the user picked. */}
+                      {fileName && (
+                        <p className="mt-1.5 text-[11px] text-amber-600">
+                          Attachments aren't sent yet - please describe the issue in the
+                          message field, or email it to sewa2026@dtu.ac.in.
+                        </p>
+                      )}
                     </div>
+
+                    {error && (
+                      <p role="alert" className="text-xs font-semibold text-[#ff4d4f]">
+                        {error}
+                      </p>
+                    )}
 
                     {/* Submit Button */}
                     <div className="pt-2">
                       <button
                         type="submit"
-                        className="w-full py-3 rounded-xl bg-[#ff4d4f] hover:bg-[#e03b40] text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.99]"
+                        disabled={busy}
+                        className="w-full py-3 rounded-xl bg-[#ff4d4f] hover:bg-[#e03b40] text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Submit Message / Grievance →
+                        {busy ? "Sending…" : "Submit Message / Grievance →"}
                       </button>
 
                       <p className="mt-2 text-center text-[10px] sm:text-[10.5px] text-gray-400 font-normal">
@@ -3145,6 +3223,114 @@ export function ContactPage() {
                 )}
               </div>
             </div>
+          </div>
+        </main>
+      </div>
+
+      <Footer />
+    </div>
+  );
+}
+
+const resourcePages = [
+  {
+    title: "About the Challenge",
+    description: "What SEWA 2026 is, who runs it, and the 5 national themes.",
+    href: "/#about",
+  },
+  {
+    title: "Guidelines & Benefits",
+    description: "Eligibility, team composition, and what shortlisted teams receive.",
+    href: "/#benefits",
+  },
+  {
+    title: "Problem Statements",
+    description: "The full list of problem statements across all five themes.",
+    href: "/#themes",
+  },
+  {
+    title: "100-Day Timeline",
+    description: "Key dates from registration through the Grand Finale.",
+    href: "/#steps",
+  },
+];
+
+const resourceLinks = [
+  {
+    title: "Delhi Technological University",
+    description: "Official university website - campus, academics, and admissions.",
+    href: "https://dtu.ac.in",
+  },
+  {
+    title: "Ministry of Education, Government of India",
+    description: "National policy context for youth innovation and skill-development initiatives.",
+    href: "https://education.gov.in",
+  },
+  {
+    title: "Startup India",
+    description: "Support schemes and resources for early-stage innovators and founders.",
+    href: "https://www.startupindia.gov.in",
+  },
+];
+
+export function ResourcesPage() {
+  return (
+    <div className="min-h-screen bg-white flex flex-col justify-between">
+      <div>
+        <Header activeNav="resources" />
+        <main className="pt-10 sm:pt-14 pb-20 sm:pb-24">
+          <div className="site-shell max-w-4xl">
+            <h1 className="text-2xl sm:text-3xl md:text-[32px] font-black text-center text-gray-950 tracking-tight mb-3 uppercase">
+              Additional Resources
+            </h1>
+            <p className="text-center text-sm sm:text-[15px] text-gray-500 max-w-lg mx-auto mb-10 sm:mb-12 font-normal leading-relaxed">
+              Reference documents and external links for SEWA 2026 participants.
+            </p>
+
+            <section className="mb-12">
+              <h2 className="mb-4 text-base font-bold text-gray-900 tracking-tight">
+                On This Site
+              </h2>
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                {resourcePages.map((page) => (
+                  <a
+                    key={page.title}
+                    href={page.href}
+                    className="flex items-start gap-3 rounded-[18px] border border-[#eaecf0] bg-[#fbfbfb] px-5 py-4 transition-all hover:border-gray-300 hover:shadow-2xs"
+                  >
+                    <FileText size={18} className="mt-0.5 shrink-0 text-primary" strokeWidth={1.8} />
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-bold text-gray-900 leading-snug">{page.title}</h3>
+                      <p className="mt-1 text-xs text-gray-500 leading-relaxed">{page.description}</p>
+                    </div>
+                    <ChevronRight size={16} className="ml-auto mt-0.5 shrink-0 text-gray-300" strokeWidth={1.8} />
+                  </a>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="mb-4 text-base font-bold text-gray-900 tracking-tight">
+                External Links
+              </h2>
+              <div className="space-y-3">
+                {resourceLinks.map((link) => (
+                  <a
+                    key={link.title}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-start gap-3 rounded-[18px] border border-[#eaecf0] bg-[#fbfbfb] px-5 py-4 transition-all hover:border-gray-300 hover:shadow-2xs"
+                  >
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-bold text-gray-900 leading-snug">{link.title}</h3>
+                      <p className="mt-1 text-xs text-gray-500 leading-relaxed">{link.description}</p>
+                    </div>
+                    <ExternalLink size={16} className="ml-auto mt-0.5 shrink-0 text-gray-300" strokeWidth={1.8} />
+                  </a>
+                ))}
+              </div>
+            </section>
           </div>
         </main>
       </div>
@@ -3240,5 +3426,3 @@ export function FaqPage() {
     </div>
   );
 }
-
-

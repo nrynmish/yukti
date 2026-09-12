@@ -26,7 +26,7 @@ import { useAuth } from "../lib/auth";
 import { Footer, Header } from "./SewaSite";
 
 // ─── Static option lists ────────────────────────────────────────────────────
-// Kept as plain arrays rather than a backend-driven catalogue — same
+// Kept as plain arrays rather than a backend-driven catalogue - same
 // rationale as team.schema's theme/problemStatement list: small, unlikely
 // to change mid-event, not worth a DB round trip.
 
@@ -392,17 +392,17 @@ function ConfirmationSummary({
 }) {
   const maskedAadhaar = personal.aadhaarNumber
     ? `•••• •••• ${personal.aadhaarNumber.slice(-4)}`
-    : "—";
+    : "-";
 
   const rows: [string, string][] = [
     [
       "Applicant",
       [personal.firstName, personal.middleName, personal.lastName].filter(Boolean).join(" "),
     ],
-    ["Date of Birth", personal.dateOfBirth || "—"],
-    ["Gender", personal.gender || "—"],
-    ["Nationality / Citizenship", personal.nationality || "—"],
-    ["Category / Social Group", personal.category || "—"],
+    ["Date of Birth", personal.dateOfBirth || "-"],
+    ["Gender", personal.gender || "-"],
+    ["Nationality / Citizenship", personal.nationality || "-"],
+    ["Category / Social Group", personal.category || "-"],
     ["Aadhaar Number", maskedAadhaar],
     [
       "Address",
@@ -417,10 +417,10 @@ function ConfirmationSummary({
         .filter(Boolean)
         .join(", "),
     ],
-    ["Mobile Number", personal.phone || "—"],
+    ["Mobile Number", personal.phone || "-"],
     ["University Email", email],
-    ["Theme / Track", theme || "—"],
-    ["Problem Statement", problem || "—"],
+    ["Theme / Track", theme || "-"],
+    ["Problem Statement", problem || "-"],
     ["Team Size", `${teamSize} members`],
   ];
 
@@ -645,7 +645,7 @@ export function TeamRegisterPage() {
       });
       // The leader's roster slot (used in Step 3's preview, Step 4's review,
       // and the printed confirmation) is otherwise only synced from the
-      // session's `user` object on mount — without this, editing your name
+      // session's `user` object on mount - without this, editing your name
       // or phone here leaves slot 0 showing what you signed up with.
       setMembers((prev) =>
         prev.map((m, idx) =>
@@ -686,7 +686,7 @@ export function TeamRegisterPage() {
     setDraftSavedNote("");
     const ok = await saveProfile();
     setSavingDraft(false);
-    if (ok) setDraftSavedNote("Saved — you can pick up right here next time you sign in.");
+    if (ok) setDraftSavedNote("Saved - you can pick up right here next time you sign in.");
   };
 
   /**
@@ -722,7 +722,7 @@ export function TeamRegisterPage() {
         id = team.id;
         setTeamId(id);
       } else {
-        // Resumed draft — the create() branch above is skipped, so push any
+        // Resumed draft - the create() branch above is skipped, so push any
         // edits made to team name/institute/theme/problem since it loaded.
         await teamApi.update(id, { name: teamName, institute, theme, problemStatement: problem });
       }
@@ -798,14 +798,14 @@ export function TeamRegisterPage() {
     const STATUS_COPY: Record<string, { title: string; body: string }> = {
       submitted: {
         title: "Your team has been registered!",
-        body: "Sit tight — wait for further rounds. We'll notify every team member by email as the process moves forward.",
+        body: "Sit tight - wait for further rounds. We'll notify every team member by email as the process moves forward.",
       },
       under_review: {
         title: "Your team is under review",
-        body: "Your registration is being reviewed by the SEWA 2026 jury. Wait for further rounds — we'll notify you by email.",
+        body: "Your registration is being reviewed by the SEWA 2026 jury. Wait for further rounds - we'll notify you by email.",
       },
       shortlisted: {
-        title: "Congratulations — you're shortlisted!",
+        title: "Congratulations - you're shortlisted!",
         body: "Your team has been shortlisted for the next round of SEWA 2026. Watch your email for next steps.",
       },
       rejected: {
@@ -1390,7 +1390,7 @@ export function TeamRegisterPage() {
                   <h2 className="mt-3 text-xl font-extrabold text-gray-900">Team Registered!</h2>
                   <p className="mx-auto mt-1 max-w-sm text-sm text-gray-500">
                     <span className="font-semibold text-gray-800">{teamName}</span> has been
-                    successfully registered for SEWA 2026. Wait for further rounds — we'll notify
+                    successfully registered for SEWA 2026. Wait for further rounds - we'll notify
                     every team member by email.
                   </p>
                 </div>

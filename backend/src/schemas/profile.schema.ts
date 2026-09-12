@@ -16,7 +16,7 @@ const ELIGIBLE_STATES = [
 ] as const;
 
 // Category / nationality / gender / state are kept as free text rather than
-// enums — same rationale as team.schema's theme/problemStatement: these
+// enums - same rationale as team.schema's theme/problemStatement: these
 // lists are expected to be finalized before launch and a DB enum would need
 // a migration every time they change. The frontend constrains them to a
 // fixed dropdown; this just guards length/shape.
@@ -28,7 +28,7 @@ export const upsertProfileSchema = z
     category: z.string().trim().max(50).optional(),
     nationality: z.string().trim().min(2).max(100),
     // z.coerce.date() runs arbitrary input through `new Date(...)`, where
-    // e.g. `null` silently becomes 1970-01-01 instead of failing — validate
+    // e.g. `null` silently becomes 1970-01-01 instead of failing - validate
     // the expected yyyy-mm-dd shape and calendar validity first.
     dateOfBirth: z
       .string()

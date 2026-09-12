@@ -9,7 +9,7 @@ export async function signupUser(input: SignupInput) {
 
   if (existing) {
     // Don't reveal *why* signup failed in a way that confirms account
-    // existence beyond what's necessary — but for signup (unlike signin)
+    // existence beyond what's necessary - but for signup (unlike signin)
     // it's standard and acceptable to say the email is taken, since the
     // alternative (silent fake-success) breaks legitimate re-signup UX.
     throw new AppError(409, "An account with this email already exists.");
@@ -55,7 +55,7 @@ export async function verifySignupOtp(email: string, code: string) {
 export async function authenticateUser(input: SigninInput) {
   const user = await prisma.user.findUnique({ where: { email: input.email } });
 
-  // Constant-shape response whether the email exists or not — don't leak
+  // Constant-shape response whether the email exists or not - don't leak
   // account existence. Always run the password check against *something*
   // to avoid a timing side-channel that distinguishes "no such user" from
   // "wrong password".
@@ -82,7 +82,7 @@ export async function authenticateUser(input: SigninInput) {
 
 /**
  * Starts a password reset. Deliberately returns void regardless of whether
- * the account exists — the controller always responds identically, so this
+ * the account exists - the controller always responds identically, so this
  * endpoint can't be used to enumerate registered emails.
  *
  * Returns the user id when one was found, purely so the caller can attach
@@ -99,7 +99,7 @@ export async function requestPasswordReset(email: string): Promise<string | unde
   try {
     await issueOtp(user.id, user.email, "password_reset");
   } catch (err) {
-    // Swallow the cooldown 429 only — otherwise a repeated request would
+    // Swallow the cooldown 429 only - otherwise a repeated request would
     // reveal that this email is registered while an unknown one wouldn't.
     if (err instanceof AppError && err.statusCode === 429) return user.id;
     throw err;
@@ -111,7 +111,7 @@ export async function requestPasswordReset(email: string): Promise<string | unde
 export async function resetPassword(input: ResetPasswordInput) {
   const user = await prisma.user.findUnique({ where: { email: input.email } });
 
-  // Same generic error for "no such user" and "wrong code" — see above.
+  // Same generic error for "no such user" and "wrong code" - see above.
   if (!user) throw new AppError(400, "Incorrect or expired code.");
 
   const isValid = await consumeOtp(user.id, "password_reset", input.code);

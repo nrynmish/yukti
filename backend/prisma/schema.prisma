@@ -33,6 +33,11 @@ enum TeamStatus {
   rejected
 }
 
+enum ContactMessageStatus {
+  open
+  resolved
+}
+
 model User {
   id              String   @id @default(uuid())
   firstName       String   @map("first_name") @db.VarChar(100)
@@ -55,7 +60,7 @@ model User {
 }
 
 /**
- * The "Personal Details" step of the registration dossier — KYC-style
+ * The "Personal Details" step of the registration dossier - KYC-style
  * fields about the applicant that don't belong on the auth-focused User
  * model. One-to-one with User; created/updated as a whole via PUT /api/profile.
  */
@@ -70,7 +75,7 @@ model CandidateProfile {
   dateOfBirth DateTime @map("date_of_birth")
   gender      String  @db.VarChar(30)
 
-  // Stored as entered per product decision — no masking/truncation.
+  // Stored as entered per product decision - no masking/truncation.
   aadhaarNumber String @map("aadhaar_number") @db.VarChar(20)
 
   addressLine1 String  @map("address_line1") @db.VarChar(200)
@@ -150,4 +155,35 @@ model AuditLog {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("audit_logs")
+}
+
+/**
+ * A submission from the public Contact Us / Grievance form. Deliberately
+ * has no relation to User: the form is reachable without signing in (an
+ * applicant might be locked out and filing a grievance about exactly
+ * that), so it captures the submitter's stated name/email/phone as plain
+ * fields rather than assuming an account exists.
+ */
+model ContactMessage {
+  id       String                @id @default(uuid())
+  category String                @db.VarChar(60)
+  fullName String                @map("full_name") @db.VarChar(200)
+
+  // Free text: an applicant may quote a team UUID or a college roll
+  // number here, neither of which is validated against the teams table.
+  teamOrAffiliationId String? @map("team_or_affiliation_id") @db.VarChar(100)
+
+  email   String @db.Citext
+  phone   String @db.VarChar(15)
+  subject String @db.VarChar(200)
+  message String @db.Text
+
+  status ContactMessageStatus @default(open)
+
+  ipAddress String?  @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([status, createdAt])
+  @@map("contact_messages")
 }

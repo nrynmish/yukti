@@ -854,7 +854,7 @@
 
 /*
  * Print isolation for the registration dossier's "Download Confirmation"
- * step — `.print-area` is the only thing left visible when the browser's
+ * step - `.print-area` is the only thing left visible when the browser's
  * print dialog opens, so "Print" doubles as "Save as PDF" with no extra
  * dependency. `.no-print` hides chrome (nav, sidebar, buttons) that has no
  * business on a printed page, and `.print-only` is the inverse: absent on

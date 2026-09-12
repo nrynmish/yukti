@@ -54,7 +54,7 @@ export function SiteHeader() {
 
           <div className="hidden items-center gap-7 text-[13px] font-medium lg:flex">
             <Link to="/" className="transition hover:text-[#f23848]">Home</Link>
-            <SiteNavLink label="Events" href="/#challenge" />
+            <SiteNavLink label="Events" href="/events" />
             <SiteNavLink label="Guidelines" href="/#steps" />
             <SiteNavLink label="About" href="/#about" />
             <a href="/#contact" className="transition hover:text-[#f23848]">Contact Us</a>
@@ -108,10 +108,26 @@ export function SiteHeader() {
 
 function SiteNavLink({ label, href }: { label: string; href: string }) {
   return (
-    <a href={href} className="flex items-center gap-1 transition hover:text-[#f23848]">
-      {label}
-      <ChevronDown size={11} />
-    </a>
+    <div className="group relative">
+      <a
+        href={href}
+        className="flex items-center gap-1 py-6 transition hover:text-[#f23848]"
+        aria-haspopup="menu"
+      >
+        {label}
+        <ChevronDown size={11} />
+      </a>
+      <div className="invisible absolute left-1/2 top-full z-50 min-w-32 -translate-x-1/2 -translate-y-1 opacity-0 transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+        <div className="rounded-md border border-gray-100 bg-white py-1 shadow-lg" role="menu">
+          <a href={href} className="block px-4 py-2 text-xs transition hover:bg-red-50 hover:text-[#f23848]" role="menuitem">
+            Page 1
+          </a>
+          <a href={href} className="block px-4 py-2 text-xs transition hover:bg-red-50 hover:text-[#f23848]" role="menuitem">
+            Page 2
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }
 

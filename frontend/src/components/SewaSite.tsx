@@ -132,6 +132,43 @@ export function Header({ activeNav = "home" }: { activeNav?: "home" | "events" |
             <a href="https://dtu.ac.in" target="_blank" rel="noreferrer" className="nav-link">
               About DTU
             </a>
+            {/* Dropdown menu for additional pages */}
+            <div className="relative group">
+              <button
+                onClick={() => navigate("/events")}
+                className="nav-link flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium hover:bg-primary/10 transition-colors"
+                aria-label="Pages dropdown"
+              >
+                Pages
+                <ChevronDown className="h-3 w-3" />
+              </button>
+              <div
+                className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 z-10 hidden group-hover:block"
+              >
+                <div className="py-1">
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate("/events");
+                    }}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Page 1
+                  </a>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate("/events");
+                    }}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Page 2
+                  </a>
+                </div>
+              </div>
+            </div>
             {isSignedIn ? (
               <>
                 <span className="max-w-[110px] truncate text-muted-foreground" title={user?.firstName}>

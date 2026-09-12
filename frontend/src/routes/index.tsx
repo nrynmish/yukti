@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import SewaLandingPage from "./landing-page";
+import { HomePage } from "../components/SewaSite";
 
 // No head() here: the home route inherits title/description/og/twitter from
 // __root.tsx, and ships no og:image so serve-time hosting can inject the
@@ -22,5 +22,5 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: SewaLandingPage,
+  component: HomePage,
 });

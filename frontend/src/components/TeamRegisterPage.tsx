@@ -23,7 +23,7 @@ import {
   type TeamMember,
 } from "../lib/api";
 import { useAuth } from "../lib/auth";
-import { SiteFooter, SiteHeader } from "./SiteChrome";
+import { Footer, Header } from "./SewaSite";
 
 // ─── Static option lists ────────────────────────────────────────────────────
 // Kept as plain arrays rather than a backend-driven catalogue — same
@@ -786,11 +786,11 @@ export function TeamRegisterPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col bg-[#fdf6f6]">
-        <SiteHeader />
+        <Header activeNav="team-register" />
         <main className="flex flex-1 items-center justify-center">
           <Loader2 className="size-8 animate-spin text-primary" />
         </main>
-        <SiteFooter />
+        <Footer />
       </div>
     );
   }
@@ -819,7 +819,7 @@ export function TeamRegisterPage() {
 
     return (
       <div className="flex min-h-screen flex-col bg-[#fdf6f6]">
-        <SiteHeader />
+        <Header activeNav="team-register" />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
           <div className="no-print rounded-2xl border border-gray-100 bg-white px-6 py-10 text-center shadow-sm sm:px-10">
             <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10">
@@ -868,14 +868,14 @@ export function TeamRegisterPage() {
             />
           </div>
         </main>
-        <SiteFooter />
+        <Footer />
       </div>
     );
   }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fdf6f6]">
-      <SiteHeader />
+      <Header activeNav="team-register" />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
         <div className="no-print mb-6">
@@ -1424,7 +1424,7 @@ export function TeamRegisterPage() {
         </div>
       </main>
 
-      <SiteFooter />
+      <Footer />
     </div>
   );
 }
